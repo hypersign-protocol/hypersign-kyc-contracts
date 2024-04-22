@@ -633,21 +633,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "hypersign-factory"
-version = "0.1.0"
-dependencies = [
- "cosmwasm-schema 2.0.1",
- "cosmwasm-std",
- "cw-multi-test",
- "cw-storage-plus 1.2.0",
- "cw-utils 1.0.3",
- "cw721-base 0.18.0",
- "schemars",
- "serde",
- "thiserror",
-]
-
-[[package]]
 name = "issuer-kyc"
 version = "0.1.0"
 dependencies = [

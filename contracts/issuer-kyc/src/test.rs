@@ -1,106 +1,116 @@
 #[cfg(any(test, feature = "tests"))]
 pub mod test {
     use super::*;
-    use crate::entry::*;
-    use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, ValueResp, ValueRespProxy};
-    use cosmwasm_std::{coin, coins, Addr, Empty};
-    use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
+    use crate::entry::{self, *};
+    use crate::error::KycContractError;
+    use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp};
+    use crate::state::COUNTER;
 
-    fn counting_contract() -> Box<dyn Contract<Empty>> {
-        let contract = ContractWrapper::new(execute, instantiate, query);
+    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+    use cosmwasm_std::{coin, coins, Addr, Empty};
+    use cw721_base::Cw721Contract;
+    use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
+    fn issuer_kyc_contract() -> Box<dyn Contract<Empty>> {
+        let contract = ContractWrapper::new(execute, instantiate, query).with_reply(entry::reply);
         Box::new(contract)
     }
 
+    fn cw_721_contract() -> Box<dyn Contract<Empty>> {
+        let contract = ContractWrapper::new(
+            cw721_base::entry::execute,
+            cw721_base::entry::instantiate,
+            cw721_base::entry::query,
+        );
+        Box::new(contract)
+    }
+
+    // #[test]
+    // fn test_initalization() {
+    //     let mut deps = mock_dependencies();
+    //     let mut app = App::default();
+    //     let sbt_contract_code_id = app.store_code(cw_721_contract());
+
+    //     // _deps: DepsMut,
+    //     // _env: Env,
+    //     // _info: MessageInfo,
+    //     // _msg: InstantiateMsg,
+
+    //     // assert min expiration
+    //     instantiate(
+    //         deps.as_mut(),
+    //         mock_env(),
+    //         mock_info("mrt", &[]),
+    //         InstantiateMsg {
+    //             owner_did: "did:hid:12313123123".to_string(),
+    //             token_code_id: sbt_contract_code_id,
+    //         },
+    //     )
+    //     .unwrap();
+    //     // assert_eq!(error, KycContractError::MinExpiration {});
+    // }
+
     #[test]
-    fn query_value() {
+    fn kyc_sbt_contracts_initialization() {
         // App simulates blockhain
         let mut app = App::default();
 
         // Let's create a dummy account
         let sender = Addr::unchecked("sender");
-        // More sophisticated way of simulating blockhain
-        // need to put fund some tokens to this sender
-        let initialBalance = 10000;
-        let tokenDenom = "uHID";
-        // let mut app = AppBuilder::new().build(|router, _api, storage| {
-        //     router  // from router
-        //     .bank // extract bank module
-        //     .init_balance(storage, &sender, coins(initialBalance, tokenDenom)) // send some initial tokens to the sender account
-        //     .unwrap()
-        // });
 
         // storing contract code on blockhain
-        let contract_id = app.store_code(counting_contract());
+        let sbt_contract_code_id = app.store_code(cw_721_contract());
+        println!("sbt_contract_code_id = {:?}", sbt_contract_code_id);
+
+        let kyc_contract_code_id = app.store_code(issuer_kyc_contract());
+        println!("kyc_contract_code_id = {:?}", kyc_contract_code_id);
 
         let contract_addr = app
             .instantiate_contract(
-                contract_id,
+                kyc_contract_code_id,
                 sender.clone(), // simulating a blockchain address
                 &InstantiateMsg {
-                    counter: 0,
-                    minimal_donation: Some(coin(10, tokenDenom)),
+                    owner_did: "did:hid:12313123123".to_string(),
+                    token_code_id: sbt_contract_code_id,
                 },
                 &[],
-                "Funding contract",
+                "Issuer contract",
                 None,
             )
             .unwrap();
 
-        // // lets first increment the counter = 1
-        let proxy_contract_addr = "abcd".to_owned();
+        // Initialiing NFT contract
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
-            &ExecMsg::Poke {
-                proxy_contract_addr: proxy_contract_addr.clone(),
-            },
+            &ExecMsg::Init {},
             &[],
         )
         .unwrap();
 
-        // // lets first increment the counter one more time = 2
-        app.execute_contract(
-            sender.clone(),
-            contract_addr.clone(),
-            &ExecMsg::Poke {
-                proxy_contract_addr: proxy_contract_addr.clone(),
-            },
-            &[],
-        )
-        .unwrap();
-
-        // lets send some fund; which will also increase the coounter = 3
-        // let amount_to_be_sent_to_contract = 10;
-        // app.execute_contract(
-        //     sender.clone(),
-        //     contract_addr.clone(),
-        //     &ExecMsg::Donate {}, &coins(amount_to_be_sent_to_contract, tokenDenom))
-        //     .unwrap();
-
-        // then test is counter has been incremented
-        let resp: ValueResp = app
+        // // then test is counter has been incremented
+        let resp: SBTcontractAddressResp = app
             .wrap()
-            .query_wasm_smart(contract_addr.clone(), &QueryMsg::Value {})
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::SBTContractAddress {})
             .unwrap();
 
-        assert_eq!(resp, ValueResp { value: 2 });
-
-        // test if proxy contract address is set
-        let resp1: ValueRespProxy = app
-            .wrap()
-            .query_wasm_smart(contract_addr.clone(), &QueryMsg::GetProxyMessage {})
-            .unwrap();
         assert_eq!(
-            resp1,
-            ValueRespProxy {
-                proxyContractAddress: proxy_contract_addr.clone()
+            resp,
+            SBTcontractAddressResp {
+                sbt_contract_address: "contract1".to_string()
             }
         );
 
-        // // lets check the balane of the cotnract as well....
-        // assert_eq!(app.wrap().query_all_balances(contract_addr).unwrap(), coins(amount_to_be_sent_to_contract, tokenDenom));
-        // // check if amount was deducted from sernder account or not
-        // assert_eq!(app.wrap().query_all_balances(sender).unwrap(), coins(initialBalance -  amount_to_be_sent_to_contract, tokenDenom))
+        // TODO: asset that a token was minited
+        // Minitnig NFT contract
+        app.execute_contract(
+            sender.clone(),
+            contract_addr.clone(),
+            &ExecMsg::Mint {},
+            &[],
+        )
+        .unwrap();
+
+        // TODO: assert taht token was transfered to the user
     }
 
     // #[test]

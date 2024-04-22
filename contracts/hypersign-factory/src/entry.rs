@@ -1,5 +1,5 @@
+use self::error::ContractError;
 use super::*;
-use error::ContractError;
 use msg::InstantiateMsg;
 use state::{COUNTER, COUNTER_PROXY_ADDR, INSTANTIATE_TOKEN_REPLY_ID};
 

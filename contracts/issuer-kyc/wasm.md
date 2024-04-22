@@ -135,3 +135,25 @@ nibid query wasm contract-state smart nibi1h6828as2z5av0xqtlh4w9m75wxewapk8z9l2f
 nibid query wasm contract-state smart nibi1h6828as2z5av0xqtlh4w9m75wxewapk8z9l2flvzc29zeyzhx6fqvy4y7j '{"tokens":{"owner": "nibi13yzstuzzw3ur6lpmn9xh6utx0ym052mq2eagm5"}}'
 ```
 
+
+-- 
+
+
+
+```
+nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas 100000000
+
+nibid q wasm list-code 
+
+
+nibid tx wasm instantiate 23 '{"owner_did": "did:hid:123123123", "token_code_id": 21 }' --label "Activity" --from validator --gas 100000000 --no-admin
+
+nibid q wasm list-contract-by-code 23
+
+```
+kyc_contract_addr: 
+nibi15fxl9g5pfjdhfqtmspmhpwtlxhfkwh9l2yk2uj926qqvg3gsfkuqr2age2
+
+```
+nibid query wasm contract-state smart nibi15fxl9g5pfjdhfqtmspmhpwtlxhfkwh9l2yk2uj926qqvg3gsfkuqr2age2 '{"s_b_t_contract_address":{}}'
+```

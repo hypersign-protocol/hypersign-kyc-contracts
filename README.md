@@ -31,3 +31,8 @@
 - [ ] Implement multitest cases 
 - [ ] Work on all edge cases of smart contract
 - [ ] Contract optimization; see how we can impvoe gas fee, check for any security loopholes
+
+
+## Resources
+
+- [CosmWasm Documentation](https://docs.cosmwasm.com/docs/smart-contracts/state/cw-plus)

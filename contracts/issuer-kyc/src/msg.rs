@@ -8,43 +8,35 @@ use serde::{Deserialize, Serialize};
 
 #[cw_serde]
 pub struct InstantiateMsg {
-    #[serde(default)]
-    pub counter: u64,
-    pub minimal_donation: Option<Coin>,
+    pub owner_did: String,
+    pub token_code_id: u64,
 }
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     #[returns(ValueResp)]
-    Value {},
-    #[returns(ValueRespProxy)]
-    GetProxyMessage {},
+    OwnerDID {},
+
+    #[returns(SBTcontractAddressResp)]
+    SBTContractAddress {},
 }
 
 #[cw_serde]
 pub enum ExecMsg {
-    Poke { proxy_contract_addr: String },
-    Donate {},
-    Withdraw {},
-    Deploy { token_code_id: u64 },
+    Mint {},
+    Init {},
+    //     Deploy { token_code_id: u64 },
 }
 
 #[cw_serde]
 pub struct ValueResp {
-    pub value: u64,
+    pub owner_did: String,
 }
 
 #[cw_serde]
-pub struct ValueRespProxy {
-    pub proxyContractAddress: String,
-}
-
-#[cw_serde]
-pub struct NftInstantiateMsg {
-    pub name: String,
-    pub symbol: String,
-    pub minter: String,
+pub struct SBTcontractAddressResp {
+    pub sbt_contract_address: String,
 }
 
 pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
