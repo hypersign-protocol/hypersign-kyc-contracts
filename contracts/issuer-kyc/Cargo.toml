@@ -1,0 +1,32 @@
+[package]
+name = "issuer-kyc"
+version       = { workspace = true }
+edition       = { workspace = true }
+license       = { workspace = true }
+repository    = { workspace = true }
+homepage      = { workspace = true }
+documentation = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+library = []
+tests = ["library", "cw-multi-test"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std    = { workspace = true }
+cw-storage-plus = { workspace = true }
+cw721-base      = { workspace = true, features = ["library"] }
+schemars        = { workspace = true }
+serde           = { workspace = true }
+thiserror       = { workspace = true }
+cw-multi-test   = { workspace = true, optional = true  }
+cw-utils        = { workspace = true }
+
+
+[dev-dependencies]
+cw-multi-test = { workspace = true }
