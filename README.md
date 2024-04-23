@@ -21,10 +21,11 @@
     - [x] Figoure out spec for SBT (cw-721-non-transferable)
     - [x] Figure out how can you make a smart contract mint SBT
     - [x] Figure out how to instantiate one contract from the other in factory design pattern
-- [ ] Implement  basic `Hypersign_KYC_factory_Contract`
-    - [ ] Implement `onboard_issuer()` to onboard an issuer in the system 
-- [ ] Implement basic `Issuer_KYC_Contract`
-    - [ ] Implement `mint()` to mint a NFT to the user
+- [x] Implement  basic `Hypersign_KYC_factory_Contract`
+    - [x] Implement `onboard_issuer()` to onboard an issuer in the system 
+- [x] Implement basic `Issuer_KYC_Contract`
+    - [x] Implment `init()` to initialize the NFT contract
+    - [x] Implement `mint()` to mint a NFT to the user
 - [ ] Integrate entity dashboard to onboard_issuer from the UI
 - [ ] Integrate widget UI to mint SBTs
 - [ ] Refator code; use wrappers

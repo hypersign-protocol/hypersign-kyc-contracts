@@ -35,7 +35,7 @@ pagination:
   total: "0"
 ```
 
-## . Admin deploys kyc contract
+## 1. Admin deploys kyc contract
 
 ```
 nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas 100000000
@@ -43,14 +43,44 @@ nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas 100000000
 nibid q wasm list-code 
 
 ```
-This happens in factory contract
-<!-- nibid tx wasm instantiate 31 '{"owner_did": "did:hid:123123123" }' --label "Activity" --from validator --gas 100000000 --no-admin -->
+
+## 2. Admin deploys factory contract
+
+```
+nibid tx wasm store ./artifacts/hypersign_factory.wasm --from validator --gas 100000000
+
+nibid q wasm list-code 
+```
+
+## 3. Admin instantiate the factory contract
+
+```
+nibid tx wasm instantiate 34 '{"counter": 0 }' --label "Activity" --from validator --gas 100000000 --no-admin
+
+nibid q wasm list-contract-by-code 34
+
+```
+
+## 4. Issuer onboard himself
+
+```
+nibid tx wasm execute nibi1yatzc54ln59caxxnj53rff2s359pezx3hqxpzu2tkyl2f9ud9yvsq60lle '{"onboard_issuer": {"issuer_did":"did:hid:123123123", "issuer_kyc_code_id": 33 }}' --from issuer  --keyring-backend test  --gas 100000000 
+```
+
+## 5. Get the Issuer KYC  contract address
+
+```
+nibid query wasm contract-state smart nibi1yatzc54ln59caxxnj53rff2s359pezx3hqxpzu2tkyl2f9ud9yvsq60lle '{"get_registered_issuer":{}}'
+```
+
+
 ```
 nibid q wasm list-contract-by-code 33
 ```
 
 kyc_contract_addr: 
 nibi1ad9jhy5xyclavg0q00g68gxlak0n2my3x0ufmwjmuslyh7nfgv6qd3fwt0
+
 
 ## 6. Issuer initialize SBT contract
 ```
