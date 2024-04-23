@@ -33,7 +33,7 @@ pub fn execute(
 
     match _msg {
         Mint {} => exec::mint(_deps, _info, _env),
-        Init {} => exec::init(_deps, _info, _env),
+        Init { token_code_id } => exec::init(_deps, _info, _env, token_code_id),
     }
 }
 

@@ -1,5 +1,5 @@
 mod contract;
-mod entry;
+pub mod entry;
 mod error;
 pub mod msg;
 mod state;

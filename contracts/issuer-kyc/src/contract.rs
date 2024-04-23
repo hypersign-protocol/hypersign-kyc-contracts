@@ -30,7 +30,7 @@ pub fn instantiate(
     // initiate the counter = 0
     COUNTER.save(deps.storage, &0)?;
 
-    SBT_CODE_ID.save(deps.storage, &msg.token_code_id)?;
+    //    SBT_CODE_ID.save(deps.storage, &msg.token_code_id)?;
 
     /// TODO: need to figure out why this isnt working..
     // let sub_msg: Vec<SubMsg> = vec![SubMsg {
@@ -90,9 +90,17 @@ pub mod exec {
         Response, StdError, StdResult, SubMsg, WasmMsg,
     };
 
-    pub fn init(deps: DepsMut, info: MessageInfo, env: Env) -> Result<Response, KycContractError> {
-        let token_code_id = SBT_CODE_ID.load(deps.storage)?;
-        println!("token_code_id {:?}", token_code_id);
+    pub fn init(
+        deps: DepsMut,
+        info: MessageInfo,
+        env: Env,
+        token_code_id: u64,
+    ) -> Result<Response, KycContractError> {
+        // let token_code_id = SBT_CODE_ID.load(deps.storage)?;
+        // println!("token_code_id {:?}", token_code_id);
+
+        SBT_CODE_ID.save(deps.storage, &token_code_id)?;
+
         // Instantiating a new SBT contract
         let sub_msg: Vec<SubMsg> = vec![SubMsg {
             msg: WasmMsg::Instantiate {

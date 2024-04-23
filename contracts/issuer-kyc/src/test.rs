@@ -70,7 +70,6 @@ pub mod test {
                 sender.clone(), // simulating a blockchain address
                 &InstantiateMsg {
                     owner_did: "did:hid:12313123123".to_string(),
-                    token_code_id: sbt_contract_code_id,
                 },
                 &[],
                 "Issuer contract",
@@ -82,7 +81,9 @@ pub mod test {
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
-            &ExecMsg::Init {},
+            &ExecMsg::Init {
+                token_code_id: sbt_contract_code_id,
+            },
             &[],
         )
         .unwrap();

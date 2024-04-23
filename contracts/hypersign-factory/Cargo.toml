@@ -26,7 +26,7 @@ serde           = { workspace = true }
 thiserror       = { workspace = true }
 cw-multi-test   = { workspace = true, optional = true  }
 cw-utils        = { workspace = true }
-
+issuer-kyc      = { workspace = true, features = ["library"] }
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }

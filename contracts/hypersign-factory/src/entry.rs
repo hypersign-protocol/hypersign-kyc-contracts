@@ -1,7 +1,7 @@
 use self::error::ContractError;
 use super::*;
-use msg::InstantiateMsg;
-use state::{COUNTER, COUNTER_PROXY_ADDR, INSTANTIATE_TOKEN_REPLY_ID};
+use msg::{InstantiateMsg, Issuer};
+use state::{DUMMY_ISSUER_ID, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS};
 
 use cosmwasm_std::{
     entry_point, to_binary, Addr, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response,
@@ -32,12 +32,10 @@ pub fn execute(
     use msg::ExecMsg::*;
 
     match _msg {
-        Poke {
-            proxy_contract_addr,
-        } => exec::poke(_deps, _info, proxy_contract_addr).map_err(ContractError::from),
-        Donate {} => exec::donate(_deps, _info, _env).map_err(ContractError::from),
-        Withdraw {} => exec::widthdraw(_deps, _env, _info),
-        Deploy { token_code_id } => exec::deploy_nft_contract(_deps, _info, _env, token_code_id)
+        OnboardIssuer {
+            issuer_did,
+            issuer_kyc_code_id,
+        } => exec::onboard_issuer(_deps, _info, _env, issuer_did, issuer_kyc_code_id)
             .map_err(ContractError::from),
     }
 }
@@ -48,8 +46,7 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
     use msg::QueryMsg::*;
 
     match msg {
-        Value {} => to_binary(&query::value(deps)?),
-        GetProxyMessage {} => to_binary(&query::getProxyMessage(deps)?),
+        GetRegisteredIssuer {} => to_binary(&query::get_registred_issuer(deps)?),
     }
 }
 
@@ -59,13 +56,30 @@ pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractE
         return Err(ContractError::InvalidTokenId { token_id: msg.id });
     }
 
-    let value: u64 = COUNTER.load(deps.storage)? + 1;
-    COUNTER.save(deps.storage, &value)?;
-
     let reply = parse_reply_instantiate_data(msg).unwrap();
     let cw721_address = Addr::unchecked(reply.contract_address).into();
 
-    COUNTER_PROXY_ADDR.save(deps.storage, &cw721_address)?;
+    // let issuer = |d: Option<Issuer>| -> StdResult<Issuer> {
+    //     match d {
+    //         Some(issuer) => Ok(Issuer {
+    //             id: "issuer-1".into(),
+    //             did: "did:hid:12123123".into(),
+    //             kyc_contract_address: cw721_address,
+    //         }),
+    //         None => Ok(Issuer {
+    //             id: "issuer-1".into(),
+    //             did: "did:hid:12123123".into(),
+    //             kyc_contract_address: cw721_address,
+    //         }),
+    //     }
+    // };
 
+    let issuer = Issuer {
+        id: "issuer-1".into(),
+        did: "did:hid:12123123".into(),
+        kyc_contract_address: Some(cw721_address),
+    };
+
+    ISSUERS.save(deps.storage, DUMMY_ISSUER_ID, &issuer)?;
     Ok(Response::new())
 }

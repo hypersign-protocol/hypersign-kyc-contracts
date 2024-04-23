@@ -9,7 +9,7 @@ rust-version  = "1.65"
 
 
 [workspace]
-members = ["contracts/issuer-kyc"]
+members = ["contracts/*"]
 
 [workspace.dependencies]
 cosmwasm-schema = "2.0.1"
@@ -21,4 +21,6 @@ thiserror       = "1.0.58"
 cw-multi-test   = "0.13.4"
 cw-utils        = "1.0.3"
 cw721-base      = "0.18.0"
+issuer-kyc      = { version = "*", path = "./contracts/issuer-kyc"} 
+# cw721-base      = { version = "*", path = "./contracts/cw721-base" }
 

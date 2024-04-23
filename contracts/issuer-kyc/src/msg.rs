@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[cw_serde]
 pub struct InstantiateMsg {
     pub owner_did: String,
-    pub token_code_id: u64,
+    // pub token_code_id: u64,
 }
 
 #[cw_serde]
@@ -25,7 +25,7 @@ pub enum QueryMsg {
 #[cw_serde]
 pub enum ExecMsg {
     Mint {},
-    Init {},
+    Init { token_code_id: u64 },
     //     Deploy { token_code_id: u64 },
 }
 
