@@ -146,14 +146,37 @@ nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas 100000000
 nibid q wasm list-code 
 
 
-nibid tx wasm instantiate 23 '{"owner_did": "did:hid:123123123", "token_code_id": 21 }' --label "Activity" --from validator --gas 100000000 --no-admin
+nibid tx wasm instantiate 24 '{"owner_did": "did:hid:123123123", "token_code_id": 21 }' --label "Activity" --from validator --gas 100000000 --no-admin
 
 nibid q wasm list-contract-by-code 23
 
 ```
 kyc_contract_addr: 
-nibi15fxl9g5pfjdhfqtmspmhpwtlxhfkwh9l2yk2uj926qqvg3gsfkuqr2age2
+nibi1afxj87jjd4usd80gsprtq76uykv02egaydwvj62ldhngzj2zdamqquumrx
 
 ```
-nibid query wasm contract-state smart nibi15fxl9g5pfjdhfqtmspmhpwtlxhfkwh9l2yk2uj926qqvg3gsfkuqr2age2 '{"s_b_t_contract_address":{}}'
+nibid tx wasm execute nibi1afxj87jjd4usd80gsprtq76uykv02egaydwvj62ldhngzj2zdamqquumrx '{"init": {}}' --from validator --gas 100000000 
+```
+
+```
+nibid tx wasm execute nibi1afxj87jjd4usd80gsprtq76uykv02egaydwvj62ldhngzj2zdamqquumrx '{"mint": {}}' --from issuer --gas 100000000 
+```
+
+
+```
+nibid query wasm contract-state smart nibi1jarq7kgdyd7dcfu2ezeqvg4w4hqdt3m5lv364d8mztnp9pzmwwwqkt3c4c '{"num_tokens":{}}'
+```
+
+`nibi1jarq7kgdyd7dcfu2ezeqvg4w4hqdt3m5lv364d8mztnp9pzmwwwqkt3c4c`
+
+```
+nibid query wasm contract-state smart nibi1jarq7kgdyd7dcfu2ezeqvg4w4hqdt3m5lv364d8mztnp9pzmwwwqkt3c4c '{"tokens":{"owner": "nibi125kz6d2cn5m7e3eag4s7r6lwvpvvllleyh2pvg"}}'
+```
+
+```
+nibid query wasm contract-state smart nibi1jarq7kgdyd7dcfu2ezeqvg4w4hqdt3m5lv364d8mztnp9pzmwwwqkt3c4c '{"all_nft_info":{"token_id": "5"}}'
+```
+
+```
+nibid query wasm contract-state smart nibi1afxj87jjd4usd80gsprtq76uykv02egaydwvj62ldhngzj2zdamqquumrx '{"s_b_t_contract_address":{}}'
 ```

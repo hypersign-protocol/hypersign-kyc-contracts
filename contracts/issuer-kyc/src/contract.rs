@@ -62,7 +62,6 @@ pub mod query {
     use crate::{
         msg::{SBTcontractAddressResp, ValueResp},
         state::COUNTER,
-        state::COUNTER_PROXY_ADDR,
         state::OWNERDID,
         state::SBT_CONTRACT_ADDRESS,
     };
@@ -81,10 +80,7 @@ pub mod query {
 }
 
 pub mod exec {
-    use super::{
-        COUNTER, COUNTER_PROXY_ADDR, INSTANTIATE_TOKEN_REPLY_ID, MINIMAL_DONATION, OWNER,
-        SBT_CODE_ID, SBT_CONTRACT_ADDRESS,
-    };
+    use super::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, SBT_CODE_ID, SBT_CONTRACT_ADDRESS};
     use crate::{
         error::KycContractError,
         msg::{Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg},
