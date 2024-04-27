@@ -108,7 +108,7 @@ pub mod exec {
                 msg: to_json_binary(&Cw721InstantiateMsg {
                     name: "SBT".to_owned(),
                     symbol: "SBT".to_owned(),
-                    minter: env.contract.address.clone().to_string(), //
+                    minter: env.contract.address.clone().into(), //
                 })?,
                 funds: vec![],
                 admin: Some(info.sender.to_string()),

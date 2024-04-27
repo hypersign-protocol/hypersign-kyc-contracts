@@ -3,7 +3,9 @@ use cosmwasm_std::{Addr, Coin};
 use cw_storage_plus::{Item, Map};
 
 // https://docs.cosmwasm.com/docs/smart-contracts/state/cw-plus#map
+// did <> Issuer
 pub const ISSUERS: Map<&str, Issuer> = Map::new("issuers");
+pub const ISSUERS_TEMP: Map<u64, Issuer> = Map::new("issuers_temp");
 pub const INSTANTIATE_TOKEN_REPLY_ID: u64 = 1;
 pub const DUMMY_ISSUER_ID: &str = "issuer-1";
 

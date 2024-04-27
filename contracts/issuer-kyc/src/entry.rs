@@ -1,13 +1,16 @@
 use self::error::KycContractError;
 use super::*;
+
+use cosmwasm_std::SubMsgResponse;
 use msg::InstantiateMsg;
 use state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CONTRACT_ADDRESS};
 
+use cosmwasm_std::Coin;
+use cosmwasm_std::Reply;
 use cosmwasm_std::{
     entry_point, to_binary, Addr, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response,
     StdResult,
 };
-use cosmwasm_std::{Coin, Reply};
 use cw_utils::parse_reply_instantiate_data;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -55,9 +58,11 @@ pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, KycContra
         return Err(KycContractError::InvalidTokenId { token_id: msg.id });
     }
 
-    let reply = parse_reply_instantiate_data(msg).unwrap();
+    let reply = cw_utils::parse_reply_instantiate_data(msg).unwrap();
     let cw721_address = Addr::unchecked(reply.contract_address).into();
 
-    SBT_CONTRACT_ADDRESS.save(deps.storage, &cw721_address)?;
+    SBT_CONTRACT_ADDRESS
+        .save(deps.storage, &cw721_address)
+        .unwrap();
     Ok(Response::new())
 }

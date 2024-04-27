@@ -8,31 +8,45 @@ pub fn instantiate(deps: DepsMut, msg: InstantiateMsg, info: MessageInfo) -> Std
 }
 
 pub mod query {
-    use cosmwasm_std::{Deps, StdResult};
-
+    use crate::error::ContractError;
     use crate::{
         msg::{RegistredIssuerResp, ValueResp, ValueRespProxy},
-        state::{DUMMY_ISSUER_ID, ISSUERS},
+        state::ISSUERS,
     };
+    use cosmwasm_std::{Deps, Response, StdError, StdResult};
+    use serde::de::value::Error;
 
-    pub fn get_registred_issuer(deps: Deps) -> StdResult<RegistredIssuerResp> {
+    pub fn get_registred_issuer(deps: Deps, issuer_did: String) -> StdResult<RegistredIssuerResp> {
+        //// TODO: check if the key does not exist in the map and thrown error otherwise
+        // let issuer_already_exists = ISSUERS.has(deps.storage, &issuer_did.clone());
+        // if !issuer_already_exists {
+        //     return Err(ContractError::InvalidIssuerDID {
+        //         issuer_did: issuer_did.into(),
+        //     });
+        // }
+
         Ok(RegistredIssuerResp {
-            issuer: ISSUERS.load(deps.storage, DUMMY_ISSUER_ID)?,
+            issuer: ISSUERS.load(deps.storage, issuer_did.as_str())?,
         })
+
+        // match ISSUERS.load(deps.storage, issuer_did.as_str()) {
+        //     Ok(value) => value,
+        //     Err(error) => Err("Invalid issuer DID"),
+        // };
     }
 }
 
 pub mod exec {
-    use super::{INSTANTIATE_TOKEN_REPLY_ID, ISSUERS};
+    use super::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS, ISSUERS_TEMP};
     use crate::{
         error::ContractError,
         msg::{
             Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg, Issuer, IssuerKycInstantiateMsg,
-            NftInstantiateMsg,
+            NftInstantiateMsg, ResponseD,
         },
     };
     use cosmwasm_std::{
-        to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn,
+        to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, Event, MessageInfo, ReplyOn,
         Response, StdError, StdResult, SubMsg, WasmMsg,
     };
 
@@ -42,32 +56,56 @@ pub mod exec {
         env: Env,
         issuer_did: String,
         issuer_kyc_code_id: u64,
-    ) -> StdResult<Response> {
+    ) -> Result<Response, ContractError> {
+        // TODO: check if issuer_did already exists in the ISSUER map
+        let issuer_already_exists = ISSUERS.has(deps.storage, &issuer_did.clone());
+        if issuer_already_exists {
+            return Err(ContractError::IssuerDIDAlreadyRegistred {
+                issuer_did: issuer_did.into(),
+            });
+        }
+
+        // TODO: optimization: we could simply use ISSUER_TEMP keys length... may be more efficient
+        let mut counter = COUNTER.load(deps.storage)?;
+
         let sub_msg: Vec<SubMsg> = vec![SubMsg {
             msg: WasmMsg::Instantiate {
                 code_id: issuer_kyc_code_id,
                 msg: to_json_binary(&IssuerKycInstantiateMsg {
-                    owner_did: issuer_did.to_string(),
+                    owner_did: issuer_did.clone().into(),
                 })?,
                 funds: vec![],
                 admin: Some(info.sender.to_string()),
                 label: String::from("Instantiate fixed price NFT contract"),
             }
             .into(),
-            id: INSTANTIATE_TOKEN_REPLY_ID,
+            id: counter,
             gas_limit: None,
             reply_on: ReplyOn::Success,
         }];
+        println!("Issuer {}", issuer_did.clone());
 
-        let resp = Response::new().add_submessages(sub_msg);
+        // let isuerID = "issuer-"
+        //     .to_owned()
+        //     .push_str(&counter.to_string())
+        //     .to_owned();
 
-        // let issuer = Issuer {
-        //     id: "issuer-1".into(),
-        //     did: issuer_did.into(),
-        //     kyc_contract_address: None,
-        // };
+        let issuer = Issuer {
+            id: "issuer-1".into(), // TODO: make the number dynamic
+            did: issuer_did.clone().into(),
+            kyc_contract_address: None,
+        };
 
-        // ISSUERS.save(deps.storage, issuer_did.as_str(), &issuer)?;
+        ISSUERS_TEMP.save(deps.storage, counter, &issuer);
+        counter += 1;
+        COUNTER.save(deps.storage, &counter);
+
+        let mut resp = Response::new().add_submessages(sub_msg);
+        // .add_event(Event::new("admin_added").add_attribute("issuer_did", issuer_did.clone()))
+        // .set_data(b"the result data");
+        // .set_data(to_json_binary(&IssuerKycInstantiateMsg {
+        //     owner_did: issuer_did.clone().into(),
+        // })?)
 
         Ok(resp)
     }

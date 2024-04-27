@@ -1,4 +1,5 @@
 use self::error::ContractError;
+use self::state::ISSUERS_TEMP;
 use super::*;
 use msg::{InstantiateMsg, Issuer};
 use state::{DUMMY_ISSUER_ID, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS};
@@ -8,7 +9,6 @@ use cosmwasm_std::{
     StdResult,
 };
 use cosmwasm_std::{Coin, Reply};
-use cw_utils::parse_reply_instantiate_data;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -46,40 +46,29 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
     use msg::QueryMsg::*;
 
     match msg {
-        GetRegisteredIssuer {} => to_binary(&query::get_registred_issuer(deps)?),
+        GetRegisteredIssuer { issuer_did } => {
+            to_binary(&query::get_registred_issuer(deps, issuer_did)?)
+        }
     }
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
-    if msg.id != INSTANTIATE_TOKEN_REPLY_ID {
-        return Err(ContractError::InvalidTokenId { token_id: msg.id });
-    }
-
-    let reply = parse_reply_instantiate_data(msg).unwrap();
+    let reply = cw_utils::parse_reply_instantiate_data(msg.clone()).unwrap();
     let cw721_address = Addr::unchecked(reply.contract_address).into();
 
-    // let issuer = |d: Option<Issuer>| -> StdResult<Issuer> {
-    //     match d {
-    //         Some(issuer) => Ok(Issuer {
-    //             id: "issuer-1".into(),
-    //             did: "did:hid:12123123".into(),
-    //             kyc_contract_address: cw721_address,
-    //         }),
-    //         None => Ok(Issuer {
-    //             id: "issuer-1".into(),
-    //             did: "did:hid:12123123".into(),
-    //             kyc_contract_address: cw721_address,
-    //         }),
-    //     }
-    // };
+    // load the temporary issuer id
+    let mut issuer_temp: Issuer = ISSUERS_TEMP.load(deps.storage, msg.id.clone())?;
 
-    let issuer = Issuer {
-        id: "issuer-1".into(),
-        did: "did:hid:12123123".into(),
-        kyc_contract_address: Some(cw721_address),
-    };
+    // TODO: check if key = msg.id exists in the ISSUERS_TEMP
 
-    ISSUERS.save(deps.storage, DUMMY_ISSUER_ID, &issuer)?;
+    issuer_temp.kyc_contract_address = Some(cw721_address);
+
+    // store in the permanent issuer location
+    ISSUERS.save(deps.storage, issuer_temp.did.as_str(), &issuer_temp)?;
+
+    // clean up item from temp storage
+    ISSUERS_TEMP.remove(deps.storage, msg.id);
+
     Ok(Response::new())
 }

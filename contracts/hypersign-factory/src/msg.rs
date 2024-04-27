@@ -24,7 +24,7 @@ pub struct InstantiateMsg {
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     #[returns(RegistredIssuerResp)]
-    GetRegisteredIssuer {},
+    GetRegisteredIssuer { issuer_did: String },
 }
 
 #[cw_serde]
@@ -67,3 +67,8 @@ pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
 pub type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
 
 pub type IssuerKycInstantiateMsg = issuer_kyc::msg::InstantiateMsg;
+
+#[cw_serde]
+pub struct ResponseD {
+    pub issuer_did: String,
+}

@@ -55,11 +55,12 @@ pub mod test {
             .unwrap();
 
         // Onboarding a user by deploying a contaract for him
+        let mut issuer_did = "did:hid:1234";
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
             &ExecMsg::OnboardIssuer {
-                issuer_did: "did:hid:123123123".into(),
+                issuer_did: issuer_did.into(),
                 issuer_kyc_code_id: kyc_contract_code_id,
             },
             &[],
@@ -69,7 +70,12 @@ pub mod test {
         // // then test is counter has been incremented
         let resp: RegistredIssuerResp = app
             .wrap()
-            .query_wasm_smart(contract_addr.clone(), &QueryMsg::GetRegisteredIssuer {})
+            .query_wasm_smart(
+                contract_addr.clone(),
+                &QueryMsg::GetRegisteredIssuer {
+                    issuer_did: issuer_did.into(),
+                },
+            )
             .unwrap();
 
         assert_eq!(
@@ -77,10 +83,24 @@ pub mod test {
             RegistredIssuerResp {
                 issuer: Issuer {
                     id: "issuer-1".into(),
-                    did: "did:hid:12123123".into(),
+                    did: issuer_did.clone().into(),
                     kyc_contract_address: Some("contract1".to_string())
                 }
             }
         );
+
+        // re registert the same issuer should not work
+        issuer_did = "did:hid:12344";
+        let resp_fail = app
+            .execute_contract(
+                sender.clone(),
+                contract_addr.clone(),
+                &ExecMsg::OnboardIssuer {
+                    issuer_did: issuer_did.into(),
+                    issuer_kyc_code_id: kyc_contract_code_id,
+                },
+                &[],
+            )
+            .unwrap();
     }
 }

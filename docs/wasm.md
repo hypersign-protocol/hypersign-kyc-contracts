@@ -55,47 +55,48 @@ nibid q wasm list-code
 ## 3. Admin instantiate the factory contract
 
 ```
-nibid tx wasm instantiate 34 '{"counter": 0 }' --label "Activity" --from validator --gas 100000000 --no-admin
+nibid tx wasm instantiate 47 '{"counter": 0 }' --label "Activity" --from validator --gas 100000000 --no-admin
 
-nibid q wasm list-contract-by-code 34
+nibid q wasm list-contract-by-code 47
 
 ```
 
 ## 4. Issuer onboard himself
 
 ```
-nibid tx wasm execute nibi1yatzc54ln59caxxnj53rff2s359pezx3hqxpzu2tkyl2f9ud9yvsq60lle '{"onboard_issuer": {"issuer_did":"did:hid:123123123", "issuer_kyc_code_id": 33 }}' --from issuer  --keyring-backend test  --gas 100000000 
+nibid tx wasm execute nibi1f5djultkcmtxwyyadkjjjjmcncxf5yxz5qkz4qfjnkwqggrw7pdqe27m2h '{"onboard_issuer": {"issuer_did":"did:hid:123123123", "issuer_kyc_code_id": 33 }}' --from issuer  --keyring-backend test  --gas 100000000 
 ```
 
 ## 5. Get the Issuer KYC  contract address
 
 ```
-nibid query wasm contract-state smart nibi1yatzc54ln59caxxnj53rff2s359pezx3hqxpzu2tkyl2f9ud9yvsq60lle '{"get_registered_issuer":{}}'
+nibid query wasm contract-state smart nibi1f5djultkcmtxwyyadkjjjjmcncxf5yxz5qkz4qfjnkwqggrw7pdqe27m2h '{"get_registered_issuer":{}}'
 ```
 
 
+
 ```
-nibid q wasm list-contract-by-code 33
+nibid q wasm list-contract-by-code 36
 ```
 
 kyc_contract_addr: 
-nibi1ad9jhy5xyclavg0q00g68gxlak0n2my3x0ufmwjmuslyh7nfgv6qd3fwt0
+nibi1vw93hy8tm3xekpz9286428gesmmc8dqxmw8cujsh3fcu3rt0hvdqg6tj60
 
 
 ## 6. Issuer initialize SBT contract
 ```
-nibid tx wasm execute nibi1ad9jhy5xyclavg0q00g68gxlak0n2my3x0ufmwjmuslyh7nfgv6qd3fwt0 '{"init": {"token_code_id": 21}}' --from issuer  --keyring-backend test --gas 100000000 
+nibid tx wasm execute nibi1vw93hy8tm3xekpz9286428gesmmc8dqxmw8cujsh3fcu3rt0hvdqg6tj60 '{"init": {"token_code_id": 21}}' --from issuer  --keyring-backend test --gas 100000000 
 ```
 
 ## 7. Get SBT contract address
 
 ```
-nibid query wasm contract-state smart nibi1ad9jhy5xyclavg0q00g68gxlak0n2my3x0ufmwjmuslyh7nfgv6qd3fwt0 '{"s_b_t_contract_address":{}}'
+nibid query wasm contract-state smart nibi1vw93hy8tm3xekpz9286428gesmmc8dqxmw8cujsh3fcu3rt0hvdqg6tj60 '{"s_b_t_contract_address":{}}'
 ```
 
 ## 8. User mints NFT
 ```
-nibid tx wasm execute nibi1ad9jhy5xyclavg0q00g68gxlak0n2my3x0ufmwjmuslyh7nfgv6qd3fwt0 '{"mint": {}}' --from user --gas 100000000 
+nibid tx wasm execute nibi1mgj39ylnnpv0mjtyl4kh7j57ktfymygsug02jxs593sdpllfw0as90t662 '{"mint": {}}' --from user --gas 100000000 
 ```
 
 ## 9. Check status of NFT in the NFT contract
@@ -112,6 +113,7 @@ nibid query wasm contract-state smart nibi15k76p44rfhep7qjvgq9unek8037km0e45mrex
 nibid query wasm contract-state smart nibi15k76p44rfhep7qjvgq9unek8037km0e45mrexknf340hsua6penqyhd76a '{"all_nft_info":{"token_id": "1"}}'
 ```
 
-
+<!-- 
+nibid query wasm contract-state smart nibi17yw4nya4kmqgn0aw4xfecrwc098260n6cnqz72afnmhqxrjp6j3shhpd20 '{"all_nft_info":{"token_id": "1"}}' -->
 
 ---
