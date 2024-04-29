@@ -27,7 +27,8 @@
     - [x] Implment `init()` to initialize the NFT contract
     - [x] Implement `mint()` to mint a NFT to the user
 - [x] Integrate entity dashboard to onboard_issuer from the UI
-- [ ] Integrate widget UI to mint SBTs
+- [x] Integrate widget UI to mint SBTs
+- [ ] Implement feature in caach server to capture user's miniing step
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
 - [ ] Figure out how can we verify resolve issuer DID (over IBC / ORacle etc.)
 - [ ] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
