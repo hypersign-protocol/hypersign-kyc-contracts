@@ -26,12 +26,16 @@
 - [x] Implement basic `Issuer_KYC_Contract`
     - [x] Implment `init()` to initialize the NFT contract
     - [x] Implement `mint()` to mint a NFT to the user
-- [ ] Integrate entity dashboard to onboard_issuer from the UI
+- [x] Integrate entity dashboard to onboard_issuer from the UI
 - [ ] Integrate widget UI to mint SBTs
+- [ ] Onchain data models (what exact data will go in the metadata of NFT)
+- [ ] Figure out how can we verify resolve issuer DID (over IBC / ORacle etc.)
+- [ ] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
 - [ ] Refator code; use wrappers
 - [ ] Implement multitest cases 
 - [ ] Work on all edge cases of smart contract
-- [ ] Contract optimization; see how we can impvoe gas fee, check for any security loopholes
+- [ ] Contract optimization; see how we can impvoe gas fee, 
+- [ ] Check for any security loopholes
 
 
 ## Resources
