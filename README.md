@@ -31,6 +31,7 @@
 - [ ] Implement feature in caach server to capture user's miniing step
 - [ ] Implement widget configuration page in Entity KYC dashboard
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
+- [ ] Integrate facefi API backend
 - [ ] Figure out how can we verify resolve issuer DID (over IBC / ORacle etc.)
 - [ ] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
 - [ ] Refator code; use wrappers
