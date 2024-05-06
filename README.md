@@ -28,8 +28,9 @@
     - [x] Implement `mint()` to mint a NFT to the user
 - [x] Integrate entity dashboard to onboard_issuer from the UI
 - [x] Integrate widget UI to mint SBTs
-- [ ] Implement feature in caach server to capture user's miniing step
-- [ ] Implement widget configuration page in Entity KYC dashboard
+- [x] Implement mint-sbt module in hypersig kyc service 
+- [x] Implement feature in caach server to capture user's miniing step
+- [x] Implement widget configuration page in Entity KYC dashboard
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
 - [ ] Integrate facefi API backend
 - [ ] Figure out how can we verify resolve issuer DID (over IBC / ORacle etc.)
@@ -39,7 +40,8 @@
 - [ ] Work on all edge cases of smart contract
 - [ ] Contract optimization; see how we can impvoe gas fee, 
 - [ ] Check for any security loopholes
-
+- [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
+- [ ] The widget URL should be signed and then sent given to the user for security purposess
 
 ## Resources
 
