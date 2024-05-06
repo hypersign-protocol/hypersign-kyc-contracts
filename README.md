@@ -31,17 +31,20 @@
 - [x] Implement mint-sbt module in hypersig kyc service 
 - [x] Implement feature in caach server to capture user's miniing step
 - [x] Implement widget configuration page in Entity KYC dashboard
+----------------------------------------------------------------
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
-- [ ] Integrate facefi API backend
 - [ ] Figure out how can we verify resolve issuer DID (over IBC / ORacle etc.)
 - [ ] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
+----------------------------------------------------------------
+- [ ] Backward compatibility with the old version
+- [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
+- [ ] Integrate facefi API backend
+- [ ] The widget URL should be signed and then sent given to the user for security purposess
 - [ ] Refator code; use wrappers
 - [ ] Implement multitest cases 
 - [ ] Work on all edge cases of smart contract
-- [ ] Contract optimization; see how we can impvoe gas fee, 
+- [ ] Contract optimization; see how we can improve gas fee, 
 - [ ] Check for any security loopholes
-- [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
-- [ ] The widget URL should be signed and then sent given to the user for security purposess
 
 ## Resources
 
