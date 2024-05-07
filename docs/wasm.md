@@ -57,13 +57,16 @@ nibid q wasm list-code
 ```
 nibid tx wasm instantiate 47 '{"counter": 0 }' --label "Activity" --from validator --gas 100000000 --no-admin
 nibid q wasm list-contract-by-code 47
+
+
+nibid tx wasm instantiate 47 '{"adminDID": "did:dhid:123123", adminDIDProof: "{ keyc schem... }" }' --label "Activity" --from validator --gas 100000000 --no-admin
 ```
 
 ----------- ISSUER --------------------------------
 ## 4. Issuer onboard himself
 
 ```
-nibid tx wasm execute nibi1f5djultkcmtxwyyadkjjjjmcncxf5yxz5qkz4qfjnkwqggrw7pdqe27m2h '{"onboard_issuer": {"issuer_did":"did:hid:123123123", "issuer_kyc_code_id": 33 }}' --from issuer  --keyring-backend test  --gas 100000000 
+nibid tx wasm execute nibi1f5djultkcmtxwyyadkjjjjmcncxf5yxz5qkz4qfjnkwqggrw7pdqe27m2h '{"onboard_issuer": {"issuer_did":"rnadomds...", proofOfAdmin: "" , "issuer_kyc_code_id": 33 }}' --from issuer  --keyring-backend test  --gas 100000000 
 ```
 
 ## 5. Get the Issuer KYC  contract address

@@ -2,6 +2,11 @@
 
 ![img](./docs/hypersign-kyc-cosm-wasm-contracts.png)
 
+
+## Sequence diagram 
+
+![img](./docs/hypersign-multi-tenant-ssi-infra.png)
+
 - Hypersign Admin deploys `Hypersign_KYC_factory_Contract`
 - **Issuer Onboarding:**
     - Issuer invokes `deploy_your_kyc()` of `Hypersign_KYC_factory_Contract` to deploy its KYC System:
