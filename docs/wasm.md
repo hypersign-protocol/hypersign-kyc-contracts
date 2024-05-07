@@ -35,32 +35,31 @@ pagination:
   total: "0"
 ```
 
-## 1. Admin deploys kyc contract
+----------- ADMIN --------------------------------
+
+## 1. Admin uploads kyc contract code
 
 ```
 nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas 100000000
-
 nibid q wasm list-code 
-
 ```
 
-## 2. Admin deploys factory contract
+## 2. Admin uploads factory contract code
 
 ```
 nibid tx wasm store ./artifacts/hypersign_factory.wasm --from validator --gas 100000000
-
 nibid q wasm list-code 
 ```
+
 
 ## 3. Admin instantiate the factory contract
 
 ```
 nibid tx wasm instantiate 47 '{"counter": 0 }' --label "Activity" --from validator --gas 100000000 --no-admin
-
 nibid q wasm list-contract-by-code 47
-
 ```
 
+----------- ISSUER --------------------------------
 ## 4. Issuer onboard himself
 
 ```
@@ -73,15 +72,12 @@ nibid tx wasm execute nibi1f5djultkcmtxwyyadkjjjjmcncxf5yxz5qkz4qfjnkwqggrw7pdqe
 nibid query wasm contract-state smart nibi1f5djultkcmtxwyyadkjjjjmcncxf5yxz5qkz4qfjnkwqggrw7pdqe27m2h '{"get_registered_issuer":{}}'
 ```
 
-
-
 ```
 nibid q wasm list-contract-by-code 36
 ```
 
 kyc_contract_addr: 
 nibi1vw93hy8tm3xekpz9286428gesmmc8dqxmw8cujsh3fcu3rt0hvdqg6tj60
-
 
 ## 6. Issuer initialize SBT contract
 ```
@@ -93,6 +89,9 @@ nibid tx wasm execute nibi1vw93hy8tm3xekpz9286428gesmmc8dqxmw8cujsh3fcu3rt0hvdqg
 ```
 nibid query wasm contract-state smart nibi1vw93hy8tm3xekpz9286428gesmmc8dqxmw8cujsh3fcu3rt0hvdqg6tj60 '{"s_b_t_contract_address":{}}'
 ```
+
+
+----------- USERS -------------------------------- 
 
 ## 8. User mints NFT
 ```
