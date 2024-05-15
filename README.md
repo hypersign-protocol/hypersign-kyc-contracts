@@ -1,6 +1,6 @@
 # Hypersign On-Chain KYC Contract Architecture
 
-![img](./docs/hypersign-kyc-cosm-wasm-contracts.png)
+![img](./docs/hypersign-kyc-cosm-wasm-contracts-Page-3.drawio.png)
 
 
 ## Sequence diagram 
@@ -37,9 +37,9 @@
 - [x] Implement feature in caach server to capture user's miniing step
 - [x] Implement widget configuration page in Entity KYC dashboard
 ----------------------------------------------------------------
+- [ ] Figure out how can we verify issuer DID (over IBC / ORacle etc.)
+- [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
-- [ ] Figure out how can we verify resolve issuer DID (over IBC / ORacle etc.)
-- [ ] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
 - [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
