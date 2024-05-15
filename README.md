@@ -40,6 +40,7 @@
 - [x] Figure out how can we verify issuer_did (over IBC / ORacle etc.)
 - [x] Figure out how to canonize a json ld
 - [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
+----------------------------------------------------------------
 - [ ] Implement `SSI_manager_contract` with constructor params `{ did_method: "did:testnet:hid" }`
     - [ ] Implement helper method - `verify_proof() -> true`
     - [ ] Implement `register_did({did, signed_did_doc})`
@@ -58,6 +59,7 @@
 - [ ] Implement request did-auth for user_did in mint NFT page in widget during performing KYC
 - [ ] Implement request `issuer_authorization_credential` in mint NFT page in widget during performing KYC
 - [ ] Update new contract address in widget and dashboard and test the entire flow.
+----------------------------------------------------------------
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
