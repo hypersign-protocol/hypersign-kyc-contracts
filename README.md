@@ -37,14 +37,17 @@
 - [x] Implement feature in caach server to capture user's miniing step
 - [x] Implement widget configuration page in Entity KYC dashboard
 ----------------------------------------------------------------
-- [ ] Figure out how can we verify issuer DID (over IBC / ORacle etc.)
+- [x] Figure out how can we verify issuer_did (over IBC / ORacle etc.)
 - [x] Figure out how to canonize a json ld
 - [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
 - [ ] Implement `SSI_manager_contract`
 - [ ] Improve `instantiation()` of `Hypersign_KYC_factory_Contract` to whitelist `SSI_manager_contract` address and whitelist hypersign_did
 - [ ] Improve `deploy_your_Kyc()` in `Hypersign_KYC_factory_Contract` 
-    - [ ] to verify issuer DID before onboarding.
-    - [ ] to verify presentation signed by hypersign_did
+    - [ ] to verify issuer_did before onboarding.
+    - [ ] to verify presentation signed by hypersign_did (only allow those issuers who have authorization)
+- [ ] Improve `mint()` of `Issuer_KYC_Contract` 
+    - [ ] to verify user_did
+    - [ ] to verify signed presentation by issuer_did (only allow those users who have authorization)
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
