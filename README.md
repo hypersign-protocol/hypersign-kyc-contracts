@@ -52,6 +52,12 @@
 - [ ] Improve `mint({user_did, user_did_proof, issuer_authorization_presentation})` of `Issuer_KYC_Contract` 
     - [ ] to verify user_did
     - [ ] to verify signed presentation by issuer_did (only allow those users who have authorization)
+- [ ] Implement request did-auth for issuer did in onchain-kyc page in dashboard during onchain kyc deployment step
+- [ ] Implement request `hs_authorization_credential` in onchain-kyc page in dashboard during onchain kyc deployment step
+- [ ] Implement generate `hs_authorization_presentation` in onchain-kyc page in dashboard during onchain kyc deployment step
+- [ ] Implement request did-auth for user_did in mint NFT page in widget during performing KYC
+- [ ] Implement request `issuer_authorization_credential` in mint NFT page in widget during performing KYC
+- [ ] Update new contract address in widget and dashboard and test the entire flow.
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
