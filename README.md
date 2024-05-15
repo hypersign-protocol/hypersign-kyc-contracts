@@ -27,18 +27,24 @@
     - [x] Figure out how can you make a smart contract mint SBT
     - [x] Figure out how to instantiate one contract from the other in factory design pattern
 - [x] Implement  basic `Hypersign_KYC_factory_Contract`
-    - [x] Implement `onboard_issuer()` to onboard an issuer in the system 
+    - [x] Implement  `deploy_your_Kyc()` to onboard an issuer in the system 
 - [x] Implement basic `Issuer_KYC_Contract`
     - [x] Implment `init()` to initialize the NFT contract
     - [x] Implement `mint()` to mint a NFT to the user
-- [x] Integrate entity dashboard to onboard_issuer from the UI
+- [x] Integrate entity dashboard to `deploy_your_Kyc()` from the UI
 - [x] Integrate widget UI to mint SBTs
 - [x] Implement mint-sbt module in hypersig kyc service 
 - [x] Implement feature in caach server to capture user's miniing step
 - [x] Implement widget configuration page in Entity KYC dashboard
 ----------------------------------------------------------------
 - [ ] Figure out how can we verify issuer DID (over IBC / ORacle etc.)
+- [x] Figure out how to canonize a json ld
 - [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
+- [ ] Implement `SSI_manager_contract`
+- [ ] Improve `instantiation()` of `Hypersign_KYC_factory_Contract` to whitelist `SSI_manager_contract` address and whitelist hypersign_did
+- [ ] Improve `deploy_your_Kyc()` in `Hypersign_KYC_factory_Contract` 
+    - [ ] to verify issuer DID before onboarding.
+    - [ ] to verify presentation signed by hypersign_did
 - [ ] Onchain data models (what exact data will go in the metadata of NFT)
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
