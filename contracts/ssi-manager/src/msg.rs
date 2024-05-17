@@ -65,10 +65,7 @@ pub enum ProofPurpose {
 
 #[cw_serde]
 pub enum ExecMsg {
-    Mint {},
-    Init { token_code_id: u64 },
     RegisterDID { did: String, did_doc: String, did_doc_proof: String }
-    //     Deploy { token_code_id: u64 },
 }
 
 #[cw_serde]

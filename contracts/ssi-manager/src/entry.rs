@@ -36,8 +36,6 @@ pub fn execute(
     use msg::ExecMsg::*;
 
     match _msg {
-        Mint {} => exec::mint(_deps, _info, _env),
-        Init { token_code_id } => exec::init(_deps, _info, _env, token_code_id),
         RegisterDID { did, did_doc, did_doc_proof } => exec::register_did(_deps, _info, _env, &did, &did_doc, &did_doc_proof)
     }
 }
