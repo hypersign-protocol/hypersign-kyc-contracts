@@ -3,7 +3,8 @@ pub mod test {
     use super::*;
     use crate::entry::{self, *};
     use crate::msg::{
-        ExecMsg, InstantiateMsg, Issuer, QueryMsg, RegistredIssuerResp, ValueResp, ValueRespProxy,
+        ExecMsg, InstantiateMsg, Issuer, QueryMsg, RegistredIssuerResp,
+        SSIManagerContractAddressResp, ValueResp, ValueRespProxy,
     };
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
@@ -21,6 +22,15 @@ pub mod test {
             issuer_kyc::entry::query,
         );
         //.with_reply(issuer_kyc::entry::reply);
+        Box::new(contract)
+    }
+
+    fn ssi_manager_contract() -> Box<dyn Contract<Empty>> {
+        let contract = ContractWrapper::new(
+            ssi_manager::entry::execute,
+            ssi_manager::entry::instantiate,
+            ssi_manager::entry::query,
+        );
         Box::new(contract)
     }
 
@@ -43,16 +53,49 @@ pub mod test {
         let kyc_contract_code_id = app.store_code(issuer_kyc_contract());
         println!("kyc_contract_code_id = {:?}", kyc_contract_code_id);
 
+        let ssi_manager_contract_code_id = app.store_code(ssi_manager_contract());
+        println!(
+            "ssi_manager_contract_code_id = {:?}",
+            ssi_manager_contract_code_id
+        );
+
+        let ssi_manager_contract_addr = app
+            .instantiate_contract(
+                ssi_manager_contract_code_id,
+                sender.clone(), // simulating a blockchain address
+                &ssi_manager::msg::InstantiateMsg {
+                    owner_did: "did:hid:12313123123".to_string(),
+                    did_method: "did:hid:testnet".to_string(),
+                },
+                &[],
+                "SSI Maager contract",
+                None,
+            )
+            .unwrap();
+
+        println!(
+            "ssi_manager_contract_addr = {:?}",
+            ssi_manager_contract_addr.to_string()
+        );
+
         let contract_addr = app
             .instantiate_contract(
                 hypersign_kyc_factory_contract_code_id,
                 sender.clone(),
-                &InstantiateMsg { counter: 0 },
+                &InstantiateMsg {
+                    counter: 0,
+                    hypersign_ssi_manager_contract_address: ssi_manager_contract_addr.to_string(),
+                },
                 &[],
                 "Hypersign kyc factory contract",
                 None,
             )
             .unwrap();
+
+        println!(
+            "hypersign_factory_contract_addr = {:?}",
+            contract_addr.to_string()
+        );
 
         // Onboarding a user by deploying a contaract for him
         let mut issuer_did = "did:hid:1234";
@@ -84,7 +127,8 @@ pub mod test {
                 issuer: Issuer {
                     id: "issuer-1".into(),
                     did: issuer_did.clone().into(),
-                    kyc_contract_address: Some("contract1".to_string())
+                    kyc_contract_address: Some("contract2".to_string()),
+                    kyc_contract_code_id: kyc_contract_code_id
                 }
             }
         );
@@ -102,5 +146,20 @@ pub mod test {
                 &[],
             )
             .unwrap();
+
+        let resp2: SSIManagerContractAddressResp = app
+            .wrap()
+            .query_wasm_smart(
+                contract_addr.clone(),
+                &QueryMsg::GetSSIManagerContractAddress {},
+            )
+            .unwrap();
+
+        assert_eq!(
+            resp2,
+            SSIManagerContractAddressResp {
+                contract_address: ssi_manager_contract_addr.to_string()
+            }
+        );
     }
 }

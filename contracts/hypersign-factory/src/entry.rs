@@ -49,6 +49,10 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
         GetRegisteredIssuer { issuer_did } => {
             to_binary(&query::get_registred_issuer(deps, issuer_did)?)
         }
+
+        GetSSIManagerContractAddress {} => {
+            to_binary(&query::get_ssi_manager_contract_address(deps)?)
+        }
     }
 }
 

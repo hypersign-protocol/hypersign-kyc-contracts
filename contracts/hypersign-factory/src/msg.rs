@@ -12,12 +12,14 @@ pub struct Issuer {
     pub id: String,
     pub did: String,
     pub kyc_contract_address: Option<String>,
+    pub kyc_contract_code_id: u64,
 }
 
 #[cw_serde]
 pub struct InstantiateMsg {
     #[serde(default)]
     pub counter: u64,
+    pub hypersign_ssi_manager_contract_address: String,
 }
 
 #[cw_serde]
@@ -25,6 +27,9 @@ pub struct InstantiateMsg {
 pub enum QueryMsg {
     #[returns(RegistredIssuerResp)]
     GetRegisteredIssuer { issuer_did: String },
+
+    #[returns(SSIManagerContractAddressResp)]
+    GetSSIManagerContractAddress {},
 }
 
 #[cw_serde]
@@ -43,6 +48,11 @@ pub struct ValueResp {
 #[cw_serde]
 pub struct RegistredIssuerResp {
     pub issuer: Issuer,
+}
+
+#[cw_serde]
+pub struct SSIManagerContractAddressResp {
+    pub contract_address: String,
 }
 
 #[cw_serde]

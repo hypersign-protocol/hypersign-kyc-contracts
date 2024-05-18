@@ -1,17 +1,26 @@
 use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult, WasmMsg};
+use cw721_base::ContractError;
 
 use crate::{msg::InstantiateMsg, state::*};
 
 pub fn instantiate(deps: DepsMut, msg: InstantiateMsg, info: MessageInfo) -> StdResult<Response> {
     COUNTER.save(deps.storage, &msg.counter)?;
+
+    // TODO check if ssi manager contract address is passed
+    // if msg.hypersign_ssi_manager_contract_address.is_ascii(){
+    //     return Std::Err("Hypersign SSI manager contract address must be passed".to_string());
+    // }
+
+    HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS
+        .save(deps.storage, &msg.hypersign_ssi_manager_contract_address)?;
     Ok(Response::new())
 }
 
 pub mod query {
     use crate::error::ContractError;
     use crate::{
-        msg::{RegistredIssuerResp, ValueResp, ValueRespProxy},
-        state::ISSUERS,
+        msg::{RegistredIssuerResp, SSIManagerContractAddressResp, ValueResp, ValueRespProxy},
+        state::{HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS, ISSUERS},
     };
     use cosmwasm_std::{Deps, Response, StdError, StdResult};
     use serde::de::value::Error;
@@ -24,7 +33,6 @@ pub mod query {
         //         issuer_did: issuer_did.into(),
         //     });
         // }
-
         Ok(RegistredIssuerResp {
             issuer: ISSUERS.load(deps.storage, issuer_did.as_str())?,
         })
@@ -33,6 +41,14 @@ pub mod query {
         //     Ok(value) => value,
         //     Err(error) => Err("Invalid issuer DID"),
         // };
+    }
+
+    pub fn get_ssi_manager_contract_address(
+        deps: Deps,
+    ) -> StdResult<SSIManagerContractAddressResp> {
+        Ok(SSIManagerContractAddressResp {
+            contract_address: HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS.load(deps.storage)?,
+        })
     }
 }
 
@@ -94,6 +110,7 @@ pub mod exec {
             id: "issuer-1".into(), // TODO: make the number dynamic
             did: issuer_did.clone().into(),
             kyc_contract_address: None,
+            kyc_contract_code_id: issuer_kyc_code_id,
         };
 
         ISSUERS_TEMP.save(deps.storage, counter, &issuer);
