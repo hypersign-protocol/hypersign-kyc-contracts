@@ -41,12 +41,12 @@
 - [x] Figure out how to canonize a json ld
 - [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
 ----------------------------------------------------------------
-- [ ] Implement `SSI_manager_contract` with constructor params `{ did_method: "did:testnet:hid" }`
-    - [ ] Implement helper method - `verify_proof() -> true`
-    - [ ] Implement `register_did({did, signed_did_doc})`
-    - [ ] Implement `resolve_did({did}) -> did_doc`
-    - [ ] Implement helper method - `canonize_ld_doc({ld_doc, context}) -> string`
-- [ ] Improve `instantiation({SSI_manager_contract})` of `Hypersign_KYC_factory_Contract` to whitelist `SSI_manager_contract` address and whitelist hypersign_did
+- [x] Implement `SSI_manager_contract` with constructor params `{ did_method: "did:testnet:hid" }`
+    - [x] Implement helper method - `verify_proof() -> true`
+    - [x] Implement `register_did({did, signed_did_doc})`
+    - [x] Implement `resolve_did({did}) -> did_doc`
+    - [x] Implement helper method - `canonize_ld_doc({ld_doc, context}) -> string`
+- [x] Improve `instantiation({SSI_manager_contract})` of `Hypersign_KYC_factory_Contract` to whitelist `SSI_manager_contract` address and whitelist hypersign_did
 - [ ] Improve `deploy_your_Kyc({issuer_did_proof, hs_authorization_presentation, issuer_did})` in `Hypersign_KYC_factory_Contract` 
     - [ ] to verify issuer_did before onboarding.
     - [ ] to verify presentation signed by hypersign_did (only allow those issuers who have authorization)
