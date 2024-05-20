@@ -26,6 +26,9 @@ serde           = { workspace = true }
 thiserror       = { workspace = true }
 cw-multi-test   = { workspace = true, optional = true  }
 cw-utils        = { workspace = true }
+hex             = { workspace = true }
+multibase       = { workspace = true }
+# cosmwasm-crypto = "2.0.3"
 
 
 [dev-dependencies]

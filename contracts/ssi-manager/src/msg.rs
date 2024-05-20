@@ -2,12 +2,12 @@ use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{to_binary, Addr, Coin, CosmosMsg, Empty, StdResult, WasmMsg};
 use cw721_base::Extension;
 use cw_storage_plus::Item;
-use didkit::ssi::did::Contexts;
+// use didkit::ssi::did::Contexts;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 // use secret_toolkit::utils::InitCallback;
 
-use didkit::ssi::did::Document;
+// use didkit::ssi::did::Document;
 
 #[cw_serde]
 pub struct InstantiateMsg {
@@ -16,24 +16,24 @@ pub struct InstantiateMsg {
     pub did_method: String,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct DIDDocumentProof {
-    #[serde(rename = "@context")]
-    pub context: Contexts,
+// #[derive(Deserialize, Debug)]
+// pub struct DIDDocumentProof {
+//     #[serde(rename = "@context")]
+//     pub context: Contexts,
 
-    #[serde(rename = "type")]
-    pub type_: String,
-    pub created: String,
+//     #[serde(rename = "type")]
+//     pub type_: String,
+//     pub created: String,
 
-    #[serde(rename = "verificationMethod")]
-    pub verification_method: String,
+//     #[serde(rename = "verificationMethod")]
+//     pub verification_method: String,
 
-    #[serde(rename = "proofPurpose")]
-    pub proof_purpose: String,
+//     #[serde(rename = "proofPurpose")]
+//     pub proof_purpose: String,
 
-    #[serde(rename = "proofValue")]
-    pub proof_value: String,
-}
+//     #[serde(rename = "proofValue")]
+//     pub proof_value: String,
+// }
 
 #[cw_serde]
 #[derive(QueryResponses)]
@@ -46,6 +46,9 @@ pub enum QueryMsg {
 
     #[returns(ResolveDIDResp)]
     ResolveDID { did: String },
+
+    #[returns(GetDIDVerStatusResp)]
+    GetDIDVerStatus {},
 }
 
 #[cw_serde]
@@ -87,6 +90,11 @@ pub struct Issuer {
 #[cw_serde]
 pub struct ResolveDIDResp {
     pub did_doc: String,
+}
+
+#[cw_serde]
+pub struct GetDIDVerStatusResp {
+    pub status: bool,
 }
 
 #[cw_serde]

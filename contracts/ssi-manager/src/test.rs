@@ -3,7 +3,10 @@ pub mod test {
     use super::*;
     use crate::entry::{self, *};
     use crate::error::KycContractError;
-    use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp, ResolveDIDResp};
+    use crate::msg::{
+        ExecMsg, GetDIDVerStatusResp, InstantiateMsg, QueryMsg, ResolveDIDResp,
+        SBTcontractAddressResp, ValueResp,
+    };
     use crate::state::COUNTER;
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
@@ -75,7 +78,7 @@ pub mod test {
                 sender.clone(), // simulating a blockchain address
                 &InstantiateMsg {
                     owner_did: "did:hid:12313123123".to_string(),
-                    did_method: "did:hid:testnet".to_string()
+                    did_method: "did:hid:testnet".to_string(),
                 },
                 &[],
                 "SSI Maager contract",
@@ -83,8 +86,7 @@ pub mod test {
             )
             .unwrap();
 
-
-            let did = "did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
+        let did = "did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
         let did_doc_string = r#"
             {"@context":["https://www.w3.org/ns/did/v1","https://w3id.org/security/suites/ed25519-2020/v1"],"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B","controller":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"],"alsoKnownAs":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"],"verificationMethod":[{"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1","type":"Ed25519VerificationKey2020","controller":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B","publicKeyMultibase":"z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"}],"authentication":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"assertionMethod":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"keyAgreement":[],"capabilityInvocation":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"capabilityDelegation":[],"service":[{"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1","type":"LinkedDomains","serviceEndpoint":"https://www.linkeddomains.com"}]}
             "#;
@@ -107,7 +109,7 @@ pub mod test {
             &ExecMsg::RegisterDID {
                 did: did.to_string(),
                 did_doc: did_doc_string.to_owned(),
-                did_doc_proof: did_doc_proof_string.to_owned()
+                did_doc_proof: did_doc_proof_string.to_owned(),
             },
             &[],
         )
@@ -116,7 +118,12 @@ pub mod test {
         // // then test is counter has been incremented
         let resp: ResolveDIDResp = app
             .wrap()
-            .query_wasm_smart(contract_addr.clone(), &QueryMsg::ResolveDID { did: did.to_string() })
+            .query_wasm_smart(
+                contract_addr.clone(),
+                &QueryMsg::ResolveDID {
+                    did: did.to_string(),
+                },
+            )
             .unwrap();
 
         assert_eq!(
@@ -125,6 +132,14 @@ pub mod test {
                 did_doc: did_doc_string.to_string()
             }
         );
+
+        // check the did verification status
+        let resp3: GetDIDVerStatusResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::GetDIDVerStatus {})
+            .unwrap();
+
+        assert_eq!(resp3, GetDIDVerStatusResp { status: true });
     }
 
     // #[test]

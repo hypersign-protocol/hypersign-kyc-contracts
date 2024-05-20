@@ -3,8 +3,7 @@ use super::*;
 
 use cosmwasm_std::SubMsgResponse;
 use msg::InstantiateMsg;
-use state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CONTRACT_ADDRESS,
-};
+use state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CONTRACT_ADDRESS};
 
 use cosmwasm_std::Coin;
 use cosmwasm_std::Reply;
@@ -36,7 +35,11 @@ pub fn execute(
     use msg::ExecMsg::*;
 
     match _msg {
-        RegisterDID { did, did_doc, did_doc_proof } => exec::register_did(_deps, _info, _env, &did, &did_doc, &did_doc_proof)
+        RegisterDID {
+            did,
+            did_doc,
+            did_doc_proof,
+        } => exec::register_did(_deps, _info, _env, &did, &did_doc, &did_doc_proof),
     }
 }
 
@@ -48,7 +51,8 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
     match msg {
         OwnerDID {} => to_binary(&query::getOwnerDID(deps)?),
         SBTContractAddress {} => to_binary(&query::getSbtContractAddress(deps)?),
-        ResolveDID { did } => to_binary(&query::resolve_did(deps, &did)?)
+        ResolveDID { did } => to_binary(&query::resolve_did(deps, &did)?),
+        GetDIDVerStatus {} => to_binary(&query::get_did_ver_status(deps)?),
     }
 }
 

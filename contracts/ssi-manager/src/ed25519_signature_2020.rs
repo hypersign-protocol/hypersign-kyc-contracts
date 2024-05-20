@@ -1,7 +1,14 @@
+use std::result;
+
 use crate::lib_json_ld::{self, Urdna2015};
-use ed25519_dalek::{Signature, Verifier, VerifyingKey, PUBLIC_KEY_LENGTH};
+// use ed25519_dalek::{Signature, Verifier, VerifyingKey, PUBLIC_KEY_LENGTH};
 use multibase::Base;
-use sha256::digest;
+// use sha256::digest;
+
+use cosmwasm_std::DepsMut;
+use serde::de::value::Error;
+
+pub const PUBLIC_KEY_LENGTH: usize = 32;
 
 fn decode_multibase_public_key(multibase_str: &str) -> Result<Vec<u8>, String> {
     let decoded = multibase::decode(multibase_str).unwrap();
@@ -32,7 +39,27 @@ fn vec_to_array<const N: usize>(input: Vec<u8>) -> Result<[u8; N], &'static str>
     Ok(array)
 }
 
-fn generate_verifying_key(public_key_str: &str) -> VerifyingKey {
+// fn generate_verifying_key(public_key_str: &str) -> VerifyingKey {
+//     const ARRAY_LENGTH: usize = 34;
+//     let public_key_bytes = decode_multibase_public_key(public_key_str).unwrap();
+//     let t_public_key_array = vec_to_array::<ARRAY_LENGTH>(public_key_bytes.to_owned()).unwrap();
+//     println!("t_public_key_array.len {:?}", t_public_key_array.len());
+
+//     // extract secret key from index 2 to 32
+//     let public_key_start_index = 2;
+//     let public_key_end_index = t_public_key_array.len();
+//     let public_key_array: [u8; 32] = t_public_key_array
+//         [public_key_start_index..public_key_end_index]
+//         .try_into()
+//         .expect("Failed to create new array");
+//     let public_key_bytes: [u8; PUBLIC_KEY_LENGTH] = public_key_array;
+//     println!("public_key_bytes.len {:?}", public_key_bytes.len());
+
+//     let verifying_key = ed25519_dalek::VerifyingKey::from_bytes(&public_key_bytes).unwrap();
+//     return verifying_key;
+// }
+
+fn generate_verifying_key1(public_key_str: &str) -> [u8; PUBLIC_KEY_LENGTH] {
     const ARRAY_LENGTH: usize = 34;
     let public_key_bytes = decode_multibase_public_key(public_key_str).unwrap();
     let t_public_key_array = vec_to_array::<ARRAY_LENGTH>(public_key_bytes.to_owned()).unwrap();
@@ -41,44 +68,58 @@ fn generate_verifying_key(public_key_str: &str) -> VerifyingKey {
     // extract secret key from index 2 to 32
     let public_key_start_index = 2;
     let public_key_end_index = t_public_key_array.len();
-    let public_key_array: [u8; 32] = t_public_key_array
-        [public_key_start_index..public_key_end_index]
+    let public_key_array = t_public_key_array[public_key_start_index..public_key_end_index]
         .try_into()
         .expect("Failed to create new array");
-    let public_key_bytes: [u8; PUBLIC_KEY_LENGTH] = public_key_array;
-    println!("public_key_bytes.len {:?}", public_key_bytes.len());
 
-    let verifying_key = ed25519_dalek::VerifyingKey::from_bytes(&public_key_bytes).unwrap();
-    return verifying_key;
+    return public_key_array;
 }
 
-pub fn verify_proof(public_key_str: &str, m: &str, signature_str1: &str) -> bool {
-    let hex_decode_message = hex::decode(m);
-    let message: &[u8] = &hex_decode_message.unwrap();
+pub fn verify_proof(public_key_str: &str, m: &str, signature_str1: &str, deps: &DepsMut) -> bool {
+    // let result = deps
+    //     .api
+    //     .ed25519_verify(message, &signature_array, &public_key)
+    //     .is_ok();
+
+    let hex_decode_message: Vec<u8> = hex::decode(m).unwrap();
+    let message = hex_decode_message;
 
     const SIGNATURE_BYTE_SIZE: usize = 64;
     let signature_bytes = decode_multibase_public_key(signature_str1).unwrap();
     println!("signature_bytes {:?}", signature_bytes.len());
     let signature_array = vec_to_array::<SIGNATURE_BYTE_SIZE>(signature_bytes.to_owned()).unwrap();
     println!("signature_str1_len {:?}", signature_array.len());
-    let signature: Signature = Signature::from_bytes(&signature_array);
-    let verifying_key: ed25519_dalek::VerifyingKey = generate_verifying_key(&public_key_str);
 
-    let res1 = verifying_key.verify(&message, &signature).is_ok();
-    // println!("result1 {:?}", res1);
-    return res1;
+    let public_key = generate_verifying_key1(public_key_str);
+    let result = deps
+        .api
+        .ed25519_verify(&message, &signature_array, &public_key)
+        .unwrap();
+
+    deps.api.debug("Verification result ===========");
+    deps.api.debug(&result.to_string());
+    deps.api.debug("Verification result ===========");
+
+    // let result = ed25519_verify(message, &signature_array, &public_key).is_ok();
+    // let result = true;
+    // let signature: Signature = Signature::from_bytes(&signature_array);
+    // let verifying_key: ed25519_dalek::VerifyingKey = generate_verifying_key(&public_key_str);
+    // let res1 = verifying_key.verify(&message, &signature).is_ok();
+
+    println!("verify_proof result {:?}", result);
+    return result;
 }
 
 // Algorithm: // https://w3c.github.io/vc-di-eddsa/#hashing-eddsa-rdfc-2022
-pub async fn transform_proof_message(did_doc: &str, did_doc_proof: &str) -> String {
+pub fn transform_proof_message(did_doc: &str, did_doc_proof: &str) -> String {
     // let did_string = r#did_doc.to_string();
 
     let did_string = r#"
     {"@context":["https://www.w3.org/ns/did/v1","https://w3id.org/security/suites/ed25519-2020/v1"],"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B","controller":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"],"alsoKnownAs":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"],"verificationMethod":[{"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1","type":"Ed25519VerificationKey2020","controller":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B","publicKeyMultibase":"z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"}],"authentication":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"assertionMethod":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"keyAgreement":[],"capabilityInvocation":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"capabilityDelegation":[],"service":[{"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1","type":"LinkedDomains","serviceEndpoint":"https://www.linkeddomains.com"}]}
     "#;
 
-    let t: Urdna2015 = lib_json_ld::get_urdna2015_normalized_str(&did_string).await;
-    let did_doc_normalized_hash = digest(&t.value);
+    let t: Urdna2015 = lib_json_ld::get_urdna2015_normalized_str(&did_string);
+    let did_doc_normalized_hash = t.value; //digest(&t.value);
     println!("did_doc_normalized_hash {:?}", did_doc_normalized_hash);
 
     let proof_string = r#"
@@ -95,9 +136,9 @@ pub async fn transform_proof_message(did_doc: &str, did_doc_proof: &str) -> Stri
     "#;
 
     println!("================================================");
-    let u: Urdna2015 = lib_json_ld::get_urdna2015_normalized_str(&proof_string).await;
+    let u: Urdna2015 = lib_json_ld::get_urdna2015_normalized_str(&proof_string);
 
-    let did_doc_proof_normalized_hash = digest(&u.value);
+    let did_doc_proof_normalized_hash = u.value; // digest(&u.value);
     let message = format!(
         "{}{}",
         did_doc_proof_normalized_hash, did_doc_normalized_hash
