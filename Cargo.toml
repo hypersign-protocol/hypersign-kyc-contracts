@@ -21,6 +21,10 @@ thiserror       = "1.0.58"
 cw-multi-test   = "0.13.4"
 cw-utils        = "1.0.3"
 cw721-base      = "0.18.0"
+serde_json      = "1.0.117"
+hex             = "0.4"
+multibase       = "0.8"
+
 issuer-kyc      = { version = "*", path = "./contracts/issuer-kyc"} 
 ssi-manager     = { version = "*", path = "./contracts/ssi-manager"}
 # cw721-base      = { version = "*", path = "./contracts/cw721-base" }
