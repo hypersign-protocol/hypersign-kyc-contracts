@@ -96,10 +96,9 @@ pub mod exec {
         // }
 
         // TODO verify authorization letter from the admin
-        // TODO extract hypersign admin did, check if the hypersign admin did is whitelisted already in this contract
-        // TODO resolve hypersign admin did and find the public key
-        // TODO verify signature of hypersign did , if successful let issuer onboard himself
-
+        /// TODO extract hypersign admin did, check if the hypersign admin did is whitelisted (HYPERSIGN_ADMIN_DID) already in this contract
+        /// TODO resolve hypersign admin did and find the public key
+        /// TODO verify signature of hypersign did , if successful let issuer onboard himself
         // TODO: check if issuer_did already exists in the ISSUER map
         let issuer_already_exists = ISSUERS.has(deps.storage, &issuer_did.clone());
         if issuer_already_exists {
