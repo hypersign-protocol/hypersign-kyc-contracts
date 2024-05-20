@@ -13,6 +13,8 @@ pub fn instantiate(deps: DepsMut, msg: InstantiateMsg, info: MessageInfo) -> Std
 
     HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS
         .save(deps.storage, &msg.hypersign_ssi_manager_contract_address)?;
+
+    ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &msg.kyc_contract_code_id)?;
     Ok(Response::new())
 }
 
@@ -53,7 +55,9 @@ pub mod query {
 }
 
 pub mod exec {
-    use super::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS, ISSUERS_TEMP};
+    use super::{
+        COUNTER, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS, ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID,
+    };
     use crate::{
         error::ContractError,
         msg::{
@@ -71,7 +75,6 @@ pub mod exec {
         info: MessageInfo,
         env: Env,
         issuer_did: String,
-        issuer_kyc_code_id: u64,
     ) -> Result<Response, ContractError> {
         // TODO: check if issuer_did already exists in the ISSUER map
         let issuer_already_exists = ISSUERS.has(deps.storage, &issuer_did.clone());
@@ -83,7 +86,7 @@ pub mod exec {
 
         // TODO: optimization: we could simply use ISSUER_TEMP keys length... may be more efficient
         let mut counter = COUNTER.load(deps.storage)?;
-
+        let issuer_kyc_code_id = ISSUER_KYC_CONTRACT_CODE_ID.load(deps.storage)?;
         let sub_msg: Vec<SubMsg> = vec![SubMsg {
             msg: WasmMsg::Instantiate {
                 code_id: issuer_kyc_code_id,

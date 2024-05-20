@@ -85,6 +85,7 @@ pub mod test {
                 &InstantiateMsg {
                     counter: 0,
                     hypersign_ssi_manager_contract_address: ssi_manager_contract_addr.to_string(),
+                    kyc_contract_code_id: kyc_contract_code_id,
                 },
                 &[],
                 "Hypersign kyc factory contract",
@@ -104,7 +105,6 @@ pub mod test {
             contract_addr.clone(),
             &ExecMsg::OnboardIssuer {
                 issuer_did: issuer_did.into(),
-                issuer_kyc_code_id: kyc_contract_code_id,
             },
             &[],
         )
@@ -141,7 +141,6 @@ pub mod test {
                 contract_addr.clone(),
                 &ExecMsg::OnboardIssuer {
                     issuer_did: issuer_did.into(),
-                    issuer_kyc_code_id: kyc_contract_code_id,
                 },
                 &[],
             )

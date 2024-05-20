@@ -32,11 +32,9 @@ pub fn execute(
     use msg::ExecMsg::*;
 
     match _msg {
-        OnboardIssuer {
-            issuer_did,
-            issuer_kyc_code_id,
-        } => exec::onboard_issuer(_deps, _info, _env, issuer_did, issuer_kyc_code_id)
-            .map_err(ContractError::from),
+        OnboardIssuer { issuer_did } => {
+            exec::onboard_issuer(_deps, _info, _env, issuer_did).map_err(ContractError::from)
+        }
     }
 }
 

@@ -25,4 +25,6 @@ pub const COUNTER_PROXY_ADDR: Item<String> = Item::new("counter_proxy_contract_a
 pub const HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS: Item<String> =
     Item::new("hypersign_ssi_manager_contract_address");
 
+pub const ISSUER_KYC_CONTRACT_CODE_ID: Item<u64> = Item::new("issuer_kyc_contract_code_id");
+
 // pub hypersign_ssi_manager_code_id: u64,

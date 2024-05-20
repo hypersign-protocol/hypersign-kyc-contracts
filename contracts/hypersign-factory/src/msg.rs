@@ -20,6 +20,7 @@ pub struct InstantiateMsg {
     #[serde(default)]
     pub counter: u64,
     pub hypersign_ssi_manager_contract_address: String,
+    pub kyc_contract_code_id: u64,
 }
 
 #[cw_serde]
@@ -34,10 +35,7 @@ pub enum QueryMsg {
 
 #[cw_serde]
 pub enum ExecMsg {
-    OnboardIssuer {
-        issuer_did: String,
-        issuer_kyc_code_id: u64,
-    },
+    OnboardIssuer { issuer_did: String },
 }
 
 #[cw_serde]
