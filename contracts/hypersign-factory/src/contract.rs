@@ -1,7 +1,7 @@
 use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult, WasmMsg};
 use cw721_base::ContractError;
 
-use crate::{msg::InstantiateMsg, state::*};
+use crate::{helper, msg::InstantiateMsg, state::*};
 
 pub fn instantiate(deps: DepsMut, msg: InstantiateMsg, info: MessageInfo) -> StdResult<Response> {
     COUNTER.save(deps.storage, &msg.counter)?;
@@ -10,6 +10,11 @@ pub fn instantiate(deps: DepsMut, msg: InstantiateMsg, info: MessageInfo) -> Std
         .save(deps.storage, &msg.hypersign_ssi_manager_contract_address)?;
 
     /// Check if hypersign admin is  a registerd did
+    let resolve_did = helper::resolve_a_did(
+        &deps.querier,
+        &msg.hypersign_admin_did,
+        &msg.hypersign_ssi_manager_contract_address,
+    )?;
 
     /// Store hypermine admin did here in state
     HYPERSIGN_ADMIN_DID.save(deps.storage, &msg.hypersign_admin_did)?;

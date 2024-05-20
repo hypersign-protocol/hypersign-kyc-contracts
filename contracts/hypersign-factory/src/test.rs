@@ -96,6 +96,18 @@ pub mod test {
             ssi_manager_contract_addr.to_string()
         );
 
+        app.execute_contract(
+            sender.clone(),
+            ssi_manager_contract_addr.clone(),
+            &ssi_manager::msg::ExecMsg::RegisterDID {
+                did: did.to_string(),
+                did_doc: did_doc_string.to_owned(),
+                did_doc_proof: did_doc_proof_string.to_owned(),
+            },
+            &[],
+        )
+        .unwrap();
+
         let contract_addr = app
             .instantiate_contract(
                 hypersign_kyc_factory_contract_code_id,
@@ -128,19 +140,6 @@ pub mod test {
                 did: did.to_string()
             }
         );
-
-        // Initialiing NFT contract
-        app.execute_contract(
-            sender.clone(),
-            ssi_manager_contract_addr.clone(),
-            &ssi_manager::msg::ExecMsg::RegisterDID {
-                did: did.to_string(),
-                did_doc: did_doc_string.to_owned(),
-                did_doc_proof: did_doc_proof_string.to_owned(),
-            },
-            &[],
-        )
-        .unwrap();
 
         // Onboarding a user by deploying a contaract for him
         let mut issuer_did = did; // "did:hid:1234";
