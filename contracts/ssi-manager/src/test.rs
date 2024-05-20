@@ -1,13 +1,11 @@
 #[cfg(any(test, feature = "tests"))]
 pub mod test {
-    use super::*;
+
     use crate::entry::{self, *};
-    use crate::error::KycContractError;
+
     use crate::msg::{
-        ExecMsg, GetDIDVerStatusResp, InstantiateMsg, QueryMsg, ResolveDIDResp,
-        SBTcontractAddressResp, ValueResp, VerifyProofsResp,
+        ExecMsg, GetDIDVerStatusResp, InstantiateMsg, QueryMsg, ResolveDIDResp, VerifyProofsResp,
     };
-    use crate::state::COUNTER;
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};

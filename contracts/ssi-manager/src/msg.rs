@@ -1,10 +1,11 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{to_binary, Addr, Coin, CosmosMsg, Empty, StdResult, WasmMsg};
+// use cosmwasm_std::{to_binary, Addr, Coin, CosmosMsg, Empty, StdResult, WasmMsg};
+use cosmwasm_std::Empty;
 use cw721_base::Extension;
-use cw_storage_plus::Item;
+// use cw_storage_plus::Item;
 // use didkit::ssi::did::Contexts;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+// use schemars::JsonSchema;
+// use serde::{Deserialize, Serialize};
 // use secret_toolkit::utils::InitCallback;
 
 // use didkit::ssi::did::Document;

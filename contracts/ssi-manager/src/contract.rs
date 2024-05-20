@@ -1,12 +1,7 @@
 use crate::error::KycContractError;
-use crate::state::{
-    COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, OWNERDID, SBT_CODE_ID, SUPPORTED_DID_METHOD,
-};
-use crate::{msg::Cw721InstantiateMsg, msg::InstantiateMsg, state::*};
-use cosmwasm_std::{
-    to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn, Response,
-    StdError, StdResult, SubMsg, WasmMsg,
-};
+use crate::state::{COUNTER, OWNER, SUPPORTED_DID_METHOD};
+use crate::{msg::InstantiateMsg, state::*};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 
 pub fn instantiate(
     deps: DepsMut,
@@ -42,12 +37,12 @@ pub mod query {
             GetDIDVerStatusResp, ResolveDIDResp, SBTcontractAddressResp, ValueResp,
             VerifyProofsResp,
         },
-        state::{COUNTER, DID_VER_STATUS, OWNERDID, SBT_CONTRACT_ADDRESS},
+        state::{DID_VER_STATUS, OWNERDID, SBT_CONTRACT_ADDRESS},
     };
 
     use super::DID_REGISTRY;
 
-    pub fn getOwnerDID(deps: Deps) -> StdResult<ValueResp> {
+    pub fn get_owner_did(deps: Deps) -> StdResult<ValueResp> {
         Ok(ValueResp {
             owner_did: OWNERDID.load(deps.storage)?,
         })
@@ -65,7 +60,7 @@ pub mod query {
         })
     }
 
-    pub fn getSbtContractAddress(deps: Deps) -> StdResult<SBTcontractAddressResp> {
+    pub fn get_sbt_contract_address(deps: Deps) -> StdResult<SBTcontractAddressResp> {
         Ok(SBTcontractAddressResp {
             sbt_contract_address: SBT_CONTRACT_ADDRESS.load(deps.storage)?,
         })
@@ -90,19 +85,14 @@ pub mod query {
 
 pub mod exec {
     // use didkit::ssi::did::Document;
-    use super::{
-        COUNTER, DID_REGISTRY, DID_VER_STATUS, INSTANTIATE_TOKEN_REPLY_ID, OWNER, SBT_CODE_ID,
-        SBT_CONTRACT_ADDRESS, SUPPORTED_DID_METHOD,
-    };
+    use super::{DID_REGISTRY, DID_VER_STATUS, SUPPORTED_DID_METHOD};
+
     use crate::{
         ed25519_signature_2020,
         error::KycContractError,
-        msg::{Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg},
+        // msg::{Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg},
     };
-    use cosmwasm_std::{
-        to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn,
-        Response, StdError, StdResult, SubMsg, WasmMsg,
-    };
+    use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 
     pub fn register_did(
         deps: DepsMut,
@@ -128,7 +118,7 @@ pub mod exec {
         // }
 
         // TODO: Check if DID alredy registered, else throw error
-        let did_already_exists = DID_REGISTRY.has(deps.storage, &did.clone());
+        let did_already_exists = DID_REGISTRY.has(deps.storage, &did);
         if did_already_exists {
             return Err(KycContractError::DIDAlreadyRegistred { did: did.into() });
         }

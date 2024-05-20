@@ -29,6 +29,7 @@ cw-utils        = { workspace = true }
 serde_json      = { workspace = true }
 hex             = { workspace = true }
 multibase       = { workspace = true }
+sha2 = "0.10"
 
 
 

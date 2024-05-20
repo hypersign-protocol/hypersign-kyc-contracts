@@ -1,12 +1,9 @@
-use std::result;
-
 use crate::lib_json_ld::{self, Urdna2015};
-// use ed25519_dalek::{Signature, Verifier, VerifyingKey, PUBLIC_KEY_LENGTH};
-use multibase::Base;
-// use sha256::digest;
-
 use cosmwasm_std::{Api, Deps, DepsMut};
-use serde::de::value::Error;
+use multibase::Base;
+// use serde::de::value::Error;
+use sha2::{Digest, Sha256};
+// use std::{io::Read, result};
 
 pub const PUBLIC_KEY_LENGTH: usize = 32;
 pub const SIGNATURE_BYTE_SIZE: usize = 64;
@@ -75,6 +72,14 @@ pub fn verify_proof(
     signature_str1: &str,
     deps_api: &dyn Api,
 ) -> bool {
+    /// Redundant code for generating hash...
+    let hash = Sha256::digest(m);
+    let message1: &[u8] = hash.as_ref();
+    let hash_hex = hex::encode(message1);
+    deps_api.debug("Message HASH ===========");
+    deps_api.debug(&hash_hex);
+    deps_api.debug("Message HASH ===========");
+    /// Redundant code for generating hash...
     let message = decode_hex_message(&m);
     let signature_array = transfrom_signature(&signature_str1);
     let public_key = transform_public_key(&public_key_str);
