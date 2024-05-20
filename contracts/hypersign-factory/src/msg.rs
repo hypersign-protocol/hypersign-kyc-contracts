@@ -21,6 +21,7 @@ pub struct InstantiateMsg {
     pub counter: u64,
     pub hypersign_ssi_manager_contract_address: String,
     pub kyc_contract_code_id: u64,
+    pub hypersign_admin_did: String,
 }
 
 #[cw_serde]
@@ -31,6 +32,9 @@ pub enum QueryMsg {
 
     #[returns(SSIManagerContractAddressResp)]
     GetSSIManagerContractAddress {},
+
+    #[returns(HypersignAdminDIDResp)]
+    GetHypersignAdminDID {},
 }
 
 #[cw_serde]
@@ -63,6 +67,10 @@ pub struct NftInstantiateMsg {
     pub name: String,
     pub symbol: String,
     pub minter: String,
+}
+#[cw_serde]
+pub struct HypersignAdminDIDResp {
+    pub did: String,
 }
 
 // impl InitCallback for  NftInstantiateMsg {

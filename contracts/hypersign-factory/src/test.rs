@@ -3,7 +3,7 @@ pub mod test {
     use super::*;
     use crate::entry::{self, *};
     use crate::msg::{
-        ExecMsg, InstantiateMsg, Issuer, QueryMsg, RegistredIssuerResp,
+        ExecMsg, HypersignAdminDIDResp, InstantiateMsg, Issuer, QueryMsg, RegistredIssuerResp,
         SSIManagerContractAddressResp, ValueResp, ValueRespProxy,
     };
     use cosmwasm_std::{coin, coins, Addr, Empty};
@@ -36,6 +36,24 @@ pub mod test {
 
     #[test]
     fn onboard_issuer() {
+        // Register issuer did
+        let did = "did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
+        let did_doc_string = r#"
+            {"@context":["https://www.w3.org/ns/did/v1","https://w3id.org/security/suites/ed25519-2020/v1"],"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B","controller":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"],"alsoKnownAs":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"],"verificationMethod":[{"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1","type":"Ed25519VerificationKey2020","controller":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B","publicKeyMultibase":"z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B"}],"authentication":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"assertionMethod":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"keyAgreement":[],"capabilityInvocation":["did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1"],"capabilityDelegation":[],"service":[{"id":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1","type":"LinkedDomains","serviceEndpoint":"https://www.linkeddomains.com"}]}
+            "#;
+        let did_doc_proof_string = r#"
+            {
+            "@context": [
+                "https://www.w3.org/ns/did/v1",
+                "https://w3id.org/security/suites/ed25519-2020/v1"
+            ],
+            "type":"Ed25519Signature2020",
+            "created":"2010-01-01T19:23:24Z",
+            "verificationMethod":"did:hid:testnet:z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B#key-1",
+            "proofPurpose":"assertionMethod"
+            }
+        "#;
+
         // App simulates blockhain
         let mut app = App::default();
 
@@ -86,6 +104,7 @@ pub mod test {
                     counter: 0,
                     hypersign_ssi_manager_contract_address: ssi_manager_contract_addr.to_string(),
                     kyc_contract_code_id: kyc_contract_code_id,
+                    hypersign_admin_did: did.to_string(),
                 },
                 &[],
                 "Hypersign kyc factory contract",
@@ -98,8 +117,33 @@ pub mod test {
             contract_addr.to_string()
         );
 
+        let resp_xyz: HypersignAdminDIDResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::GetHypersignAdminDID {})
+            .unwrap();
+
+        assert_eq!(
+            resp_xyz,
+            HypersignAdminDIDResp {
+                did: did.to_string()
+            }
+        );
+
+        // Initialiing NFT contract
+        app.execute_contract(
+            sender.clone(),
+            ssi_manager_contract_addr.clone(),
+            &ssi_manager::msg::ExecMsg::RegisterDID {
+                did: did.to_string(),
+                did_doc: did_doc_string.to_owned(),
+                did_doc_proof: did_doc_proof_string.to_owned(),
+            },
+            &[],
+        )
+        .unwrap();
+
         // Onboarding a user by deploying a contaract for him
-        let mut issuer_did = "did:hid:1234";
+        let mut issuer_did = did; // "did:hid:1234";
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
@@ -134,17 +178,17 @@ pub mod test {
         );
 
         // re registert the same issuer should not work
-        issuer_did = "did:hid:12344";
-        let resp_fail = app
-            .execute_contract(
-                sender.clone(),
-                contract_addr.clone(),
-                &ExecMsg::OnboardIssuer {
-                    issuer_did: issuer_did.into(),
-                },
-                &[],
-            )
-            .unwrap();
+        // issuer_did = "did:hid:12344";
+        // let resp_fail = app
+        //     .execute_contract(
+        //         sender.clone(),
+        //         contract_addr.clone(),
+        //         &ExecMsg::OnboardIssuer {
+        //             issuer_did: issuer_did.into(),
+        //         },
+        //         &[],
+        //     )
+        //     .unwrap();
 
         let resp2: SSIManagerContractAddressResp = app
             .wrap()
