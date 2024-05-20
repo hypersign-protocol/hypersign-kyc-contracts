@@ -34,14 +34,15 @@ pub fn instantiate(
 }
 
 pub mod query {
+    use crate::ed25519_signature_2020;
     use cosmwasm_std::{Deps, StdResult};
 
     use crate::{
-        msg::{GetDIDVerStatusResp, ResolveDIDResp, SBTcontractAddressResp, ValueResp},
-        state::COUNTER,
-        state::DID_VER_STATUS,
-        state::OWNERDID,
-        state::SBT_CONTRACT_ADDRESS,
+        msg::{
+            GetDIDVerStatusResp, ResolveDIDResp, SBTcontractAddressResp, ValueResp,
+            VerifyProofsResp,
+        },
+        state::{COUNTER, DID_VER_STATUS, OWNERDID, SBT_CONTRACT_ADDRESS},
     };
 
     use super::DID_REGISTRY;
@@ -68,6 +69,22 @@ pub mod query {
         Ok(SBTcontractAddressResp {
             sbt_contract_address: SBT_CONTRACT_ADDRESS.load(deps.storage)?,
         })
+    }
+
+    pub fn verify_proof(
+        deps: Deps,
+        public_key_str: &str,
+        signature_str: &str,
+        message: &str,
+    ) -> StdResult<VerifyProofsResp> {
+        let result = ed25519_signature_2020::verify_proof(
+            &public_key_str,
+            &message,
+            &signature_str,
+            deps.api,
+        );
+
+        Ok(VerifyProofsResp { result: result })
     }
 }
 
@@ -117,21 +134,13 @@ pub mod exec {
         }
 
         // TODO:: 3. verify did_doc_proof
-        //let message = ed25519_signature_2020::transform_proof_message(did_doc, did_doc_proof).await;
-        // let parsed_did_doc_proof: DIDDocumentProof = serde_json::from_str(did_doc_proof)?;
-        // match serde_json::from_str(did_doc_proof) {
-        //     Ok(parsed_doc) => {
-        //         let parsed_did_doc_proof: DIDDocumentProof = parsed_doc;
-        //         println!(
-        //             "VerificationMethod: {}",
-        //             parsed_did_doc_proof.verification_method
-        //         );
-
+        // remove hardcoding...
+        // do canonizations
         let m = "40ea48e7bfde895182f57845da0b6648de11a9f31203569d10936a3bba0b1b8f0df7abe82aef2eb7b86bb78897066dca754180a99edd692c66b6fc71d028d5f6";
         let signature_str = "z4S8Zxko4KLtHEKGkJVSPCrK4PcchJTYmcx3gsgxq3YG8uYQ3DJfaVufTDgjozNV174mZEmmUiib6J917jirmRfnY";
         let public_key_str = "z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
         let result =
-            ed25519_signature_2020::verify_proof(&public_key_str, &m, &signature_str, &deps);
+            ed25519_signature_2020::verify_proof(&public_key_str, &m, &signature_str, deps.api);
         DID_VER_STATUS.save(deps.storage, &result)?;
 
         // 4. Store DID into registry ...

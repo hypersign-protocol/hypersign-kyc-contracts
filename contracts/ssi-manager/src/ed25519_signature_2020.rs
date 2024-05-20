@@ -5,10 +5,11 @@ use crate::lib_json_ld::{self, Urdna2015};
 use multibase::Base;
 // use sha256::digest;
 
-use cosmwasm_std::DepsMut;
+use cosmwasm_std::{Api, Deps, DepsMut};
 use serde::de::value::Error;
 
 pub const PUBLIC_KEY_LENGTH: usize = 32;
+pub const SIGNATURE_BYTE_SIZE: usize = 64;
 
 fn decode_multibase_public_key(multibase_str: &str) -> Result<Vec<u8>, String> {
     let decoded = multibase::decode(multibase_str).unwrap();
@@ -39,27 +40,7 @@ fn vec_to_array<const N: usize>(input: Vec<u8>) -> Result<[u8; N], &'static str>
     Ok(array)
 }
 
-// fn generate_verifying_key(public_key_str: &str) -> VerifyingKey {
-//     const ARRAY_LENGTH: usize = 34;
-//     let public_key_bytes = decode_multibase_public_key(public_key_str).unwrap();
-//     let t_public_key_array = vec_to_array::<ARRAY_LENGTH>(public_key_bytes.to_owned()).unwrap();
-//     println!("t_public_key_array.len {:?}", t_public_key_array.len());
-
-//     // extract secret key from index 2 to 32
-//     let public_key_start_index = 2;
-//     let public_key_end_index = t_public_key_array.len();
-//     let public_key_array: [u8; 32] = t_public_key_array
-//         [public_key_start_index..public_key_end_index]
-//         .try_into()
-//         .expect("Failed to create new array");
-//     let public_key_bytes: [u8; PUBLIC_KEY_LENGTH] = public_key_array;
-//     println!("public_key_bytes.len {:?}", public_key_bytes.len());
-
-//     let verifying_key = ed25519_dalek::VerifyingKey::from_bytes(&public_key_bytes).unwrap();
-//     return verifying_key;
-// }
-
-fn generate_verifying_key1(public_key_str: &str) -> [u8; PUBLIC_KEY_LENGTH] {
+pub fn transform_public_key(public_key_str: &str) -> [u8; PUBLIC_KEY_LENGTH] {
     const ARRAY_LENGTH: usize = 34;
     let public_key_bytes = decode_multibase_public_key(public_key_str).unwrap();
     let t_public_key_array = vec_to_array::<ARRAY_LENGTH>(public_key_bytes.to_owned()).unwrap();
@@ -75,36 +56,36 @@ fn generate_verifying_key1(public_key_str: &str) -> [u8; PUBLIC_KEY_LENGTH] {
     return public_key_array;
 }
 
-pub fn verify_proof(public_key_str: &str, m: &str, signature_str1: &str, deps: &DepsMut) -> bool {
-    // let result = deps
-    //     .api
-    //     .ed25519_verify(message, &signature_array, &public_key)
-    //     .is_ok();
-
-    let hex_decode_message: Vec<u8> = hex::decode(m).unwrap();
-    let message = hex_decode_message;
-
-    const SIGNATURE_BYTE_SIZE: usize = 64;
+pub fn transfrom_signature(signature_str1: &str) -> [u8; SIGNATURE_BYTE_SIZE] {
     let signature_bytes = decode_multibase_public_key(signature_str1).unwrap();
     println!("signature_bytes {:?}", signature_bytes.len());
     let signature_array = vec_to_array::<SIGNATURE_BYTE_SIZE>(signature_bytes.to_owned()).unwrap();
     println!("signature_str1_len {:?}", signature_array.len());
+    return signature_array;
+}
 
-    let public_key = generate_verifying_key1(public_key_str);
-    let result = deps
-        .api
+pub fn decode_hex_message(message: &str) -> Vec<u8> {
+    let hex_decode_message: Vec<u8> = hex::decode(message).unwrap();
+    return hex_decode_message;
+}
+
+pub fn verify_proof(
+    public_key_str: &str,
+    m: &str,
+    signature_str1: &str,
+    deps_api: &dyn Api,
+) -> bool {
+    let message = decode_hex_message(&m);
+    let signature_array = transfrom_signature(&signature_str1);
+    let public_key = transform_public_key(&public_key_str);
+
+    let result = deps_api
         .ed25519_verify(&message, &signature_array, &public_key)
         .unwrap();
 
-    deps.api.debug("Verification result ===========");
-    deps.api.debug(&result.to_string());
-    deps.api.debug("Verification result ===========");
-
-    // let result = ed25519_verify(message, &signature_array, &public_key).is_ok();
-    // let result = true;
-    // let signature: Signature = Signature::from_bytes(&signature_array);
-    // let verifying_key: ed25519_dalek::VerifyingKey = generate_verifying_key(&public_key_str);
-    // let res1 = verifying_key.verify(&message, &signature).is_ok();
+    deps_api.debug("Verification result ===========");
+    deps_api.debug(&result.to_string());
+    deps_api.debug("Verification result ===========");
 
     println!("verify_proof result {:?}", result);
     return result;

@@ -49,6 +49,13 @@ pub enum QueryMsg {
 
     #[returns(GetDIDVerStatusResp)]
     GetDIDVerStatus {},
+
+    #[returns(VerifyProofsResp)]
+    VerifySSIProof {
+        public_key_str: String,
+        signature_str: String,
+        message: String,
+    },
 }
 
 #[cw_serde]
@@ -100,6 +107,11 @@ pub struct GetDIDVerStatusResp {
 #[cw_serde]
 pub struct SBTcontractAddressResp {
     pub sbt_contract_address: String,
+}
+
+#[cw_serde]
+pub struct VerifyProofsResp {
+    pub result: bool,
 }
 
 pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;

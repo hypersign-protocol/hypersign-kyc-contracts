@@ -53,6 +53,16 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
         SBTContractAddress {} => to_binary(&query::getSbtContractAddress(deps)?),
         ResolveDID { did } => to_binary(&query::resolve_did(deps, &did)?),
         GetDIDVerStatus {} => to_binary(&query::get_did_ver_status(deps)?),
+        VerifySSIProof {
+            public_key_str,
+            signature_str,
+            message,
+        } => to_binary(&query::verify_proof(
+            deps,
+            &public_key_str,
+            &signature_str,
+            &message,
+        )?),
     }
 }
 

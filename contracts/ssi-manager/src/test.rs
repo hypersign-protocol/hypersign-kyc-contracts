@@ -5,7 +5,7 @@ pub mod test {
     use crate::error::KycContractError;
     use crate::msg::{
         ExecMsg, GetDIDVerStatusResp, InstantiateMsg, QueryMsg, ResolveDIDResp,
-        SBTcontractAddressResp, ValueResp,
+        SBTcontractAddressResp, ValueResp, VerifyProofsResp,
     };
     use crate::state::COUNTER;
 
@@ -140,6 +140,23 @@ pub mod test {
             .unwrap();
 
         assert_eq!(resp3, GetDIDVerStatusResp { status: true });
+
+        let m = "40ea48e7bfde895182f57845da0b6648de11a9f31203569d10936a3bba0b1b8f0df7abe82aef2eb7b86bb78897066dca754180a99edd692c66b6fc71d028d5f6";
+        let signature_str = "z4S8Zxko4KLtHEKGkJVSPCrK4PcchJTYmcx3gsgxq3YG8uYQ3DJfaVufTDgjozNV174mZEmmUiib6J917jirmRfnY";
+        let public_key_str = "z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
+        let resp4: VerifyProofsResp = app
+            .wrap()
+            .query_wasm_smart(
+                contract_addr.clone(),
+                &QueryMsg::VerifySSIProof {
+                    public_key_str: public_key_str.to_string(),
+                    signature_str: signature_str.to_string(),
+                    message: m.to_string(),
+                },
+            )
+            .unwrap();
+
+        assert_eq!(resp4, VerifyProofsResp { result: true });
     }
 
     // #[test]
