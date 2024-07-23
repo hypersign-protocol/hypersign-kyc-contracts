@@ -1,5 +1,6 @@
 use cosmwasm_std::StdError;
 use thiserror::Error;
+use url::ParseError;
 
 use crate::msg::SignatureTypes;
 #[derive(Error, Debug, PartialEq)]
@@ -46,4 +47,10 @@ pub enum KycContractError {
     // SignatureMissmatch {},
     #[error("Could not transfrom proof of type ")]
     ProofTransformationError { signature_type: SignatureTypes },
+
+    #[error("RDF graph error: {0}")]
+    RdfGraphError(#[from] ParseError),
+
+    #[error("Fragment not found")]
+    FragmentNotFound,
 }

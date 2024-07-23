@@ -22,7 +22,7 @@ pub struct InstantiateMsg {
 //     #[serde(rename = "@context")]
 //     pub context: Contexts,
 
-//     #[serde(rename = "type")]
+//     #[serde(rename = "@type")]
 //     pub type_: String,
 //     pub created: String,
 
@@ -113,6 +113,22 @@ pub struct SBTcontractAddressResp {
 #[cw_serde]
 pub struct VerifyProofsResp {
     pub result: bool,
+}
+
+#[cw_serde]
+pub struct Proof {
+    pub challenge: String,
+    pub created: String,
+    pub domain: String,
+    pub proof_purpose: String,
+    pub proof_value: String,
+    // "@type": "Ed25519Signature2020",
+    // "challenge": "1231231231",
+    // "created": "2024-05-09T08:01:46Z",
+    // "domain": "www.adbv.com",
+    // "proofPurpose": "https://w3id.org/security#authenticationMethod",
+    // "proofValue": "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa",
+    // "verificationMethod": "did:hid:testnet:z6MkmKhhHKKAXrMcfLDZZkd5fhx1jUa1sz87QP6j9LtvHBwM#key-1"
 }
 
 pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
