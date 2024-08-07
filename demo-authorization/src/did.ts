@@ -1,6 +1,6 @@
-import { HypersignDID } from "hs-ssi-sdk";
+import { HypersignDID, SupportedPurpose } from "hs-ssi-sdk";
 
-import { createWallet, mnemonic } from './wallet'
+import { createWallet, mnemonic, hidNodeEp } from './wallet'
 
 
 let did; 
@@ -8,24 +8,29 @@ let didDoc;
 
 export async function generateDidAndDoc(){
 
-    const wallet = await createWallet(mnemonic)
+    // Create a wallet
+    const offlineSigner = await createWallet(mnemonic)
 
+    // Instantiate the SDK
     const hypersignDID = new HypersignDID({
-        offlineSigner: wallet,
-        namespace: 'testnet'
+        offlineSigner,
+        nodeRestEndpoint: hidNodeEp.rest,
+        nodeRpcEndpoint: hidNodeEp.rpc,
+        namespace: hidNodeEp.namespace,
     });
 
-    // ed25519 in multibase
+    // Initialize the SDK
+    await hypersignDID.init()
+
+    // Generate keys: ed25519 in multibase
     const keys = await hypersignDID.generateKeys({})
 
     console.log(keys)
 
+    // Generate DIDs
     const user = await hypersignDID.generate({ publicKeyMultibase: keys.publicKeyMultibase})
     did = user.id
     didDoc = user;
-
-
-    
 
 
     if(user && user.verificationMethod  && user.verificationMethod[0].id){
@@ -33,26 +38,29 @@ export async function generateDidAndDoc(){
 
         console.log(JSON.stringify(didDoc, null, 2))
 
-        // const resutl1 = await hypersignDID.register({didDocument: didDoc, 
-        //     privateKeyMultibase: keys.privateKeyMultibase, 
-        //     verificationMethodId})
-        // console.log(resutl1)
+        // Register DID on the blockchian [optional]
+        const resutl1 = await hypersignDID.register({didDocument: didDoc, 
+            privateKeyMultibase: keys.privateKeyMultibase, 
+            verificationMethodId})
+        console.log(resutl1)
     
     
-        const challenge = "12123123123"
-        const domain = "https://hypersign.id"
+        const challenge = "123123"
+        const domain = "http:adsasd"
 
+        // Sign a DID with authentication proof purpose
         const signature = await hypersignDID.sign({
+            purpose: SupportedPurpose.authentication,
             didDocument: didDoc, 
             privateKeyMultibase: keys.privateKeyMultibase,
             verificationMethodId: verificationMethodId,
-            challenge, 
-            domain
+            challenge, // 
+            domain, // 
         })
         console.log(signature)
 
-        /// write in rust code...
-        const result = await hypersignDID.verify({didDocument: signature, verificationMethodId, challenge: challenge, domain })
+        // Verify a DID with authentication proof purpose
+        const result = await hypersignDID.verify({didDocument: signature, verificationMethodId,  challenge, domain})
         console.log(result)
     }
     
