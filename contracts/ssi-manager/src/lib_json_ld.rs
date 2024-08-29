@@ -1,9 +1,28 @@
 // use didkit::ssi::{self, jsonld::StaticLoader, rdf};
 // use sha256::digest;
 use std::error::Error;
+use sha2::{Sha256, Digest};
+
+/// Hashes a string using SHA-256
+pub fn hash_string(input: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(input.as_bytes());
+    let result = hasher.finalize();
+    
+    // Convert the hash result to a hexadecimal string
+    hex::encode(result)
+}
 
 pub struct Urdna2015 {
     pub value: String,
+}
+
+pub fn extract_after_last_delimiter(input: &str, delimiter: char) -> &str {
+    // Split the string by the delimiter and collect the parts into a vector
+    let parts: Vec<&str> = input.split(delimiter).collect();
+
+    // Return the last part of the vector
+    return parts.last().unwrap_or(&"")
 }
 
 // https://w3c.github.io/vc-di-eddsa/#transformation-ed25519signature2020

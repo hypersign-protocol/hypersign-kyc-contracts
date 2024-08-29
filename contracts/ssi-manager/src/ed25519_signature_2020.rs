@@ -22,7 +22,7 @@ use url::{Host, Position, Url};
 use rdf::uri::Uri;
 use rdf::writer::n_triples_writer::NTriplesWriter;
 use rdf::writer::rdf_writer::RdfWriter;
-use sophia_api::serializer::TripleSerializer;
+// use sophia_api::serializer::TripleSerializer;
 
 // use crate::msg::DIDDocumentProof;
 
@@ -138,7 +138,7 @@ _:c14n0 <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6MkmKhh
     */
     let mut jsonld = serde_json::json!({});
     for triple in graph.triples_iter() {
-        deps_api.debug("------------ granf node  ----");
+        // deps_api.debug("------------ granf node  ----");
 
         let subject: &Node = triple.subject();
         let predicate: &Node = triple.predicate();
@@ -155,11 +155,11 @@ _:c14n0 <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6MkmKhh
             _ => continue,
         };
 
-        deps_api.debug(&subject_str.to_string());
+        // deps_api.debug(&subject_str.to_string());
 
         let predicate_str = match predicate {
             Node::BlankNode { id } => {
-                deps_api.debug("predicate is blank node");
+                // deps_api.debug("predicate is blank node");
                 format!("{}", id)
             }
             Node::LiteralNode {
@@ -167,20 +167,20 @@ _:c14n0 <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6MkmKhh
                 data_type,
                 language,
             } => {
-                deps_api.debug("predicate is literal node");
+                // deps_api.debug("predicate is literal node");
                 format!("{}", literal)
             }
             Node::UriNode { uri } => {
-                deps_api.debug("predicate is uri node");
+                // deps_api.debug("predicate is uri node");
                 parse_uri_get_fragment(&uri.to_string())?
             } // format!("{}", uri.to_string()),
             _ => continue,
         };
-        deps_api.debug(&predicate_str.to_string());
+        // deps_api.debug(&predicate_str.to_string());
 
         match object {
             Node::BlankNode { id } => {
-                deps_api.debug("Object is blank node");
+                // deps_api.debug("Object is blank node");
                 jsonld[predicate_str] = serde_json::json!({ "@id-blank": id.to_string() });
             }
             Node::LiteralNode {
@@ -188,12 +188,12 @@ _:c14n0 <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6MkmKhh
                 data_type,
                 language,
             } => {
-                deps_api.debug("Object is litrel node");
+                // deps_api.debug("Object is litrel node");
                 jsonld[predicate_str] = serde_json::json!(literal.to_string());
             }
             Node::UriNode { uri } => {
                 // let url_parsed = Url::parse(uri.to_string())?;
-                deps_api.debug("Object is uri node");
+                // deps_api.debug("Object is uri node");
 
                 if predicate_str.to_owned() == "@type" {
                     jsonld[predicate_str] =
@@ -208,7 +208,7 @@ _:c14n0 <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6MkmKhh
     }
 
     let m = serde_json::to_string_pretty(&jsonld).unwrap();
-    deps_api.debug(&m);
+    // deps_api.debug(&m);
 
     // let proof: DIDDocumentProof = serde_json::from_str(&m).unwrap();
     // // Access properties
@@ -227,9 +227,9 @@ pub fn verify_proof(
     let hash = Sha256::digest(m);
     let message1: &[u8] = hash.as_ref();
     let hash_hex = hex::encode(message1);
-    deps_api.debug("Message HASH ===========");
-    deps_api.debug(&hash_hex);
-    deps_api.debug("Message HASH ===========");
+    // deps_api.debug("Message HASH test ===========");
+    // deps_api.debug(&hash_hex);
+    // deps_api.debug("Message HASH ===========");
     /// Redundant code for generating hash...
     ///
     transform_rdf_to_json_ld(deps_api);

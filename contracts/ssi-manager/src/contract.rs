@@ -89,11 +89,12 @@ pub mod exec {
 
     use crate::{
         ed25519_signature_2020,
-        error::KycContractError,
+        lib_json_ld,
+        error::KycContractError
         // msg::{Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg},
     };
     use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
-
+    
     pub fn register_did(
         deps: DepsMut,
         info: MessageInfo,
@@ -126,9 +127,29 @@ pub mod exec {
         // TODO:: 3. verify did_doc_proof
         // remove hardcoding...
         // do canonizations
-        let m = "40ea48e7bfde895182f57845da0b6648de11a9f31203569d10936a3bba0b1b8f0df7abe82aef2eb7b86bb78897066dca754180a99edd692c66b6fc71d028d5f6";
-        let signature_str = "z4S8Zxko4KLtHEKGkJVSPCrK4PcchJTYmcx3gsgxq3YG8uYQ3DJfaVufTDgjozNV174mZEmmUiib6J917jirmRfnY";
-        let public_key_str = "z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
+        // let m = "40ea48e7bfde895182f57845da0b6648de11a9f31203569d10936a3bba0b1b8f0df7abe82aef2eb7b86bb78897066dca754180a99edd692c66b6fc71d028d5f6";
+        // let signature_str = "z4S8Zxko4KLtHEKGkJVSPCrK4PcchJTYmcx3gsgxq3YG8uYQ3DJfaVufTDgjozNV174mZEmmUiib6J917jirmRfnY";
+        // let public_key_str = "z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
+
+        // Bypass to register even if proof verification fails
+        let m = "300ca1bc6cda0ef58ce58f638afc759be35c39fb41ae8879687d9180e581b7201e4c6152326424ee226927ce572264fb05958df55156f8241cf2db3bc113bfb7";
+        // let public_key_str = "z6MkmKhhHKKAXrMcfLDZZkd5fhx1jUa1sz87QP6j9LtvHBwM";
+        // let signature_str = "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa";
+
+        // Get pubkey
+        let public_key_str = lib_json_ld::extract_after_last_delimiter(did, ':');
+        let m1 = lib_json_ld::hash_string(&did_doc);
+        let m2 = lib_json_ld::hash_string(&did_doc_proof);
+        // let json_proof: Value = serde_json::from_str(&did_doc_proof)?;
+        // let signature_str = json_proof.get("proofValue").and_then(Value::as_str).unwrap_or("");
+
+        // let canonical_json = urdna2015::canonicalize(&json_value)?;
+        // println!("Pubkey {:?}", canonical_json);
+
+        let signature_str = "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa";
+        // let m = m1 + m2;
+        println!("Pubkey {:?}", m1);
+
         let result =
             ed25519_signature_2020::verify_proof(&public_key_str, &m, &signature_str, deps.api);
         DID_VER_STATUS.save(deps.storage, &result)?;

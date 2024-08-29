@@ -29,12 +29,24 @@ cw-utils        = { workspace = true }
 serde_json      = { workspace = true }
 hex             = { workspace = true }
 multibase       = { workspace = true }
+getrandom = { version = "0.2", features = ["js"] }
 sha2 = "0.10"
-rdf = "0.1.4"
-sophia_api = "0.8.0"
 url = "2.5.0"
-
-
+ssi-rdf = "0.1.0" 
+json-ld = "0.21.1"
+rio_api = "0.8.4"
+rio_turtle = "=0.5.1"
+rdf-types = "0.22.4"
+iref = "3.1.2"
+static-iref = "3.0"
+rdf = "0.1.4"
+linked-data = "0.1.2"
+nquads-syntax = "0.19"
+locspan = "0.8"
+ssi-json-ld = "0.3.0"
+json-syntax = "0.12.5"
+oxrdf =  { version = "0.2.0-rc.1" }
+oxigraph = { version = "0.4.0-rc.1", default-features = false, features = [] }
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }

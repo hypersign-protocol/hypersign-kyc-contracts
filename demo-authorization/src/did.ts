@@ -32,6 +32,8 @@ export async function generateDidAndDoc(){
     did = user.id
     didDoc = user;
 
+    console.log("==== DID DOC ==== ")
+    console.log(didDoc)
 
     if(user && user.verificationMethod  && user.verificationMethod[0].id){
         const verificationMethodId =  user.verificationMethod[0].id
@@ -42,6 +44,8 @@ export async function generateDidAndDoc(){
         const resutl1 = await hypersignDID.register({didDocument: didDoc, 
             privateKeyMultibase: keys.privateKeyMultibase, 
             verificationMethodId})
+        
+        console.log("=== register ===")
         console.log(resutl1)
     
     
@@ -57,11 +61,12 @@ export async function generateDidAndDoc(){
             challenge, // 
             domain, // 
         })
+        console.log("=== signature ===")
         console.log(signature)
 
         // Verify a DID with authentication proof purpose
         const result = await hypersignDID.verify({didDocument: signature, verificationMethodId,  challenge, domain})
-        console.log(result)
+        console.log(JSON.stringify(result))
     }
     
 

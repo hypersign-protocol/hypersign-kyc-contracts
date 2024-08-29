@@ -12,8 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cosmjs/proto-signing": "^0.31.0",
     "hs-ssi-sdk": "github:hypersign-protocol/hid-ssi-js-sdk#testcase/bjj",
-    "@cosmjs/proto-signing": "^0.31.0"
+    "idb-keyval": "^6.2.1"
   },
   "devDependencies": {
     "typescript": "^5.5.4"
