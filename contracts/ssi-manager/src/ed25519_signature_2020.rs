@@ -2,7 +2,7 @@ use std::fmt::format;
 use std::hash::Hash;
 
 use crate::error::KycContractError;
-use crate::lib_json_ld::{self, Urdna2015};
+use crate::lib_json_ld::{self};
 use cosmwasm_std::{Api, Deps, DepsMut};
 use multibase::Base;
 

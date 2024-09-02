@@ -4,6 +4,7 @@ use crate::{msg::InstantiateMsg, state::*};
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 use cosmwasm_crypto::ed25519_verify;
 
+
 pub fn instantiate(
     deps: DepsMut,
     msg: InstantiateMsg,
@@ -93,7 +94,8 @@ pub mod exec {
         error::KycContractError
     };
     use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
-    
+    use crate::msg::ExecMsg;
+
     pub fn register_did(
         deps: DepsMut,
         info: MessageInfo,
@@ -121,12 +123,12 @@ pub mod exec {
         }
 
         // Get pubkey
-        let public_key_str = lib_json_ld::extract_after_last_delimiter(did, ':');
+        let public_key = lib_json_ld::extract_after_last_delimiter(did, ':');
         let m1 = lib_json_ld::hash_string(&did_doc);
         let m2 = lib_json_ld::hash_string(&did_doc_proof);
 
         // Get the signature from the did proof
-        let signature_str = "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa";
+        let signature = "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa";
         let message = [m2.clone(), m1.clone()].concat();
 
         let msg = ExecMsg::VerifySignature { 
@@ -134,6 +136,8 @@ pub mod exec {
             message: message.to_string(), 
             signature: signature.to_string()
         };
+
+        let result = true;
         
         DID_VER_STATUS.save(deps.storage, &result)?;
 
