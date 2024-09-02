@@ -2,7 +2,6 @@ use crate::error::KycContractError;
 use crate::state::{COUNTER, OWNER, SUPPORTED_DID_METHOD};
 use crate::{msg::InstantiateMsg, state::*};
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
-use cosmwasm_crypto::ed25519_verify;
 
 
 pub fn instantiate(
@@ -131,20 +130,19 @@ pub mod exec {
         let signature = "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa";
         let message = [m2.clone(), m1.clone()].concat();
 
-        let msg = ExecMsg::VerifySignature { 
-            public_key: public_key.to_string(), 
-            message: message.to_string(), 
-            signature: signature.to_string()
-        };
-
-        let result = true;
-        
+        // TODO:: 3. verify did_doc_proof
+        // remove hardcoding...
+        // do canonizations
+        let m = "40ea48e7bfde895182f57845da0b6648de11a9f31203569d10936a3bba0b1b8f0df7abe82aef2eb7b86bb78897066dca754180a99edd692c66b6fc71d028d5f6";
+        let signature_str = "z4S8Zxko4KLtHEKGkJVSPCrK4PcchJTYmcx3gsgxq3YG8uYQ3DJfaVufTDgjozNV174mZEmmUiib6J917jirmRfnY";
+        let public_key_str = "z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
+        let result =
+            ed25519_signature_2020::verify_proof(&public_key_str, &m, &signature_str, deps.api);
         DID_VER_STATUS.save(deps.storage, &result)?;
 
         // 4. Store DID into registry ...
         // let did_document_parsed: Document = Document::from_json(did_doc).expect("JSON was not well-formatted");
         DID_REGISTRY.save(deps.storage, did, &did_doc.to_owned())?;
-
         // Send the response
         resp = resp
             .add_attribute("action", "register_did")

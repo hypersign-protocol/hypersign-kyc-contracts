@@ -10,7 +10,6 @@ use oxigraph::io::{GraphParser, GraphFormat};
 use oxigraph::model::{Quad, NamedNode, Triple, GraphName, BlankNode, Term, Graph, Literal, TripleRef, NamedOrBlankNode };
 use oxigraph::model::Subject;
 use cosmwasm_std::{Binary, Response, StdError, StdResult, MessageInfo, DepsMut, Env};
-use cosmwasm_crypto::ed25519_verify;
 use crate::ed25519_signature_2020::{transfrom_signature, transform_public_key, decode_hex_message};
 
 /// Hashes a string using SHA-256

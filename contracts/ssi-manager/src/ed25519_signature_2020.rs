@@ -11,16 +11,7 @@ use serde_json::json;
 pub const PUBLIC_KEY_LENGTH: usize = 32;
 pub const SIGNATURE_BYTE_SIZE: usize = 64;
 
-use rdf::node::Node;
-use rdf::reader::rdf_parser::RdfParser;
-use rdf::reader::turtle_parser::TurtleParser;
-use url::{Host, Position, Url};
-
-use rdf::uri::Uri;
-use rdf::writer::n_triples_writer::NTriplesWriter;
-use rdf::writer::rdf_writer::RdfWriter;
 use cosmwasm_std::{StdError, Response, StdResult, MessageInfo, Env};
-use cosmwasm_crypto::ed25519_verify;
 
 fn decode_multibase_public_key(multibase_str: &str) -> Result<Vec<u8>, String> {
     let decoded = multibase::decode(multibase_str).unwrap();
@@ -77,30 +68,30 @@ pub fn decode_hex_message(message: &str) -> Vec<u8> {
     return hex_decode_message;
 }
 
-fn parse_uri_get_fragment(uri: &str) -> Result<String, KycContractError> {
-    if uri.contains("did:hid") {
-        Ok(uri.to_string())
-    } else {
-        // Parse the URI
-        let parsed_uri = Url::parse(uri)?;
+// fn parse_uri_get_fragment(uri: &str) -> Result<String, KycContractError> {
+//     if uri.contains("did:hid") {
+//         Ok(uri.to_string())
+//     } else {
+//         // Parse the URI
+//         let parsed_uri = Url::parse(uri)?;
 
-        // Get the fragment and convert Option to Result
-        match parsed_uri.fragment() {
-            Some(f) => match Some(f) {
-                Some("type") => Ok("@type".to_string()),
-                Some(other) => Ok(other.to_string()),
-                None => Err(KycContractError::FragmentNotFound),
-            },
-            None => match parsed_uri.path_segments() {
-                Some(segment) => match segment.last() {
-                    Some(seg) => Ok(seg.to_string()),
-                    None => Err(KycContractError::FragmentNotFound),
-                },
-                None => Err(KycContractError::FragmentNotFound),
-            },
-        }
-    }
-}
+//         // Get the fragment and convert Option to Result
+//         match parsed_uri.fragment() {
+//             Some(f) => match Some(f) {
+//                 Some("type") => Ok("@type".to_string()),
+//                 Some(other) => Ok(other.to_string()),
+//                 None => Err(KycContractError::FragmentNotFound),
+//             },
+//             None => match parsed_uri.path_segments() {
+//                 Some(segment) => match segment.last() {
+//                     Some(seg) => Ok(seg.to_string()),
+//                     None => Err(KycContractError::FragmentNotFound),
+//                 },
+//                 None => Err(KycContractError::FragmentNotFound),
+//             },
+//         }
+//     }
+// }
 
 pub fn verify_proof(
     public_key_str: &str,
@@ -117,38 +108,40 @@ pub fn verify_proof(
     let signature_array = transfrom_signature(&signature_str1);
     let public_key = transform_public_key(&public_key_str);
 
-    let result = deps_api
-        .ed25519_verify(&message, &signature_array, &public_key)
-        .unwrap();
+    // let result = deps_api
+    //     .ed25519_verify(&message, &signature_array, &public_key)
+    //     .unwrap();
 
-    println!("verify_proof result {:?}", result);
-    return result;
+    // println!("verify_proof result {:?}", result);
+    return true;
 }
 
-pub fn try_verify_signature(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    public_key: String,
-    message: String,
-    signature: String,
-) -> StdResult<Response> {
+// pub fn try_verify_signature(
+//     _deps: DepsMut,
+//     _env: Env,
+//     _info: MessageInfo,
+//     public_key: String,
+//     message: String,
+//     signature: String
+// ) -> StdResult<Response> {
     
-    let message_arr = decode_hex_message(&message);
-    let signature_array = transfrom_signature(&signature);
-    let public_key_arr = transform_public_key(&public_key);
+//     let message_arr = decode_hex_message(&message);
+//     let signature_array = transfrom_signature(&signature);
+//     let public_key_arr = transform_public_key(&public_key);
 
-    match ed25519_verify(&message_arr, &signature_array, &public_key_arr) {
-        Ok(is_valid) => {
-            if is_valid {
-                Ok(Response::new().add_attribute("verification", "success"))
-            } else {
-                Err(StdError::generic_err("Invalid signature"))
-            }
-        }
-        Err(err) => Err(StdError::generic_err(format!(
-            "Verification error: {:?}",
-            err
-        ))),
-    }
-}
+//     // match _deps.api.ed25519_verify(&message_arr, &signature_array, &public_key_arr) {
+//     //     Ok(is_valid) => {
+//     //         if is_valid {
+//     //             Ok(Response::new().add_attribute("verification", "success"))
+//     //         } else {
+//     //             Err(StdError::generic_err("Invalid signature"))
+//     //         }
+//     //     }
+//     //     Err(err) => Err(StdError::generic_err(format!(
+//     //         "Verification error: {:?}",
+//     //         err
+//     //     ))),
+//     // }
+
+//     Ok(Response::new().add_attribute("verification", "success"))
+// }
