@@ -138,8 +138,6 @@ pub fn get_cannonized_str(expanded_did_json: Value) -> String {
                         )
                         .into_nquads();
 
-
-
     return normalized
 }
 

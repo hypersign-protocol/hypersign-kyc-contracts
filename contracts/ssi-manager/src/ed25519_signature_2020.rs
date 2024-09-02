@@ -11,7 +11,7 @@ use serde_json::json;
 pub const PUBLIC_KEY_LENGTH: usize = 32;
 pub const SIGNATURE_BYTE_SIZE: usize = 64;
 
-use cosmwasm_std::{StdError, Response, StdResult, MessageInfo, Env};
+// use cosmwasm_std::{StdError, Response, StdResult, MessageInfo, Env};
 
 fn decode_multibase_public_key(multibase_str: &str) -> Result<Vec<u8>, String> {
     let decoded = multibase::decode(multibase_str).unwrap();
@@ -108,12 +108,12 @@ pub fn verify_proof(
     let signature_array = transfrom_signature(&signature_str1);
     let public_key = transform_public_key(&public_key_str);
 
-    // let result = deps_api
-    //     .ed25519_verify(&message, &signature_array, &public_key)
-    //     .unwrap();
+    let result = deps_api
+        .ed25519_verify(&message, &signature_array, &public_key)
+        .unwrap();
 
-    // println!("verify_proof result {:?}", result);
-    return true;
+    println!("verify_proof result {:?}", result);
+    return result;
 }
 
 // pub fn try_verify_signature(
