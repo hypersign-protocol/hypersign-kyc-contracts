@@ -94,6 +94,7 @@
         }
       }
     },
+    "challenge": "https://w3id.org/security#challenge",
     "Ed25519Signature2020": {
       "@id": "https://w3id.org/security#Ed25519Signature2020",
       "@context": {

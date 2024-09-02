@@ -14,7 +14,8 @@
   "dependencies": {
     "@cosmjs/proto-signing": "^0.31.0",
     "hs-ssi-sdk": "github:hypersign-protocol/hid-ssi-js-sdk#testcase/bjj",
-    "idb-keyval": "^6.2.1"
+    "idb-keyval": "^6.2.1",
+    "jsonld": "^8.3.2"
   },
   "devDependencies": {
     "typescript": "^5.5.4"

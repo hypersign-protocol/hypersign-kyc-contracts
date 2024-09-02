@@ -2,6 +2,7 @@ use cosmwasm_schema::{cw_serde, QueryResponses};
 // use cosmwasm_std::{to_binary, Addr, Coin, CosmosMsg, Empty, StdResult, WasmMsg};
 use cosmwasm_std::Empty;
 use cw721_base::Extension;
+use cosmwasm_std::{Binary, StdError};
 // use cw_storage_plus::Item;
 // use didkit::ssi::did::Contexts;
 // use schemars::JsonSchema;
@@ -81,7 +82,13 @@ pub enum ExecMsg {
         did_doc: String,
         did_doc_proof: String,
     },
+    VerifySignature {
+        public_key: String,
+        message: String,
+        signature: String,
+    }
 }
+
 
 #[cw_serde]
 pub struct ValueResp {

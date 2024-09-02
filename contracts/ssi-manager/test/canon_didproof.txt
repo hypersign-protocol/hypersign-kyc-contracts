@@ -1,0 +1,18 @@
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#Ed25519VerificationKey2020> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> <https://w3id.org/security#controller> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> <https://w3id.org/security#publicKeyMultibase> "z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji"^^<https://w3id.org/security#multibase> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#assertionMethod> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#authenticationMethod> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#capabilityDelegationMethod> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#capabilityInvocationMethod> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#controller> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#proof> _:c14n1 .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> .
+<did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> <https://www.w3.org/ns/activitystreams#alsoKnownAs> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji> .
+_:c14n0 <http://purl.org/dc/terms/created> "2024-08-27T13:20:50Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:c14n1 .
+_:c14n0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#Ed25519Signature2020> _:c14n1 .
+_:c14n0 <https://w3id.org/security#challenge> "123123" _:c14n1 .
+_:c14n0 <https://w3id.org/security#domain> "http:adsasd" _:c14n1 .
+_:c14n0 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#authenticationMethod> _:c14n1 .
+_:c14n0 <https://w3id.org/security#proofValue> "z3F4qcGijV7iFXt7whJbMb2dpcpmHfYTpit41dyXuUmLmgdLMKkP5TedSaLkg8PQ2qNbBpYwsUv8qYdKGh5eqpgzk"^^<https://w3id.org/security#multibase> _:c14n1 .
+_:c14n0 <https://w3id.org/security#verificationMethod> <did:hid:testnet:z6Mkv7iBhUSanTHMBWoFTY6Srz3KF44EnAsjL8EjUtNnjLji#key-1> _:c14n1 .

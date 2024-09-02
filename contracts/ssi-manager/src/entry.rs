@@ -10,6 +10,7 @@ use cosmwasm_std::Reply;
 use cosmwasm_std::{
     entry_point, to_binary, Addr, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
 };
+use crate::ed25519_signature_2020::try_verify_signature;
 // use cw_utils::parse_reply_instantiate_data;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -39,6 +40,9 @@ pub fn execute(
             did_doc,
             did_doc_proof,
         } => exec::register_did(_deps, _info, _env, &did, &did_doc, &did_doc_proof),
+        VerifySignature { public_key, message, signature } => {
+            Ok(try_verify_signature(_deps, _env, _info, public_key, message, signature)?) 
+        }
     }
 }
 
