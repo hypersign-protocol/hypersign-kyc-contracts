@@ -32,11 +32,11 @@ multibase       = { workspace = true }
 getrandom = { version = "0.2", features = ["js"] }
 sha2 = "0.10"
 rdf-types = "0.22.4"
-ssi-rdf = "0.1.0" 
 nquads-syntax = "0.19"
 locspan = "0.8"
-oxrdf =  { version = "0.2.0-rc.1" }
-oxigraph = { version = "0.4.0-rc.1", default-features = false, features = [] }
+indexmap = "2.5.0"
+combination = "0.2.2"
+difference = "2.0"
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }

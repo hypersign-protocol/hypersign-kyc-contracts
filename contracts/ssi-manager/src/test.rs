@@ -102,14 +102,17 @@ pub mod test {
         let expanded_did_str = fs::read_to_string(expanded_did).expect("Failed");
         let expanded_did_json: Value = serde_json::from_str(&expanded_did_str).expect("Failed");
         let cannonized_did = get_cannonized_str(expanded_did_json.clone());
+        
+        // println!("{}", cannonized_did);
 
         // Read the expanded did proof
         let expanded_did_proof =  "./test/expanded_test_didproof.json";
         let expanded_did_proof_str = fs::read_to_string(expanded_did_proof).expect("Failed");
         let expanded_did_proof_json: Value = serde_json::from_str(&expanded_did_proof_str).expect("Failed");
         let cannonized_did_proof = get_cannonized_str(expanded_did_proof_json.clone());
+        println!("{}", cannonized_did_proof);
 
-        // Test verification
+        // // Test verification
         let public_key = "z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp";
         let m1 = hash_string(&cannonized_did.clone()); 
 
@@ -128,5 +131,6 @@ pub mod test {
         let res = execute(deps.as_mut(), env, info, msg).unwrap();
 
         assert_eq!(res.attributes, vec![("verification", "success")]);
+        // assert_eq!(true, false);
     } 
 }

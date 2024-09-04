@@ -6,3 +6,4 @@ mod state;
 mod test;
 pub mod ed25519_signature_2020;
 pub mod lib_json_ld;
+pub mod urdna;
