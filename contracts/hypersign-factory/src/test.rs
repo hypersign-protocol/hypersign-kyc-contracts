@@ -77,6 +77,7 @@ pub mod test {
             ssi_manager_contract_code_id
         );
 
+        //// Implement SSI_manager_contract with constructor params { did_method: "did:testnet:hid" }
         let ssi_manager_contract_addr = app
             .instantiate_contract(
                 ssi_manager_contract_code_id,
@@ -96,6 +97,7 @@ pub mod test {
             ssi_manager_contract_addr.to_string()
         );
 
+        //// Implement register_did({did, signed_did_doc})
         app.execute_contract(
             sender.clone(),
             ssi_manager_contract_addr.clone(),
@@ -108,6 +110,7 @@ pub mod test {
         )
         .unwrap();
 
+        //// Improve instantiation({SSI_manager_contract, hs_admin_did, hs_admin_did_doc, hs_admin_did_doc_proof}) of Hypersign_KYC_factory_Contract to whitelist SSI_manager_contract address and whitelist hypersign_did
         let contract_addr = app
             .instantiate_contract(
                 hypersign_kyc_factory_contract_code_id,
@@ -142,7 +145,10 @@ pub mod test {
         );
 
         // Onboarding a user by deploying a contaract for him
+        //// Improve deploy_your_Kyc({issuer_did_proof, hs_authorization_presentation, issuer_did}) in Hypersign_KYC_factory_Contract
         let mut issuer_did = did; // "did:hid:1234";
+        ///## Issuer registring his own DID should work....
+        /// Add another testcase for issuer to digeter his own DID first
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
@@ -176,7 +182,7 @@ pub mod test {
             }
         );
 
-        // re registert the same issuer should not work
+        //// re registert the same issuer should not work
         // issuer_did = "did:hid:12344";
         // let resp_fail = app
         //     .execute_contract(
