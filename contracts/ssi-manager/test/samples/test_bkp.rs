@@ -8,7 +8,7 @@ pub mod test {
     };
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coin, coins, Addr, Empty, Attribute, Response};
+    use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw721_base::Cw721Contract;
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
     fn ssi_manager_contract() -> Box<dyn Contract<Empty>> {
@@ -55,8 +55,6 @@ pub mod test {
     //     // assert_eq!(error, KycContractError::MinExpiration {});
     // }
 
-    
-
     // Test Proof verification
     #[test]
     fn kyc_sbt_contracts_initialization() {
@@ -94,34 +92,45 @@ pub mod test {
         use std::fs;
         use std::io;
         use std::error::Error;
+        use std::path::PathBuf;
+        use serde_json::Value;
         use cw721_base::ExecuteMsg;
-        use cosmwasm_std::{Attribute, Response};
+        
 
         // Read the expanded did
-        let did = "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp";
-        let expanded_did = "./test/expanded_test_basic.json";
-        let expanded_did_str = fs::read_to_string(expanded_did).expect("Failed");
-      
-        // Read the expanded did proof
-        let expanded_did_proof =  "./test/expanded_test_didproof.json";
-        let expanded_did_proof_str = fs::read_to_string(expanded_did_proof).expect("Failed");
+        // let expanded_did = "./test/expanded_test_basic.json";
+        // let expanded_did_str = fs::read_to_string(expanded_did).expect("Failed");
+        // let expanded_did_json: Value = serde_json::from_str(&expanded_did_str).expect("Failed");
+        // let cannonized_did = get_cannonized_str(expanded_did_json.clone());
         
+        // // println!("{}", cannonized_did);
+
+        // // Read the expanded did proof
+        // let expanded_did_proof =  "./test/expanded_test_didproof.json";
+        // let expanded_did_proof_str = fs::read_to_string(expanded_did_proof).expect("Failed");
+        // let expanded_did_proof_json: Value = serde_json::from_str(&expanded_did_proof_str).expect("Failed");
+        // let cannonized_did_proof = get_cannonized_str(expanded_did_proof_json.clone());
+        // println!("{}", cannonized_did_proof);
+
+        // // // Test verification
+        // let public_key = "z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp";
+        // let m1 = hash_string(&cannonized_did.clone()); 
+
+        // let m2 = hash_string(&cannonized_did_proof.clone()); // Using expanded did proof
+        // let message = [m2.clone(), m1.clone()].concat();
+                        
         let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
-        let msg = ExecMsg::RegisterDID { 
-                            did: did.to_string(), 
-                            did_doc: expanded_did_str.to_string(), 
-                            did_doc_proof: expanded_did_proof_str.to_string(),
+        let msg = ExecMsg::VerifySignature { 
+                            public_key: public_key.to_string(), 
+                            message: message.to_string(), 
                             signature: signature.to_string()
                         };
         let info = mock_info("sender", &[]);
         let env = mock_env();
         let mut deps = mock_dependencies();
+        let res = execute(deps.as_mut(), env, info, msg).unwrap();
 
-        let response = execute(deps.as_mut(), env, info, msg).unwrap();
-        let result_value =  response.attributes.iter()
-                            .find(|attr| attr.key == "result")
-                            .map(|attr| attr.value.clone());
-
-        assert_eq!(result_value.as_deref(), Some("true"));
+        assert_eq!(res.attributes, vec![("verification", "success")]);
+        // assert_eq!(true, false);
     } 
 }

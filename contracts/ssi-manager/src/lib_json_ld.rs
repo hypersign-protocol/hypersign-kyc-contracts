@@ -58,9 +58,9 @@ pub fn extract_after_last_delimiter(input: &str, delimiter: char) -> &str {
 }
 
 // https://w3c.github.io/vc-di-eddsa/#transformation-ed25519signature2020
-pub fn get_cannonized_str(expanded_did_json: Value) -> String {
-
-                            let graph = convert_expanded_jsonld_to_graph(&expanded_did_json).expect("Failed");
+pub fn get_cannonized_str(json_str: String) -> String {
+                            let json_value: Value = serde_json::from_str(&json_str).expect("Failed");
+                            let graph = convert_expanded_jsonld_to_graph(&json_value).expect("Failed");
                             
                             // Convert triples to quads (adding a default graph name)
                             let mut quads: &mut Vec<Quad> = &mut graph.into_iter().map(|Triple { subject, predicate, object }| {
@@ -276,7 +276,7 @@ pub fn get_cannonized_str(expanded_did_json: Value) -> String {
                             subject: subject.to_string(),
                             predicate: predicate.to_string(), 
                             object: term.to_string()
-                        };;
+                        };
                         graph.push(triple);
                     }
                     // Return a term for the array as a whole if needed

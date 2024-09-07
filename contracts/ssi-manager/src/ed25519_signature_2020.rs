@@ -11,7 +11,7 @@ use serde_json::json;
 pub const PUBLIC_KEY_LENGTH: usize = 32;
 pub const SIGNATURE_BYTE_SIZE: usize = 64;
 
-// use cosmwasm_std::{StdError, Response, StdResult, MessageInfo, Env};
+use cosmwasm_std::{StdError, Response, StdResult, MessageInfo, Env};
 
 fn decode_multibase_public_key(multibase_str: &str) -> Result<Vec<u8>, String> {
     let decoded = multibase::decode(multibase_str).unwrap();
@@ -116,32 +116,56 @@ pub fn verify_proof(
     return result;
 }
 
-// pub fn try_verify_signature(
-//     _deps: DepsMut,
-//     _env: Env,
-//     _info: MessageInfo,
-//     public_key: String,
-//     message: String,
-//     signature: String
-// ) -> StdResult<Response> {
+pub fn verify_signature(
+    public_key: String,
+    message: String,
+    signature: String,
+    deps: DepsMut,
+) -> StdResult<Response> {
+    // Call the try_verify_signature function, which returns a bool
+    match try_verify_signature(public_key, message, signature, deps) {
+        Ok(is_valid) => {
+            if is_valid {
+                // If valid, return a response with a success attribute
+                Ok(Response::new().add_attribute("verification", "true"))
+            } else {
+                // If invalid, return a response with a failure attribute
+                Ok(Response::new().add_attribute("verification", "false"))
+            }
+        }
+        Err(err) => {
+            // If there's an error, propagate it as a StdError
+            Err(StdError::generic_err(format!(
+                "Verification failed: {:?}", err
+            )))
+        }
+    }
+}
+
+
+pub fn try_verify_signature(
+    public_key: String,
+    message: String,
+    signature: String, 
+    _deps: DepsMut,
+) -> StdResult<bool> {
     
-//     let message_arr = decode_hex_message(&message);
-//     let signature_array = transfrom_signature(&signature);
-//     let public_key_arr = transform_public_key(&public_key);
+    // Decode and transform inputs
+    let message_arr = decode_hex_message(&message);
+    let signature_array = transfrom_signature(&signature);
+    let public_key_arr = transform_public_key(&public_key);
 
-//     // match _deps.api.ed25519_verify(&message_arr, &signature_array, &public_key_arr) {
-//     //     Ok(is_valid) => {
-//     //         if is_valid {
-//     //             Ok(Response::new().add_attribute("verification", "success"))
-//     //         } else {
-//     //             Err(StdError::generic_err("Invalid signature"))
-//     //         }
-//     //     }
-//     //     Err(err) => Err(StdError::generic_err(format!(
-//     //         "Verification error: {:?}",
-//     //         err
-//     //     ))),
-//     // }
-
-//     Ok(Response::new().add_attribute("verification", "success"))
-// }
+    // Perform signature verification
+    match _deps.api.ed25519_verify(&message_arr, &signature_array, &public_key_arr) {
+        Ok(is_valid) => {
+            if is_valid {
+                Ok(true)  // Signature is valid
+            } else {
+                Ok(false)  // Signature is invalid
+            }
+        }
+        Err(err) => Err(StdError::generic_err(format!(
+            "Verification error: {:?}", err
+        ))),  // Verification error
+    }
+}

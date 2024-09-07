@@ -81,6 +81,7 @@ pub enum ExecMsg {
         did: String,
         did_doc: String,
         did_doc_proof: String,
+        signature: String
     },
     VerifySignature {
         public_key: String,

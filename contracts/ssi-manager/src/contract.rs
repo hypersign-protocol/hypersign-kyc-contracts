@@ -2,7 +2,7 @@ use crate::error::KycContractError;
 use crate::state::{COUNTER, OWNER, SUPPORTED_DID_METHOD};
 use crate::{msg::InstantiateMsg, state::*};
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
-
+use crate::lib_json_ld::get_cannonized_str;
 
 pub fn instantiate(
     deps: DepsMut,
@@ -90,6 +90,7 @@ pub mod exec {
     use crate::{
         ed25519_signature_2020,
         lib_json_ld,
+        lib_json_ld::get_cannonized_str,
         error::KycContractError
     };
     use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
@@ -102,6 +103,7 @@ pub mod exec {
         did: &str,
         did_doc: &str,
         did_doc_proof: &str,
+        signature: &str
     ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
@@ -111,42 +113,45 @@ pub mod exec {
         }
 
         // TODO: 2. Check if did is of supported did method
-        let supported_did_method = SUPPORTED_DID_METHOD.load(deps.storage)?;
+        // let supported_did_method = SUPPORTED_DID_METHOD.load(deps.storage)?;
         let did_string = String::from(did);
         
 
         // TODO: Check if DID alredy registered, else throw error
-        let did_already_exists = DID_REGISTRY.has(deps.storage, &did);
-        if did_already_exists {
-            return Err(KycContractError::DIDAlreadyRegistred { did: did.into() });
-        }
+        // let did_already_exists = DID_REGISTRY.has(deps.storage, &did);
+        // if did_already_exists {
+        //     return Err(KycContractError::DIDAlreadyRegistred { did: did.into() });
+        // }
 
-        // // Get pubkey
-        // let public_key = lib_json_ld::extract_after_last_delimiter(did, ':');
-        // let m1 = lib_json_ld::hash_string(&did_doc);
-        // let m2 = lib_json_ld::hash_string(&did_doc_proof);
+        // TODO:: 3. verify did_doc_proof
+        // Get cannonized strings
+        let cannonized_did  = get_cannonized_str(did_doc.to_string());
+        let cannonized_did_proof  = get_cannonized_str(did_doc_proof.to_string());
 
-        // // Get the signature from the did proof
-        // let signature = "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa";
-        // let message = [m2.clone(), m1.clone()].concat();
+        // Get pubkey
+        let public_key = lib_json_ld::extract_after_last_delimiter(did, ':');
+        let m1 = lib_json_ld::hash_string(&cannonized_did);
+        let m2 = lib_json_ld::hash_string(&cannonized_did_proof);
 
-        // // TODO:: 3. verify did_doc_proof
-        // // remove hardcoding...
-        // // do canonizations
-        // let m = "40ea48e7bfde895182f57845da0b6648de11a9f31203569d10936a3bba0b1b8f0df7abe82aef2eb7b86bb78897066dca754180a99edd692c66b6fc71d028d5f6";
-        // let signature_str = "z4S8Zxko4KLtHEKGkJVSPCrK4PcchJTYmcx3gsgxq3YG8uYQ3DJfaVufTDgjozNV174mZEmmUiib6J917jirmRfnY";
-        // let public_key_str = "z6MkkyG63Rb68hBFhUg9n2a3teEzQdhqyCqAdVZYC5Dxoa1B";
-        // let result =
-        //     ed25519_signature_2020::verify_proof(&public_key_str, &m, &signature_str, deps.api);
-        // DID_VER_STATUS.save(deps.storage, &result)?;
+        // Get the signature from the did proof
+        let message = [m2.clone(), m1.clone()].concat();
 
-        // // 4. Store DID into registry ...
-        // // let did_document_parsed: Document = Document::from_json(did_doc).expect("JSON was not well-formatted");
+        let result =
+            ed25519_signature_2020::try_verify_signature(
+                    public_key.to_string(), 
+                    message.to_string(), 
+                    signature.to_string(), 
+                    deps
+                );
+        // DID_VER_STATUS.save(deps.storage, &result?.clone())?;
+
+        // let did_document_parsed: Document = Document::from_json(did_doc).expect("JSON was not well-formatted");
         // DID_REGISTRY.save(deps.storage, did, &did_doc.to_owned())?;
         
         // Send the response
         resp = resp
             .add_attribute("action", "register_did")
+            .add_attribute("result", result?.to_string())
             .add_attribute("sender", info.sender.as_str())
             .add_attribute("did", did.to_string());
         Ok(resp)
