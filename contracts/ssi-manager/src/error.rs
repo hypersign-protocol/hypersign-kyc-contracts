@@ -49,4 +49,7 @@ pub enum KycContractError {
 
     #[error("Fragment not found")]
     FragmentNotFound,
+
+    #[error("Unexpected failure")]
+    UnexpectedFailure {},
 }

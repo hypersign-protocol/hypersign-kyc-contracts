@@ -2,7 +2,6 @@ use crate::error::KycContractError;
 use crate::state::{COUNTER, OWNER, SUPPORTED_DID_METHOD};
 use crate::{msg::InstantiateMsg, state::*};
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
-use crate::lib_json_ld::get_cannonized_str;
 
 pub fn instantiate(
     deps: DepsMut,
@@ -91,69 +90,64 @@ pub mod exec {
         ed25519_signature_2020,
         lib_json_ld,
         lib_json_ld::get_cannonized_str,
-        error::KycContractError
+        lib_json_ld::get_did_value,
+        error::KycContractError,
     };
-    use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+    use serde_json::Value;
+    use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, StdError};
     use crate::msg::ExecMsg;
 
     pub fn register_did(
         deps: DepsMut,
         info: MessageInfo,
         env: Env,
-        did: &str,
         did_doc: &str,
         did_doc_proof: &str,
         signature: &str
     ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
+        // Get did
+        let did_json: Value = serde_json::from_str(did_doc).expect("Invalid JSON");
+        let did: String = get_did_value(&did_json);
+
         // 1. Check if did is passed
         if did.is_empty() {
             return Err(KycContractError::EmptyDID {});
         }
 
-        // TODO: 2. Check if did is of supported did method
-        // let supported_did_method = SUPPORTED_DID_METHOD.load(deps.storage)?;
-        let did_string = String::from(did);
+        let did_string = String::from(did.clone());
         
-
         // TODO: Check if DID alredy registered, else throw error
-        // let did_already_exists = DID_REGISTRY.has(deps.storage, &did);
-        // if did_already_exists {
-        //     return Err(KycContractError::DIDAlreadyRegistred { did: did.into() });
-        // }
+        let did_already_exists = DID_REGISTRY.has(deps.storage, &did);
+        if did_already_exists {
+            return Err(KycContractError::DIDAlreadyRegistred { did: did.into() });
+        }
 
-        // TODO:: 3. verify did_doc_proof
-        // Get cannonized strings
-        let cannonized_did  = get_cannonized_str(did_doc.to_string());
-        let cannonized_did_proof  = get_cannonized_str(did_doc_proof.to_string());
+        // Call the try_verify_signature function, which returns a bool
+        match ed25519_signature_2020::verify(did_doc.to_owned(), did_doc_proof.to_owned(), signature.to_owned(), &deps) {
+            Ok(is_valid) => {
+                if is_valid {
 
-        // Get pubkey
-        let public_key = lib_json_ld::extract_after_last_delimiter(did, ':');
-        let m1 = lib_json_ld::hash_string(&cannonized_did);
-        let m2 = lib_json_ld::hash_string(&cannonized_did_proof);
+                    DID_REGISTRY.save(deps.storage, &did, &did_doc.to_owned())?;
+                    
+                    // Send the response
+                    resp = resp
+                        .add_attribute("action", "register_did")
+                        .add_attribute("result", is_valid.to_string())
+                        .add_attribute("sender", info.sender.as_str())
+                        .add_attribute("did", did.to_string());
 
-        // Get the signature from the did proof
-        let message = [m2.clone(), m1.clone()].concat();
-
-        let result =
-            ed25519_signature_2020::try_verify_signature(
-                    public_key.to_string(), 
-                    message.to_string(), 
-                    signature.to_string(), 
-                    deps
-                );
-        // DID_VER_STATUS.save(deps.storage, &result?.clone())?;
-
-        // let did_document_parsed: Document = Document::from_json(did_doc).expect("JSON was not well-formatted");
-        // DID_REGISTRY.save(deps.storage, did, &did_doc.to_owned())?;
-        
-        // Send the response
-        resp = resp
-            .add_attribute("action", "register_did")
-            .add_attribute("result", result?.to_string())
-            .add_attribute("sender", info.sender.as_str())
-            .add_attribute("did", did.to_string());
-        Ok(resp)
+                    Ok(resp)
+                } else {
+                    // If invalid, return a response with a failure attribute
+                    Ok(Response::new().add_attribute("verification", is_valid.to_string()))
+                }
+            }
+            Err(err) => {
+                // If there's an error, propagate it as a StdError
+                Err(KycContractError::UnexpectedFailure {})
+            }
+        }
     }
 }

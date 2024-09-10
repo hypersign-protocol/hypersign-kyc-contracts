@@ -36,13 +36,12 @@ pub fn execute(
 
     match _msg {
         RegisterDID {
-            did,
             did_doc,
             did_doc_proof,
             signature
-        } => exec::register_did(_deps, _info, _env, &did, &did_doc, &did_doc_proof, &signature),
+        } => exec::register_did(_deps, _info, _env, &did_doc, &did_doc_proof, &signature),
         VerifySignature { public_key, message, signature } => {
-            Ok(verify_signature(public_key, message, signature, _deps)?)
+            Ok(verify_signature(public_key, message, signature, &_deps)?)
         }
     }
 }

@@ -7,6 +7,16 @@ use nquads_syntax::Parse;
 use cosmwasm_std::{Binary, Response, StdError, StdResult, MessageInfo, DepsMut, Env};
 use crate::ed25519_signature_2020::{transfrom_signature, transform_public_key, decode_hex_message};
 use crate::urdna::normalize;
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+
+lazy_static! {
+    static ref CONTEXT_MAP: HashMap<&'static str, &'static str> = {
+        let mut m = HashMap::new();
+        m.insert("verificationMethod", "https://w3id.org/security#verificationMethod");
+        m
+    };
+}
 
 // Define a struct representing a triple
 #[derive(Default, Clone)]
@@ -40,6 +50,12 @@ impl Quad {
 type Graph = Vec<Triple>;
 
 /// Hashes a string using SHA-256
+pub fn get_did_value(doc: &Value) -> String {
+    let did = doc.get("@id").and_then(Value::as_str).unwrap_or("Unknown");
+    did.to_string()
+}
+
+/// Hashes a string using SHA-256
 pub fn hash_string(input: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(input.as_bytes());
@@ -56,6 +72,55 @@ pub fn extract_after_last_delimiter(input: &str, delimiter: char) -> &str {
     // Return the last part of the vector
     return parts.last().unwrap_or(&"")
 }
+
+// Helper function to find an object in a JSON array based on a key-value pair
+fn find_object_by_key_value<'a>(array: &'a Vec<Value>, key: &'a str, value: Value) -> Option<&'a Value> {
+    array.iter()
+         .find(|obj| obj.get(key) == Some(&value))
+}
+
+// Handle only @id
+pub fn get_public_key(did_doc: String, did_doc_proof: String) -> String {
+
+    let mut public_key = None;
+    let json_value: Value = serde_json::from_str(&did_doc).expect("Failed");
+    let json_value_proof: Value = serde_json::from_str(&did_doc_proof).expect("Failed");
+    
+    // Get Verification Method from the proof
+    let value_to_find = "https://w3id.org/security#verificationMethod";
+    let key = CONTEXT_MAP.iter()
+                        .find(|&(_, &v)| v == value_to_find)
+                        .map(|(k, _)| k);
+    let verification_id_value =  json_value_proof[0].get(value_to_find).unwrap();
+    let verification_id = verification_id_value[0].get("@id");
+
+    // Get the public key from the did doc
+    let verification_method = json_value[0].get(value_to_find).unwrap();
+
+    // Ensure the value is an array
+     if let Some(array) = verification_method.as_array() {
+        // Define the key and value we are searching for
+        let key_to_find = "@id";
+        let value_to_find = verification_id;
+
+        // Use the helper function to find the matching object
+        if let Some(matching_object) = find_object_by_key_value(array, key_to_find, value_to_find.unwrap().clone()) {
+            // Output the matching object
+            let obj = matching_object.get("https://w3id.org/security#publicKeyMultibase").unwrap();
+            public_key = Some(obj[0].get("@value").unwrap());
+        } else {
+            println!("No matching object found");
+        }
+    } else {
+        println!("Expected a JSON array");
+    }
+
+    let binding = Value::String("".to_owned());
+    let mut value = public_key.unwrap_or(&binding);
+    println!("{:?}",  value.as_str().expect("REASON").trim_matches('"').to_string());
+    value.as_str().expect("REASON").trim_matches('"').to_string()
+}
+
 
 // https://w3c.github.io/vc-di-eddsa/#transformation-ed25519signature2020
 pub fn get_cannonized_str(json_str: String) -> String {

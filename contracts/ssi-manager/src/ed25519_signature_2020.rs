@@ -2,7 +2,7 @@ use std::fmt::format;
 use std::hash::Hash;
 
 use crate::error::KycContractError;
-use crate::lib_json_ld::{self};
+use crate::lib_json_ld::{extract_after_last_delimiter, hash_string, get_cannonized_str, get_public_key};
 use cosmwasm_std::{Api, Deps, DepsMut};
 use multibase::Base;
 
@@ -57,8 +57,8 @@ pub fn transform_public_key(public_key_str: &str) -> [u8; PUBLIC_KEY_LENGTH] {
     return public_key_array;
 }
 
-pub fn transfrom_signature(signature_str1: &str) -> [u8; SIGNATURE_BYTE_SIZE] {
-    let signature_bytes = decode_multibase_public_key(signature_str1).unwrap();
+pub fn transfrom_signature(signature_str: &str) -> [u8; SIGNATURE_BYTE_SIZE] {
+    let signature_bytes = decode_multibase_public_key(signature_str).unwrap();
     let signature_array = vec_to_array::<SIGNATURE_BYTE_SIZE>(signature_bytes.to_owned()).unwrap();
     return signature_array;
 }
@@ -96,7 +96,7 @@ pub fn decode_hex_message(message: &str) -> Vec<u8> {
 pub fn verify_proof(
     public_key_str: &str,
     m: &str,
-    signature_str1: &str,
+    signature_str: &str,
     deps_api: &dyn Api,
 ) -> bool {
     /// Redundant code for generating hash...
@@ -105,7 +105,7 @@ pub fn verify_proof(
     let hash_hex = hex::encode(message1);
  
     let message = decode_hex_message(&m);
-    let signature_array = transfrom_signature(&signature_str1);
+    let signature_array = transfrom_signature(&signature_str);
     let public_key = transform_public_key(&public_key_str);
 
     let result = deps_api
@@ -116,14 +116,42 @@ pub fn verify_proof(
     return result;
 }
 
+pub fn verify(
+    did_doc: String,
+    did_doc_proof: String,
+    signature: String,
+    deps: &DepsMut,
+) -> StdResult<bool> {
+
+    let cannonized_did  = get_cannonized_str(did_doc.to_string());
+    let cannonized_did_proof  = get_cannonized_str(did_doc_proof.to_string());
+
+    // Get pubkey
+    let public_key = get_public_key(did_doc, did_doc_proof);
+    let m1 = hash_string(&cannonized_did);
+    let m2 = hash_string(&cannonized_did_proof);
+
+    // Get the signature from the did proof
+    let message = [m2.clone(), m1.clone()].concat();
+
+    let result = try_verify_signature(
+                    public_key.to_string(), 
+                    message.to_string(), 
+                    signature.to_string(), 
+                    &deps
+                );
+    
+    result
+}
+
 pub fn verify_signature(
     public_key: String,
     message: String,
     signature: String,
-    deps: DepsMut,
+    deps: &DepsMut,
 ) -> StdResult<Response> {
     // Call the try_verify_signature function, which returns a bool
-    match try_verify_signature(public_key, message, signature, deps) {
+    match try_verify_signature(public_key, message, signature, &deps) {
         Ok(is_valid) => {
             if is_valid {
                 // If valid, return a response with a success attribute
@@ -147,7 +175,7 @@ pub fn try_verify_signature(
     public_key: String,
     message: String,
     signature: String, 
-    _deps: DepsMut,
+    _deps: &DepsMut
 ) -> StdResult<bool> {
     
     // Decode and transform inputs

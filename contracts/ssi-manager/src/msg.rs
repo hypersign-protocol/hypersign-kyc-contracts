@@ -78,7 +78,6 @@ pub enum ProofPurpose {
 #[cw_serde]
 pub enum ExecMsg {
     RegisterDID {
-        did: String,
         did_doc: String,
         did_doc_proof: String,
         signature: String

@@ -21,12 +21,5 @@
     "credentialStatus": {
       "id": "https://api.prajna.hypersign.id/hypersign-protocol/hidnode/ssi/credential/vc:hid:testnet:z6MkjGKgZENPY8pagvc7LLbwwoi4dvTnfSszMdzAvHa17pYk",
       "type": "HypersignCredentialStatus2023"
-    },
-    "proof": {
-      "type": "Ed25519Signature2020",
-      "created": "2024-08-20T14:45:33Z",
-      "verificationMethod": "did:hid:testnet:z6MkwCy5gZ9ifVLeGtg7fVufiST6PXMaasn7tht7kv25NCty#key-1",
-      "proofPurpose": "assertionMethod",
-      "proofValue": "z38ZG2KuNRytEB3QQuUPXn9CbaZUPGAe44MeTYVYGxK21d7seFdgpDnQfuG8DLrYc18mpxDow34F5W2RNv2j15YYA"
     }
   }
