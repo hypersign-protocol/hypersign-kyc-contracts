@@ -97,48 +97,48 @@ pub mod test {
         //// Implement register_did({did, signed_did_doc})
         let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
 
-        let msg = &ssi_manager::msg::ExecMsg::RegisterDID {
-            did_doc: serde_json::to_string(&did_doc_string).unwrap(),
-            did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
-            signature: signature.to_string(),
-        };
-        // println!("msg = {:?}", msg.clone());
-        app.execute_contract(sender.clone(), ssi_manager_contract_addr.clone(), msg, &[])
-            .unwrap();
+        // let msg = &ssi_manager::msg::ExecMsg::RegisterDID {
+        //     did_doc: serde_json::to_string(&did_doc_string).unwrap(),
+        //     did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
+        //     signature: signature.to_string(),
+        // };
+        // // println!("msg = {:?}", msg.clone());
+        // app.execute_contract(sender.clone(), ssi_manager_contract_addr.clone(), msg, &[])
+        //     .unwrap();
 
-        // resolve this did
-        println!("did = {:?}", did.to_string());
-        let qresp2: ssi_manager::msg::ValueResp = app
-            .wrap()
-            .query_wasm_smart(
-                ssi_manager_contract_addr.clone(),
-                &ssi_manager::msg::QueryMsg::OwnerDID {},
-            )
-            .unwrap();
-        // println!("qresp = {:?}", qresp.to_string());
-        assert_eq!(
-            qresp2,
-            ssi_manager::msg::ValueResp {
-                owner_did: "did:hid:12313123123".to_string()
-            }
-        );
+        // // resolve this did
+        // println!("did = {:?}", did.to_string());
+        // let qresp2: ssi_manager::msg::ValueResp = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         ssi_manager_contract_addr.clone(),
+        //         &ssi_manager::msg::QueryMsg::OwnerDID {},
+        //     )
+        //     .unwrap();
+        // // println!("qresp = {:?}", qresp.to_string());
+        // assert_eq!(
+        //     qresp2,
+        //     ssi_manager::msg::ValueResp {
+        //         owner_did: "did:hid:12313123123".to_string()
+        //     }
+        // );
 
-        let qresp: ssi_manager::msg::ResolveDIDResp = app
-            .wrap()
-            .query_wasm_smart(
-                ssi_manager_contract_addr.clone(),
-                &ssi_manager::msg::QueryMsg::ResolveDID {
-                    did: did.to_string(),
-                },
-            )
-            .unwrap();
+        // let qresp: ssi_manager::msg::ResolveDIDResp = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         ssi_manager_contract_addr.clone(),
+        //         &ssi_manager::msg::QueryMsg::ResolveDID {
+        //             did: did.to_string(),
+        //         },
+        //     )
+        //     .unwrap();
 
-        assert_eq!(
-            qresp,
-            ssi_manager::msg::ResolveDIDResp {
-                did_doc: did_doc_string.to_string()
-            }
-        );
+        // assert_eq!(
+        //     qresp,
+        //     ssi_manager::msg::ResolveDIDResp {
+        //         did_doc: did_doc_string.to_string()
+        //     }
+        // );
 
         // ----------------------------------------------------------------
 
@@ -151,7 +151,11 @@ pub mod test {
                     counter: 0,
                     hypersign_ssi_manager_contract_address: ssi_manager_contract_addr.to_string(),
                     kyc_contract_code_id: kyc_contract_code_id,
-                    hypersign_admin_did: did.to_string(),
+
+                    // Identity
+                    did_doc: serde_json::to_string(&did_doc_string).unwrap(),
+                    did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
+                    signature: signature.to_string(),
                 },
                 &[],
                 "Hypersign kyc factory contract",
@@ -187,6 +191,7 @@ pub mod test {
                 did_doc: serde_json::to_string(&did_doc_string).unwrap(),
                 did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
                 signature: signature.to_string(),
+                // need to verify proof from hypersign_admin
             },
             &[],
         )

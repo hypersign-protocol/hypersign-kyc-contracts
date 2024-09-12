@@ -1,4 +1,4 @@
-use self::error::ContractError;
+use self::error::FactoryContractError;
 use self::state::ISSUERS_TEMP;
 use super::*;
 use msg::{InstantiateMsg, Issuer};
@@ -16,7 +16,7 @@ pub fn instantiate(
     _env: Env,
     _info: MessageInfo,
     _msg: InstantiateMsg,
-) -> StdResult<Response> {
+) -> Result<Response, FactoryContractError> {
     contract::instantiate(_deps, _msg, _info)?;
     Ok(Response::new())
 }
@@ -27,7 +27,7 @@ pub fn execute(
     _env: Env,
     _info: MessageInfo,
     _msg: msg::ExecMsg,
-) -> Result<Response, ContractError> {
+) -> Result<Response, FactoryContractError> {
     use contract::exec;
     use msg::ExecMsg::*;
 
@@ -37,7 +37,7 @@ pub fn execute(
             did_doc_proof,
             signature,
         } => exec::onboard_issuer(_deps, _info, _env, did_doc, did_doc_proof, signature)
-            .map_err(ContractError::from),
+            .map_err(FactoryContractError::from),
     }
 }
 
@@ -60,7 +60,7 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
+pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, FactoryContractError> {
     let reply = cw_utils::parse_reply_instantiate_data(msg.clone()).unwrap();
     let cw721_address = Addr::unchecked(reply.contract_address).into();
 

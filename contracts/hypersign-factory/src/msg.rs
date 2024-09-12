@@ -21,7 +21,9 @@ pub struct InstantiateMsg {
     pub counter: u64,
     pub hypersign_ssi_manager_contract_address: String,
     pub kyc_contract_code_id: u64,
-    pub hypersign_admin_did: String,
+    pub did_doc: String,
+    pub did_doc_proof: String,
+    pub signature: String,
 }
 
 #[cw_serde]

@@ -1,30 +1,65 @@
 use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult, WasmMsg};
 use cw721_base::ContractError;
 
+use crate::error::FactoryContractError;
 use crate::{helper, msg::InstantiateMsg, state::*};
-
-pub fn instantiate(deps: DepsMut, msg: InstantiateMsg, info: MessageInfo) -> StdResult<Response> {
+use serde_json::{from_slice, from_str, Value};
+pub fn instantiate(
+    deps: DepsMut,
+    msg: InstantiateMsg,
+    info: MessageInfo,
+) -> Result<Response, FactoryContractError> {
     COUNTER.save(deps.storage, &msg.counter)?;
 
     HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS
         .save(deps.storage, &msg.hypersign_ssi_manager_contract_address)?;
 
     /// Check if hypersign admin is  a registerd did
-    let resolve_did = helper::resolve_a_did(
-        &deps.querier,
-        &msg.hypersign_admin_did,
-        &msg.hypersign_ssi_manager_contract_address,
-    )?;
+    // let resolve_did = helper::resolve_a_did(
+    //     &deps.querier,
+    //     &msg.hypersign_admin_did,
+    //     &msg.hypersign_ssi_manager_contract_address,
+    // )?;
 
-    /// Store hypermine admin did here in state
-    HYPERSIGN_ADMIN_DID.save(deps.storage, &msg.hypersign_admin_did)?;
+    // checking id DID is registered or not is not required actually, we can simply verify if did proofs are provided
+    // or not - you ARE the owner of this did, thats it!
+    match ssi_manager::ed25519_signature_2020::verify(
+        msg.did_doc.to_owned(),
+        msg.did_doc_proof.to_owned(),
+        msg.signature.to_owned(),
+        &deps,
+    ) {
+        Ok(is_valid) => {
+            if is_valid {
+                // let mut resp = Response::new();
+                let did_json: Value = serde_json::from_str(&msg.did_doc).expect("Invalid JSON");
+                let hypersign_admin_did: String =
+                    ssi_manager::lib_json_ld::get_did_value(&did_json);
 
-    ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &msg.kyc_contract_code_id)?;
-    Ok(Response::new())
+                if hypersign_admin_did.is_empty() {
+                    return Err(FactoryContractError::OnwerDIDRequired {});
+                }
+
+                /// Store hypermine admin did here in state
+                HYPERSIGN_ADMIN_DID.save(deps.storage, &hypersign_admin_did)?;
+
+                ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &msg.kyc_contract_code_id)?;
+                Ok(Response::new())
+            } else {
+                // If invalid, return a response with a failure attribute
+                // Ok(Response::new().add_attribute("verification", is_valid.to_string()))
+                Err(FactoryContractError::SignatureMissmatch {})
+            }
+        }
+        Err(err) => {
+            // If there's an error, propagate it as a StdError
+            Err(FactoryContractError::UnexpectedFailure {})
+        }
+    }
 }
 
 pub mod query {
-    use crate::error::ContractError;
+    use crate::error::FactoryContractError;
     use crate::{
         msg::{
             HypersignAdminDIDResp, RegistredIssuerResp, SSIManagerContractAddressResp, ValueResp,
@@ -62,7 +97,7 @@ pub mod exec {
         ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID,
     };
     use crate::{
-        error::ContractError,
+        error::FactoryContractError,
         helper,
         msg::{
             Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg, Issuer, IssuerKycInstantiateMsg,
@@ -83,7 +118,7 @@ pub mod exec {
         did_doc_proof_str: String,
         signature: String, // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
                            // hypersign_authorization: String // proof json(string)
-    ) -> Result<Response, ContractError> {
+    ) -> Result<Response, FactoryContractError> {
         let ssi_manager_contract_address =
             HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS.load(deps.storage)?;
 
@@ -94,7 +129,7 @@ pub mod exec {
         // TODO: throw readable error if the did is not already registered
         // if resolve_did_query_resp {
         // } else {
-        //     return Err(ContractError::InvalidIssuerDID { issuer_did });
+        //     return Err(FactoryContractError::InvalidIssuerDID { issuer_did });
         // }
 
         // TODO verify authorization letter from the admin
@@ -106,7 +141,7 @@ pub mod exec {
 
         let issuer_already_exists = ISSUERS.has(deps.storage, &owner_did);
         if issuer_already_exists {
-            return Err(ContractError::IssuerDIDAlreadyRegistred {
+            return Err(FactoryContractError::IssuerDIDAlreadyRegistred {
                 issuer_did: owner_did.into(),
             });
         }
