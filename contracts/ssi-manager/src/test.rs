@@ -107,6 +107,7 @@ pub mod test {
         let expanded_did_proof_str: Value = from_str(&fs::read_to_string(expanded_did_proof).unwrap()).expect("Failed");
         
         let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
+
         let msg = ExecMsg::RegisterDID { 
                             did_doc: serde_json::to_string(&expanded_did_str).unwrap(), 
                             did_doc_proof: serde_json::to_string(&expanded_did_proof_str).unwrap(), 

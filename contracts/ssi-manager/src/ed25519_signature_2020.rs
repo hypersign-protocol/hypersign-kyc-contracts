@@ -2,12 +2,12 @@ use std::fmt::format;
 use std::hash::Hash;
 
 use crate::error::KycContractError;
-use crate::lib_json_ld::{extract_after_last_delimiter, hash_string, get_cannonized_str, get_public_key};
+use crate::lib_json_ld::{extract_after_last_delimiter, hash_string, get_cannonized_str, get_public_key, get_verification_id};
 use cosmwasm_std::{Api, Deps, DepsMut};
 use multibase::Base;
 
 use sha2::{Digest, Sha256};
-use serde_json::json;
+use serde_json::{json, Value};
 pub const PUBLIC_KEY_LENGTH: usize = 32;
 pub const SIGNATURE_BYTE_SIZE: usize = 64;
 
@@ -123,17 +123,20 @@ pub fn verify(
     deps: &DepsMut,
 ) -> StdResult<bool> {
 
+    // Get pubkey
+    let verification_id = get_verification_id(did_doc_proof.clone());
+    let public_key = get_public_key(verification_id, did_doc.clone());
+
     let cannonized_did  = get_cannonized_str(did_doc.to_string());
     let cannonized_did_proof  = get_cannonized_str(did_doc_proof.to_string());
 
-    // Get pubkey
-    let public_key = get_public_key(did_doc, did_doc_proof);
     let m1 = hash_string(&cannonized_did);
     let m2 = hash_string(&cannonized_did_proof);
 
     // Get the signature from the did proof
     let message = [m2.clone(), m1.clone()].concat();
 
+    
     let result = try_verify_signature(
                     public_key.to_string(), 
                     message.to_string(), 
