@@ -8,8 +8,10 @@ use serde::{Deserialize, Serialize};
 
 #[cw_serde]
 pub struct InstantiateMsg {
-    pub owner_did: String,
     // pub token_code_id: u64,
+    pub did_doc: String,
+    pub did_doc_proof: String,
+    pub signature: String,
 }
 
 #[cw_serde]

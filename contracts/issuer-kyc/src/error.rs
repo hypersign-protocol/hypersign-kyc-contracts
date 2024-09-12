@@ -16,4 +16,10 @@ pub enum KycContractError {
 
     #[error("Code_Id is required")]
     CodeIdRequired {},
+
+    #[error("Could not verify the proof")]
+    SignatureMissmatch {},
+
+    #[error("Unexpected failure")]
+    UnexpectedFailure {},
 }

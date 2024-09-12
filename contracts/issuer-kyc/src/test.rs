@@ -5,11 +5,12 @@ pub mod test {
     use crate::error::KycContractError;
     use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp};
     use crate::state::COUNTER;
-
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw721_base::Cw721Contract;
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
+    use serde_json::{from_slice, from_str, Value};
+    use std::fs;
     fn issuer_kyc_contract() -> Box<dyn Contract<Empty>> {
         let contract = ContractWrapper::new(execute, instantiate, query).with_reply(entry::reply);
         Box::new(contract)
@@ -64,18 +65,46 @@ pub mod test {
         let kyc_contract_code_id = app.store_code(issuer_kyc_contract());
         println!("kyc_contract_code_id = {:?}", kyc_contract_code_id);
 
+        // Read the expanded did
+        let expanded_did = "../ssi-manager/test/mock/expanded_did_doc.json";
+        let expanded_did_str: Value =
+            from_str(&fs::read_to_string(expanded_did).unwrap()).expect("Failed");
+
+        // Read the expanded did proof
+        let expanded_did_proof = "../ssi-manager/test/mock/expanded_did_proof.json";
+        let expanded_did_proof_str: Value =
+            from_str(&fs::read_to_string(expanded_did_proof).unwrap()).expect("Failed");
+
+        let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
+
         let contract_addr = app
             .instantiate_contract(
                 kyc_contract_code_id,
                 sender.clone(), // simulating a blockchain address
                 &InstantiateMsg {
-                    owner_did: "did:hid:12313123123".to_string(),
+                    did_doc: serde_json::to_string(&expanded_did_str).unwrap(),
+                    did_doc_proof: serde_json::to_string(&expanded_did_proof_str).unwrap(),
+                    signature: signature.to_string(),
                 },
                 &[],
                 "Issuer contract",
                 None,
             )
             .unwrap();
+
+        // check if owner did properly set
+        let qresp: ValueResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::OwnerDID {})
+            .unwrap();
+
+        assert_eq!(
+            qresp,
+            ValueResp {
+                owner_did: "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+                    .to_string()
+            }
+        );
 
         // Initialiing NFT contract
         app.execute_contract(
