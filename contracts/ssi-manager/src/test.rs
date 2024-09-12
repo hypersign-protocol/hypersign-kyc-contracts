@@ -97,20 +97,17 @@ pub mod test {
         use std::io;
 
         // Read the expanded did
-        // let expanded_did = "./test/expanded_test_basic.json";
         let expanded_did = "./test/mock/expanded_did_doc.json";
         let expanded_did_str: Value =
             from_str(&fs::read_to_string(expanded_did).unwrap()).expect("Failed");
 
         // Read the expanded did proof
-        // let expanded_did_proof = "./test/expanded_test_didproof.json";
         let expanded_did_proof = "./test/mock/expanded_did_proof.json";
         let expanded_did_proof_str: Value =
             from_str(&fs::read_to_string(expanded_did_proof).unwrap()).expect("Failed");
 
         let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
-        // let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
-
+        
         // Register a DID
         let msg = &ExecMsg::RegisterDID {
             did_doc: serde_json::to_string(&expanded_did_str).unwrap(),
