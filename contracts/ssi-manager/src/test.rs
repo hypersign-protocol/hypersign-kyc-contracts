@@ -4,7 +4,8 @@ pub mod test {
     use crate::entry::{self, *};
 
     use crate::msg::{
-        ExecMsg, GetDIDVerStatusResp, InstantiateMsg, QueryMsg, ResolveDIDResp, VerifyProofsResp,
+        ExecMsg, GetDIDVerStatusResp, InstantiateMsg, QueryMsg, ResolveDIDResp, ValueResp,
+        VerifyProofsResp,
     };
 
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
@@ -107,7 +108,7 @@ pub mod test {
         let expanded_did_proof_str: Value =
             from_str(&fs::read_to_string(expanded_did_proof).unwrap()).expect("Failed");
 
-        let signature = "z5bbtAadagdzmJzXxi1pNb1wFkZUbmNZaqXHgpLJ5QkAifyrynwhmTtY1fHadCuagmZPJBTzFKszqfvsBJdGniCnt";
+        let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
         // let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
 
         // Register a DID
@@ -116,11 +117,16 @@ pub mod test {
             did_doc_proof: serde_json::to_string(&expanded_did_proof_str).unwrap(),
             signature: signature.to_string(),
         };
-        app.execute_contract(sender.clone(), contract_addr.clone(), msg, &[])
+        let execute_resp = app
+            .execute_contract(sender.clone(), contract_addr.clone(), msg, &[])
             .unwrap();
+
+        // let t = execute_resp.events.join(' ');
+        println!("t = {:?}", execute_resp.events.clone());
 
         // Resolve a DID
         let did = get_did_value(&expanded_did_str);
+        println!("did here = {:?}", did.clone());
         let qresp: ResolveDIDResp = app
             .wrap()
             .query_wasm_smart(
@@ -135,6 +141,18 @@ pub mod test {
             qresp,
             ResolveDIDResp {
                 did_doc: expanded_did_str.to_string()
+            }
+        );
+
+        let qresp2: ValueResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::OwnerDID {})
+            .unwrap();
+
+        assert_eq!(
+            qresp2,
+            ValueResp {
+                owner_did: "did:hid:12313123123".to_string()
             }
         );
     }

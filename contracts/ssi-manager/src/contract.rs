@@ -25,6 +25,8 @@ pub fn instantiate(
     // initiate the counter = 0
     COUNTER.save(deps.storage, &0)?;
 
+    OWNERDID.save(deps.storage, &msg.owner_did)?;
+
     Ok(Response::new())
 }
 
@@ -86,16 +88,13 @@ pub mod query {
 pub mod exec {
     use super::{DID_REGISTRY, DID_VER_STATUS, SUPPORTED_DID_METHOD};
 
-    use crate::{
-        ed25519_signature_2020,
-        lib_json_ld,
-        lib_json_ld::get_cannonized_str,
-        lib_json_ld::get_did_value,
-        error::KycContractError,
-    };
-    use serde_json::Value;
-    use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, StdError};
     use crate::msg::ExecMsg;
+    use crate::{
+        ed25519_signature_2020, error::KycContractError, lib_json_ld,
+        lib_json_ld::get_cannonized_str, lib_json_ld::get_did_value,
+    };
+    use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, StdError};
+    use serde_json::Value;
 
     pub fn register_did(
         deps: DepsMut,
@@ -103,13 +102,14 @@ pub mod exec {
         env: Env,
         did_doc: &str,
         did_doc_proof: &str,
-        signature: &str
+        signature: &str,
     ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
         // Get did
         let did_json: Value = serde_json::from_str(did_doc).expect("Invalid JSON");
         let did: String = get_did_value(&did_json);
+        println!("did here = {:?}", did.clone());
 
         // 1. Check if did is passed
         if did.is_empty() {
@@ -117,7 +117,7 @@ pub mod exec {
         }
 
         let did_string = String::from(did.clone());
-        
+
         // TODO: Check if DID alredy registered, else throw error
         let did_already_exists = DID_REGISTRY.has(deps.storage, &did);
         if did_already_exists {
@@ -125,12 +125,15 @@ pub mod exec {
         }
 
         // Call the try_verify_signature function, which returns a bool
-        match ed25519_signature_2020::verify(did_doc.to_owned(), did_doc_proof.to_owned(), signature.to_owned(), &deps) {
+        match ed25519_signature_2020::verify(
+            did_doc.to_owned(),
+            did_doc_proof.to_owned(),
+            signature.to_owned(),
+            &deps,
+        ) {
             Ok(is_valid) => {
                 if is_valid {
-
                     DID_REGISTRY.save(deps.storage, &did, &did_doc.to_owned())?;
-                    
                     // Send the response
                     resp = resp
                         .add_attribute("action", "register_did")
@@ -141,7 +144,8 @@ pub mod exec {
                     Ok(resp)
                 } else {
                     // If invalid, return a response with a failure attribute
-                    Ok(Response::new().add_attribute("verification", is_valid.to_string()))
+                    // Ok(Response::new().add_attribute("verification", is_valid.to_string()))
+                    Err(KycContractError::SignatureMissmatch {})
                 }
             }
             Err(err) => {
