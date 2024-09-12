@@ -23,6 +23,7 @@ cw-storage-plus = { workspace = true }
 cw721-base      = { workspace = true, features = ["library"] }
 schemars        = { workspace = true }
 serde           = { workspace = true }
+serde_json     = { workspace = true }
 thiserror       = { workspace = true }
 cw-multi-test   = { workspace = true, optional = true  }
 cw-utils        = { workspace = true }
