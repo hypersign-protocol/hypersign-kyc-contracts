@@ -39,7 +39,11 @@ pub enum QueryMsg {
 
 #[cw_serde]
 pub enum ExecMsg {
-    OnboardIssuer { issuer_did: String },
+    OnboardIssuer {
+        did_doc: String,
+        did_doc_proof: String,
+        signature: String,
+    },
 }
 
 #[cw_serde]

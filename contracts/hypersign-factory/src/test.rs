@@ -184,7 +184,9 @@ pub mod test {
             sender.clone(),
             contract_addr.clone(),
             &ExecMsg::OnboardIssuer {
-                issuer_did: issuer_did.into(),
+                did_doc: serde_json::to_string(&did_doc_string).unwrap(),
+                did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
+                signature: signature.to_string(),
             },
             &[],
         )
@@ -201,6 +203,7 @@ pub mod test {
             )
             .unwrap();
 
+        println!("resp {:?}", resp);
         assert_eq!(
             resp,
             RegistredIssuerResp {

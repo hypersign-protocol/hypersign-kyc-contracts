@@ -73,21 +73,23 @@ pub mod exec {
         to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, Event, MessageInfo,
         QueryRequest, ReplyOn, Response, StdError, StdResult, SubMsg, WasmMsg, WasmQuery,
     };
+    use serde_json::{from_slice, from_str, Value};
 
     pub fn onboard_issuer(
         deps: DepsMut,
         info: MessageInfo,
         env: Env,
-        issuer_did: String,
-        // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
-        // hypersign_authorization: String // proof json(string)
+        did_doc_str: String,
+        did_doc_proof_str: String,
+        signature: String, // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
+                           // hypersign_authorization: String // proof json(string)
     ) -> Result<Response, ContractError> {
         let ssi_manager_contract_address =
             HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS.load(deps.storage)?;
 
         // [Optional] TODO check if this issuer did is registed in did registry, if not throw error
-        let resolve_did =
-            helper::resolve_a_did(&deps.querier, &issuer_did, &ssi_manager_contract_address)?;
+        // let resolve_did =
+        //     helper::resolve_a_did(&deps.querier, &issuer_did, &ssi_manager_contract_address)?;
 
         // TODO: throw readable error if the did is not already registered
         // if resolve_did_query_resp {
@@ -99,21 +101,27 @@ pub mod exec {
         /// TODO extract hypersign admin did, check if the hypersign admin did is whitelisted (HYPERSIGN_ADMIN_DID) already in this contract
         /// TODO resolve hypersign admin did and find the public key
         /// TODO verify signature of hypersign did , if successful let issuer onboard himself
-        let issuer_already_exists = ISSUERS.has(deps.storage, &issuer_did.clone());
+        let did_json: Value = serde_json::from_str(&did_doc_str).expect("Invalid JSON");
+        let owner_did: String = ssi_manager::lib_json_ld::get_did_value(&did_json);
+
+        let issuer_already_exists = ISSUERS.has(deps.storage, &owner_did);
         if issuer_already_exists {
             return Err(ContractError::IssuerDIDAlreadyRegistred {
-                issuer_did: issuer_did.into(),
+                issuer_did: owner_did.into(),
             });
         }
 
         // TODO: optimization: we could simply use ISSUER_TEMP keys length... may be more efficient
         let mut counter = COUNTER.load(deps.storage)?;
         let issuer_kyc_code_id = ISSUER_KYC_CONTRACT_CODE_ID.load(deps.storage)?;
+        println!("--------------------------------");
         let sub_msg: Vec<SubMsg> = vec![SubMsg {
             msg: WasmMsg::Instantiate {
                 code_id: issuer_kyc_code_id,
                 msg: to_json_binary(&IssuerKycInstantiateMsg {
-                    owner_did: issuer_did.clone().into(),
+                    did_doc: did_doc_str,
+                    did_doc_proof: did_doc_proof_str,
+                    signature: signature.to_string(),
                 })?,
                 funds: vec![],
                 admin: Some(info.sender.to_string()),
@@ -124,10 +132,11 @@ pub mod exec {
             gas_limit: None,
             reply_on: ReplyOn::Success,
         }];
+        println!("--------------2------------------");
 
         let issuer = Issuer {
-            id: "issuer-1".into(), // TODO: make the number dynamic
-            did: issuer_did.clone().into(),
+            id: "issuer-1".into(),         // TODO: make the number dynamic
+            did: owner_did.clone().into(), // TODO: this need to be updated only whne contract is deployed..
             kyc_contract_address: None,
             kyc_contract_code_id: issuer_kyc_code_id,
         };
