@@ -6,11 +6,11 @@ use msg::InstantiateMsg;
 use state::{INSTANTIATE_TOKEN_REPLY_ID, SBT_CONTRACT_ADDRESS};
 
 // use cosmwasm_std::Coin;
+use crate::ed25519_signature_2020::verify_signature;
 use cosmwasm_std::Reply;
 use cosmwasm_std::{
     entry_point, to_binary, Addr, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
 };
-use crate::ed25519_signature_2020::verify_signature;
 // use cw_utils::parse_reply_instantiate_data;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -38,11 +38,14 @@ pub fn execute(
         RegisterDID {
             did_doc,
             did_doc_proof,
-            signature
+            signature,
         } => exec::register_did(_deps, _info, _env, &did_doc, &did_doc_proof, &signature),
-        VerifySignature { public_key, message, signature } => {
-            Ok(verify_signature(public_key, message, signature, &_deps)?)
-        }
+
+        VerifySignature {
+            public_key,
+            message,
+            signature,
+        } => Ok(verify_signature(public_key, message, signature, &_deps)?),
     }
 }
 

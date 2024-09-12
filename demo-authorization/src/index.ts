@@ -1,7 +1,7 @@
 import { generateDidAndDoc }  from './did'
 import * as jsonld from 'jsonld';
 
-// generateDidAndDoc()
+generateDidAndDoc()
 
 const CONTEXTS = {
     "https://www.w3.org/ns/did/v1": {
@@ -196,5 +196,6 @@ const CONTEXTS = {
   })()
 
    expanded.then((e) => {
-    console.log(JSON.stringify(e))
+    console.log(e)
+    console.log(JSON.stringify(e, null, 2))
   });
