@@ -1,0 +1,32 @@
+{
+    "context": [
+      "https://www.w3.org/ns/did/v1",
+      "https://w3id.org/security/suites/ed25519-2020/v1"
+    ],
+    "id": "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14",
+    "controller": [
+      "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14"
+    ],
+    "alsoKnownAs": [
+      "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14"
+    ],
+    "verificationMethod": [
+      {
+        "id": "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14#key-1",
+        "type": "Ed25519VerificationKey2020",
+        "controller": "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14",
+        "publicKeyMultibase": "z6MkfNSmyyyxkMAXPYZftKGASe1QMoG9pJKJdX1JMFsLBxVS",
+        "blockchainAccountId": ""
+      }
+    ],
+    "authentication": [
+      "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14#key-1"
+    ],
+    "assertionMethod": [
+      "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14#key-1"
+    ],
+    "keyAgreement": [],
+    "capabilityInvocation": [],
+    "capabilityDelegation": [],
+    "service": []
+  }
