@@ -229,11 +229,10 @@ pub mod exec {
             ..cw721_metadata_onchain::Metadata::default()
         });
 
-        let token_uri = Some("https://starships.example.com/Starship/Enterprise.json".into());
         let mint_msg = cw721_metadata_onchain::MintMsg {
             token_id: value.to_string(),
             owner: env.contract.address.to_string(),
-            token_uri: token_uri.clone(),
+            token_uri: None,
             extension: extension.clone(),
         };
 
