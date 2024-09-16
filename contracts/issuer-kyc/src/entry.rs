@@ -35,7 +35,7 @@ pub fn execute(
     use msg::ExecMsg::*;
 
     match _msg {
-        Mint {} => exec::mint(_deps, _info, _env),
+        Mint { hypersign_proof } => exec::mint(_deps, _info, _env, hypersign_proof),
         Init { token_code_id } => exec::init(_deps, _info, _env, token_code_id),
     }
 }

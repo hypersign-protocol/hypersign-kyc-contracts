@@ -1,6 +1,7 @@
 use crate::error::KycContractError;
 use crate::state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, OWNERDID, SBT_CODE_ID};
-use crate::{msg::Cw721InstantiateMsg, msg::InstantiateMsg, state::*};
+use crate::{msg::InstantiateMsg, state::*};
+
 use cosmwasm_std::{
     to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn, Response,
     StdError, StdResult, SubMsg, WasmMsg,
@@ -45,7 +46,7 @@ pub fn instantiate(
                 OWNERDID.save(deps.storage, &owner_did)?;
 
                 // save the owner
-                OWNER.save(deps.storage, &info.sender)?;
+                //OWNER.save(deps.storage, &info.sender)?;
 
                 // initiate the counter = 0
                 COUNTER.save(deps.storage, &0)?;
@@ -112,16 +113,26 @@ pub mod query {
 }
 
 pub mod exec {
-    use super::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, SBT_CODE_ID, SBT_CONTRACT_ADDRESS};
+    use super::{
+        COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
+        SBT_SYMBOL,
+    };
+    use cosmwasm_std::Empty;
+    use cw721_base::Extension;
+    use strum_macros::ToString;
+    pub type ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
+
     use crate::{
         error::KycContractError,
-        msg::{Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg},
+        msg::{
+            CW721OnChainMetadataInstantiateMsg, Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg,
+            HypersignKYCProof, HypersignKYCProofTypes,
+        },
     };
     use cosmwasm_std::{
         to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn,
         Response, StdError, StdResult, SubMsg, WasmMsg,
     };
-
     pub fn init(
         deps: DepsMut,
         info: MessageInfo,
@@ -137,14 +148,14 @@ pub mod exec {
         let sub_msg: Vec<SubMsg> = vec![SubMsg {
             msg: WasmMsg::Instantiate {
                 code_id: token_code_id,
-                msg: to_json_binary(&Cw721InstantiateMsg {
-                    name: "SBT".to_owned(),
-                    symbol: "SBT".to_owned(),
+                msg: to_json_binary(&CW721OnChainMetadataInstantiateMsg {
+                    name: SBT_NAME.to_owned(),
+                    symbol: SBT_SYMBOL.to_owned(),
                     minter: env.contract.address.clone().into(), //
                 })?,
                 funds: vec![],
                 admin: Some(info.sender.to_string()),
-                label: String::from("Instantiate fixed price NFT contract"),
+                label: String::from("Instantiate fixed NFT contract"),
             }
             .into(),
             id: INSTANTIATE_TOKEN_REPLY_ID,
@@ -156,7 +167,12 @@ pub mod exec {
         Ok(resp)
     }
 
-    pub fn mint(deps: DepsMut, info: MessageInfo, env: Env) -> Result<Response, KycContractError> {
+    pub fn mint(
+        deps: DepsMut,
+        info: MessageInfo,
+        env: Env,
+        hypersign_proof: HypersignKYCProof,
+    ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
         let sbt_contract_address = SBT_CONTRACT_ADDRESS.load(deps.storage)?;
@@ -168,15 +184,64 @@ pub mod exec {
         let value: u64 = COUNTER.load(deps.storage)? + 1;
         COUNTER.save(deps.storage, &value)?;
 
+        // {
+        //     token_id: token_id.to_string(),
+        //     owner: "john".to_string(),
+        //     token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
+        //     extension: Some(Metadata {
+        //         description: Some("Spaceship with Warp Drive".into()),
+        //         name: Some("Starship USS Enterprise".to_string()),
+        //         ..Metadata::default()
+        //     }),
+        // }
+
+        // https://docs.opensea.io/docs/metadata-standards
+        // https://github.com/public-awesome/cw-nfts/tree/v0.9.3/contracts/cw721-metadata-onchain
+
+        //// https://docs.opensea.io/docs/metadata-standards#metadata-structure
+
+        //// https://docs.opensea.io/docs/metadata-standards#attributes
+        // Here trait_type is the name of the trait, value is the value of the trait,
+        // and display_type is a field indicating how you would like it to be displayed.
+        // For string traits, you don't have to worry about display_type.
+
+        /// Creating all traits
+        let prooftype = hypersign_proof.proof_type; //HypersignKYCProofTypes::ProofOfAge;
+        let proof_type_trait = cw721_metadata_onchain::Trait {
+            display_type: None, // No display type
+            trait_type: "proof-type".to_string(),
+            value: prooftype.to_string(),
+        };
+
+        let sbt_code_trait = cw721_metadata_onchain::Trait {
+            display_type: None,
+            trait_type: "sbt-code".to_string(),
+            value: hypersign_proof.sbt_code.to_string(),
+        };
+
+        let extension = Some(cw721_metadata_onchain::Metadata {
+            description: Some(hypersign_proof.description.to_string()),
+            name: Some(prooftype.to_string()),
+            // image_data: "", // use this if you are not using image. you can store svg image
+            image: Some(hypersign_proof.proof_type_image.expect("Error")),
+            background_color: Some("#ffttwww".to_string()),
+            attributes: Some(vec![proof_type_trait, sbt_code_trait]),
+            ..cw721_metadata_onchain::Metadata::default()
+        });
+
+        let token_uri = Some("https://starships.example.com/Starship/Enterprise.json".into());
+        let mint_msg = cw721_metadata_onchain::MintMsg {
+            token_id: value.to_string(),
+            owner: env.contract.address.to_string(),
+            token_uri: token_uri.clone(),
+            extension: extension.clone(),
+        };
+
+        let exec_msg = ExecuteMsg::Mint(mint_msg.clone());
         // Mint SBT to the issuer_kyc_contract
         let msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
-            msg: to_json_binary(&ExecuteNFTMsg::Mint {
-                token_id: value.clone().to_string(),
-                owner: env.contract.address.to_string(),
-                token_uri: None,
-                extension: None,
-            })?,
+            msg: to_json_binary(&exec_msg)?,
             funds: (&[]).to_vec(),
         };
         resp = resp.add_message(msg);

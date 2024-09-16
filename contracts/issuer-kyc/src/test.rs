@@ -3,11 +3,15 @@ pub mod test {
     use super::*;
     use crate::entry::{self, *};
     use crate::error::KycContractError;
-    use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp};
+    use crate::msg::{
+        ExecMsg, HypersignKYCProof, HypersignKYCProofTypes, InstantiateMsg, QueryMsg,
+        SBTcontractAddressResp, ValueResp,
+    };
     use crate::state::COUNTER;
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw721_base::Cw721Contract;
+    // use cw721_metadata_onchain::QueryMsg;
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
     use serde_json::{from_slice, from_str, Value};
     use std::fs;
@@ -132,13 +136,40 @@ pub mod test {
 
         // TODO: asset that a token was minited
         // Minitnig NFT contract
+        let hypersign_proof = HypersignKYCProof {
+            proof_type: HypersignKYCProofTypes::ProofOfKYC,
+            description: "Proves that user has finished his/her KYC".to_string(),
+            sbt_code: "T2".to_string(),
+            credential_id: None,
+            data: None,
+            proof_type_image: Some("".to_string()),
+        };
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
-            &ExecMsg::Mint {},
+            &ExecMsg::Mint { hypersign_proof },
             &[],
         )
         .unwrap();
+
+        // check if user own that nft or not
+        // let qresp2: cw721::NftInfoResponse<Q> = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         "contract1".clone(),
+        //         &cw721_metadata_onchain::QueryMsg::NftInfo {
+        //             token_id: ("1".to_string()),
+        //         },
+        //     )
+        //     .unwrap();
+
+        // assert_eq!(
+        //     qresp2,
+        //     cw721::NftInfoResponse {
+        //         token_uri: Some("abc".to_string()),
+        //         extension: None
+        //     }
+        // );
 
         // TODO: assert taht token was transfered to the user
     }
