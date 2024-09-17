@@ -31,7 +31,7 @@ cw-utils        = { workspace = true }
 hex             = { workspace = true }
 multibase       = { workspace = true }
 ssi-manager     = { workspace = true, features = ["library"] }
-strum = "0.26"
+
 strum_macros = "0.26"
 cw721 = "0.18.0"
 

@@ -118,15 +118,13 @@ pub mod exec {
         SBT_SYMBOL,
     };
     use cosmwasm_std::Empty;
-    use cw721_base::Extension;
     use strum_macros::ToString;
     pub type ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
 
     use crate::{
         error::KycContractError,
         msg::{
-            CW721OnChainMetadataInstantiateMsg, Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg,
-            HypersignKYCProof, HypersignKYCProofTypes,
+            CW721OnChainMetadataInstantiateMsg, ExecMsg, HypersignKYCProof, HypersignKYCProofTypes,
         },
     };
     use cosmwasm_std::{
@@ -154,7 +152,7 @@ pub mod exec {
                     minter: env.contract.address.clone().into(), //
                 })?,
                 funds: vec![],
-                admin: Some(info.sender.to_string()),
+                admin: Some(env.contract.address.clone().into()),
                 label: String::from("Instantiate fixed NFT contract"),
             }
             .into(),
@@ -232,35 +230,49 @@ pub mod exec {
         let mint_msg = cw721_metadata_onchain::MintMsg {
             token_id: value.to_string(),
             owner: env.contract.address.to_string(),
-            token_uri: None,
+            token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
             extension: extension.clone(),
         };
 
-        let exec_msg = ExecuteMsg::Mint(mint_msg.clone());
+        // {
+        //     token_id: "1",
+        //     owner: "contract0",
+        //     token_uri: None,
+        //     extension: Some(Metadata { image: Some(""), image_data: None, external_url: None, description: Some("Proves that user has finished his/her KYC"), name: Some("ProofOfKYC"), attributes: Some([Trait { display_type: None, trait_type: "proof-type", value: "ProofOfKYC" }, Trait { display_type: None, trait_type: "sbt-code", value: "T2" }]), background_color: Some("#ffttwww"), animation_url: None, youtube_url: None })
+        // }
+
+        println!(
+            "Beofre cw721_metadata_onchain::MintMsg {:?}",
+            mint_msg.clone()
+        );
+
+        let exec_msg = cw721_metadata_onchain::ExecuteMsg::Mint(mint_msg.clone());
         // Mint SBT to the issuer_kyc_contract
-        let msg = WasmMsg::Execute {
+        let mint_nft_msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
             msg: to_json_binary(&exec_msg)?,
             funds: (&[]).to_vec(),
         };
-        resp = resp.add_message(msg);
+        resp = resp.add_message(mint_nft_msg);
 
         // transfer SBT to the user
-        let transfer_msg = WasmMsg::Execute {
+        let transfer_nft_msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
-            msg: to_json_binary(&ExecuteNFTMsg::TransferNft {
+            msg: to_json_binary(&cw721_metadata_onchain::ExecuteMsg::TransferNft {
                 recipient: info.sender.to_string(),
                 token_id: value.clone().to_string(),
             })?,
             funds: (&[]).to_vec(),
         };
 
-        resp = resp.add_message(transfer_msg);
+        println!("transfer_nft_msg = {:?}", transfer_nft_msg.clone());
+
+        resp = resp.add_message(transfer_nft_msg);
 
         resp = resp
             .add_attribute("action", "donate")
-            .add_attribute("sender", info.sender.as_str());
-        // .add_attribute("counter", counter.to_string());
+            .add_attribute("sender", info.sender.as_str())
+            .add_attribute("counter", value.to_string());
         Ok(resp)
     }
 }

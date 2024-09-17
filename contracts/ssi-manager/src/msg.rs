@@ -1,15 +1,8 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 // use cosmwasm_std::{to_binary, Addr, Coin, CosmosMsg, Empty, StdResult, WasmMsg};
 use cosmwasm_std::Empty;
-use cw721_base::Extension;
 use cosmwasm_std::{Binary, StdError};
-// use cw_storage_plus::Item;
-// use didkit::ssi::did::Contexts;
-// use schemars::JsonSchema;
-// use serde::{Deserialize, Serialize};
-// use secret_toolkit::utils::InitCallback;
-
-// use didkit::ssi::did::Document;
+use cw721_base::Extension;
 
 #[cw_serde]
 pub struct InstantiateMsg {
@@ -80,15 +73,14 @@ pub enum ExecMsg {
     RegisterDID {
         did_doc: String,
         did_doc_proof: String,
-        signature: String
+        signature: String,
     },
     VerifySignature {
         public_key: String,
         message: String,
         signature: String,
-    }
+    },
 }
-
 
 #[cw_serde]
 pub struct ValueResp {
@@ -137,7 +129,3 @@ pub struct Proof {
     // "proofValue": "z326jXtLJDnzL7LtmQbRXCKjWNUxbUZvrJdpGh1JztYgxec6LJ5Dt2RwzyNKJkiCEneDPkDTTee6wsx6usZ9zQWSa",
     // "verificationMethod": "did:hid:testnet:z6MkmKhhHKKAXrMcfLDZZkd5fhx1jUa1sz87QP6j9LtvHBwM#key-1"
 }
-
-pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
-
-pub type Cw721InstantiateMsg = cw721_base::InstantiateMsg;

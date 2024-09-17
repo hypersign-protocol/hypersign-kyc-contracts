@@ -84,10 +84,6 @@ pub struct HypersignAdminDIDResp {
 //     const BLOCK_SIZE: usize = 256;
 // }
 
-pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
-
-pub type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
-
 pub type IssuerKycInstantiateMsg = issuer_kyc::msg::InstantiateMsg;
 
 #[cw_serde]

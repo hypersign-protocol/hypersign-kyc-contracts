@@ -1,13 +1,10 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{to_binary, Addr, Coin, CosmosMsg, Empty, StdResult, WasmMsg};
-use cw721_base::Extension;
-
 use cw_storage_plus::Item;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-// use secret_toolkit::utils::InitCallback;
-// use strum;
 use strum_macros::ToString;
+
 #[cw_serde]
 pub struct InstantiateMsg {
     // pub token_code_id: u64,
@@ -117,16 +114,4 @@ pub struct SBTcontractAddressResp {
 //     }
 // }
 
-pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
-pub type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
-
 pub type CW721OnChainMetadataInstantiateMsg = cw721_metadata_onchain::InstantiateMsg;
-// pub type ExecuteOnChainMetaDataNFTMsg =
-//     cw721_metadata_onchain::ExecuteMsg<cw721_metadata_onchain::Extension, Empty>;
-
-// pub type CW721OnChainMetadataExtension = Option<cw721_metadata_onchain::Metadata>;
-// pub type Extension = Option<Metadata>;
-
-// pub type Cw721MetadataContract<'a> = cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Empty>;
-// pub type ExecuteMsg = cw721_base::ExecuteMsg<Extension, Empty>;
-// pub type QueryMsg = cw721_base::QueryMsg<Empty>;

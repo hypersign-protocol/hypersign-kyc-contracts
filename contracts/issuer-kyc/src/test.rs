@@ -9,7 +9,7 @@ pub mod test {
     };
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};
-    use cw721_base::Cw721Contract;
+    use cw721;
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
     use serde_json::{from_slice, from_str, Value};
     use std::fs;
@@ -48,7 +48,7 @@ pub mod test {
         let mut app: App = App::default();
 
         // Let's create a dummy account
-        let sender = Addr::unchecked("sender");
+        let sender = Addr::unchecked("user");
 
         // storing contract code on blockhain
         let sbt_contract_code_id = app.store_code(cw_721_contract());
@@ -240,6 +240,47 @@ pub mod test {
             &[],
         )
         .unwrap();
+
+        let resp: cw721::NumTokensResponse = app
+            .wrap()
+            .query_wasm_smart(
+                "contract1".clone(),
+                &cw721_metadata_onchain::QueryMsg::NumTokens {},
+            )
+            .unwrap();
+
+        assert_eq!(resp, cw721::NumTokensResponse { count: 1 });
+
+        let resp: cw721::OwnerOfResponse = app
+            .wrap()
+            .query_wasm_smart(
+                "contract1".clone(),
+                &cw721_metadata_onchain::QueryMsg::OwnerOf {
+                    token_id: "1".to_string(),
+                    include_expired: Some(true),
+                },
+            )
+            .unwrap();
+
+        assert_eq!(
+            resp,
+            cw721::OwnerOfResponse {
+                owner: "user".to_string(),
+                approvals: [].to_vec(),
+            }
+        );
+
+        // let resp2: cw721_metadata_onchain::Metadata = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         "contract1".clone(),
+        //         &cw721_metadata_onchain::QueryMsg::NftInfo {
+        //             token_id: "1".to_string(),
+        //         },
+        //     )
+        //     .unwrap();
+
+        // assert_eq!(resp2.description, Some("description1".into()));
 
         // TODO: assert taht token was transfered to the user
     }

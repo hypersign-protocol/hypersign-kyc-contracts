@@ -14,13 +14,6 @@ pub fn instantiate(
     HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS
         .save(deps.storage, &msg.hypersign_ssi_manager_contract_address)?;
 
-    /// Check if hypersign admin is  a registerd did
-    // let resolve_did = helper::resolve_a_did(
-    //     &deps.querier,
-    //     &msg.hypersign_admin_did,
-    //     &msg.hypersign_ssi_manager_contract_address,
-    // )?;
-
     // checking id DID is registered or not is not required actually, we can simply verify if did proofs are provided
     // or not - you ARE the owner of this did, thats it!
     match ssi_manager::ed25519_signature_2020::verify(
@@ -44,6 +37,7 @@ pub fn instantiate(
                 HYPERSIGN_ADMIN_DID.save(deps.storage, &hypersign_admin_did)?;
 
                 ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &msg.kyc_contract_code_id)?;
+
                 Ok(Response::new())
             } else {
                 // If invalid, return a response with a failure attribute
@@ -99,10 +93,7 @@ pub mod exec {
     use crate::{
         error::FactoryContractError,
         helper,
-        msg::{
-            Cw721InstantiateMsg, ExecMsg, ExecuteNFTMsg, Issuer, IssuerKycInstantiateMsg,
-            NftInstantiateMsg, ResponseD,
-        },
+        msg::{ExecMsg, Issuer, IssuerKycInstantiateMsg, NftInstantiateMsg, ResponseD},
     };
     use cosmwasm_std::{
         to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, Event, MessageInfo,
@@ -118,6 +109,7 @@ pub mod exec {
         did_doc_proof_str: String,
         signature: String, // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
                            // hypersign_authorization: String // proof json(string)
+                           // Take Issuer DID_doc
     ) -> Result<Response, FactoryContractError> {
         let ssi_manager_contract_address =
             HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS.load(deps.storage)?;
@@ -149,7 +141,6 @@ pub mod exec {
         // TODO: optimization: we could simply use ISSUER_TEMP keys length... may be more efficient
         let mut counter = COUNTER.load(deps.storage)?;
         let issuer_kyc_code_id = ISSUER_KYC_CONTRACT_CODE_ID.load(deps.storage)?;
-        println!("--------------------------------");
         let sub_msg: Vec<SubMsg> = vec![SubMsg {
             msg: WasmMsg::Instantiate {
                 code_id: issuer_kyc_code_id,
@@ -181,6 +172,7 @@ pub mod exec {
         COUNTER.save(deps.storage, &counter);
 
         let mut resp = Response::new().add_submessages(sub_msg);
+
         // .add_event(Event::new("admin_added").add_attribute("issuer_did", issuer_did.clone()))
         // .set_data(b"the result data");
         // .set_data(to_json_binary(&IssuerKycInstantiateMsg {
