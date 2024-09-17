@@ -192,6 +192,7 @@ pub mod test {
                 did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
                 signature: signature.to_string(),
                 // need to verify proof from hypersign_admin
+                // authorization letter from hypersign_admin
             },
             &[],
         )
