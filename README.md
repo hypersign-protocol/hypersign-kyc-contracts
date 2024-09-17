@@ -10,6 +10,12 @@
 https://www.youtube.com/watch?v=z6Skl_a8IYk
 ```
 
+## Version 
+
+- rustc 1.80.1 (3f5fd8dd4 2024-08-06)
+- rustup 1.27.1 (54dd3d00f 2024-04-24)
+- cargo 1.80.1 (376290515 2024-07-16)
+
 ## Sequence diagram 
 
 ![img](./docs/hypersign-multi-tenant-ssi-infra.png)
