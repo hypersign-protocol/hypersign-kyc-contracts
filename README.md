@@ -10,6 +10,13 @@
 https://www.youtube.com/watch?v=z6Skl_a8IYk
 ```
 
+Pre-requisite: 
+
+```bash
+rustup target add wasm32-unknown-unknown
+cargo install cosmwasm-check
+```
+
 ## Version 
 
 - rustc 1.80.1 (3f5fd8dd4 2024-08-06)
