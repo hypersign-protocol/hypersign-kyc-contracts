@@ -54,37 +54,41 @@ nibid keys add user2 --keyring-backend test | jq
   "address": "nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l",
   "pubkey": "{\"@type\":\"/cosmos.crypto.secp256k1.PubKey\",\"key\":\"A6mXgB9pECPh6IPl7Rj/1mmU6XYvP7tZjZu91rSIAuZ7\"}",
   "mnemonic": "pony fantasy artist prefer level puzzle nerve powder rude front endless rib supreme fan off sand clarify age thumb chronic celery coffee below beef"
-}```
+}
+```
 
-
+```
 nibid tx bank send nibi1zaavvzxez0elundtn32qnk9lkm8kmcsz44g7xl nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l 1000000unibi --keyring-backend test
 
 nibid q bank balances nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l | jq
+```
 ----------- ADMIN --------------------------------
 
 ## Developer
 
 ### Uploads SSI contract code
 ```bash
-nibid tx wasm store ./artifacts/ssi_manager.wasm --from validator --gas  100000000 --yes | jq -rcs '.[0].txhash'
+nibid tx wasm store ./artifacts/ssi_manager.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx F2EEB4B3FD4B9A008E8CB74E05E425B4A15D57B3B845515FE359F42326877260 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
 
-nibid q tx 07F91DCED56F010A5F8E69168190D88DE0AD84708EDA678CA1A73FABCACF1C9B | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#1310
 ```
+
 
 ### Uploads kyc contract code
 
 ```bash
-nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas 100000000
-nibid q tx 7E089EC35E4397070DE75D60F2FFE93A5EAC5DA9CED9D64BD897142E0965CB90 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#76
+nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx 126C10344066750CA9C4C922728812B20F5BFA2D0DCB975CA5C8868F555E8B71 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#1311
 ```
 
 ### Uploads factory contract code
 
 ```bash
-nibid tx wasm store ./artifacts/hypersign_factory.wasm --from validator --gas 100000000
-nibid q tx 5F201DD2AEF5A5C3207750AD8C2DAE0E8B378E3BD1B726D5F5FCCA3315D0DB0B | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#69
+nibid tx wasm store ./artifacts/hypersign_factory.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx B49EB81C83FDE405B6A474B1ABA0C82CD7682D03FC3B252CBAAD8A5692DFC39E | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#1312
 ```
 
 
@@ -92,9 +96,9 @@ nibid q tx 5F201DD2AEF5A5C3207750AD8C2DAE0E8B378E3BD1B726D5F5FCCA3315D0DB0B | jq
 
 ```bash
 ## this artifact is present in /Users/hermit/code/hm/hs/kyc/cw-nfts/artifacts folder
-nibid tx wasm store ./artifacts/cw721_metadata_onchain.wasm --from validator --gas 100000000
-nibid q tx 32DCDE2AF62E8B3858C3DEDB85CDE9E2749CC75CADDC9AB0C555DF8D2D3E1438 | jq -rcs '.[0].logs[0].events[1].attributes[1].value' | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#75
+nibid tx wasm store /Users/hermit/code/hm/hs/kyc/cw-nfts/artifacts/cw721_metadata_onchain.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx 2A25E9FD9C32123C1ABF6CDA20F5C53C1B8416C0E88F16ED66347481927DEEEE | jq -rcs '.[0].logs[0].events[1].attributes[1].value' 
+#1313
 ```
 
 
@@ -103,11 +107,9 @@ nibid q tx 32DCDE2AF62E8B3858C3DEDB85CDE9E2749CC75CADDC9AB0C555DF8D2D3E1438 | jq
 ### Instnatiate SSI Contract
 
 ```bash
-nibid tx wasm instantiate 67 '{"owner_did": "did:hid:123123123", "did_method": "did:hid:testnet" }' --label "SSI" --from nibi1zaavvzxez0elundtn32qnk9lkm8kmcsz44g7xl --gas 100000000 --no-admin --keyring-backend test
-
-nibid q tx 916FB7EF77AD3EA960A20B2AB9D750342AB13F7695659C649560A14B7780375D | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
-
-nibid q wasm list-contract-by-code 67 | jq
+nibid tx wasm instantiate 1310 '{"owner_did": "did:hid:123123123", "did_method": "did:hid:testnet" }' --label "SSI" --no-admin --from validator   --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx CCF027D11A45F5F4EA60693D31BD8EF2653A4B3F7FC223C2E561D7ED6EF5CE6C | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
+#nibi1ffq5s3ghw2aghgks98hqxexsdn736ec9jc96rzjhwpwyxz5wcjuqwslhmn
 ```
 
 ### Register DID
@@ -131,10 +133,26 @@ nibid query wasm contract-state smart nibi15tu27v983k0my76k4e6r4z6y7sjvussctwe0a
 ### Admin instantiate the factory contract
 
 ```bash
-nibid tx wasm instantiate 69 '{"counter": 0, "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq", "hypersign_ssi_manager_contract_address": "nibi15tu27v983k0my76k4e6r4z6y7sjvussctwe0aqr69tztzdgpauasv98ejt", "kyc_contract_code_id": 71 }' --label "Activity" --from validator --gas 100000000 --no-admin
-nibid q tx 1B18F67DCD8E8BB6A8E8BB6024A8F2874697C6743B35728EE0AD3D18065AACD6 | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
-#nibi1qfdeqsc4m8jhz8zxch2vmsqr0fx7zspc54w8r7sj880n9l75qrlsfqynf5
+nibid tx wasm instantiate 1312 '{"counter": 0, "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq", "hypersign_ssi_manager_contract_address": "nibi1ffq5s3ghw2aghgks98hqxexsdn736ec9jc96rzjhwpwyxz5wcjuqwslhmn", "kyc_contract_code_id": 1311 }' --label "Activity" --no-admin --from validator   --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx 047A683EFD2CA7280AE3B04DCEAD86DB502F306ED08A32F7E3B53B33E0ACEA56 | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
+#nibi19c3tpkj9dr3wakehywh8mxkua56d0l5nrkzx35uyt6jxuy686yrqlr6q2u
 ```
+
+
+
+
+
+
+
+
+
+
+
+==============
+
+
+
+
 
 ### Query hypersign admin did
 
