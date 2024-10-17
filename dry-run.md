@@ -13,12 +13,15 @@ issuer: {
     mnemonic: "fossil away enjoy victory conduct position window torch middle grab maple head scheme kick idle shoe width monkey village spawn goddess ankle parrot knife"
 }
 
+
+
 nibid tx bank send nibi1zaavvzxez0elundtn32qnk9lkm8kmcsz44g7xl nibi125kz6d2cn5m7e3eag4s7r6lwvpvvllleyh2pvg 10000000unibi --keyring-backend test --chain-id nibiru-localnet-0
 
 nibid q bank balances nibi125kz6d2cn5m7e3eag4s7r6lwvpvvllleyh2pvg | jq
 ```
 
 fossil away enjoy victory conduct position window torch middle grab maple head scheme kick idle shoe width monkey village spawn goddess ankle parrot knife
+
 
 
 
@@ -202,6 +205,9 @@ nibid query wasm contract-state smart nibi1afk9dd5rdqsjasz3v73jurufujfwm57jc7ezn
 
 ```bash
 nibid tx wasm execute nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87 '{"mint": {"hypersign_proof": {"credential_id": "", "data": "","description": "Proves that user has finished his/her KYC", "proof_type_image": "https://cdn.mos.cms.futurecdn.net/mpGh6USjRkE3dPQnF8tXRC-1200-80.jpg", "sbt_code": "T1" , "proof_type" : "proof_of_personhood" }}}' --from nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l --gas 100000000 --keyring-backend test 
+
+nibid tx wasm execute nibi1ag6a26rvt9duue8wh8rsp94z9lx7c5pdjf8mlkals6f2uqr0aj0s4ltp6q '{"mint": {"hypersign_proof": {"credential_id": "", "data": "","description": "Proves that user has finished his/her KYC", "proof_type_image": "https://cdn.mos.cms.futurecdn.net/mpGh6USjRkE3dPQnF8tXRC-1200-80.jpg", "sbt_code": "T1" , "proof_type" : "proof_of_personhood" }}}' --from issuer --keyring-backend test --gas 100000000
+
 nibid q tx CCDBC03684655596B95E13E56F67E97A553981514F2F8D6E1B81B27E09C43AE1 | jq
 ```
 
