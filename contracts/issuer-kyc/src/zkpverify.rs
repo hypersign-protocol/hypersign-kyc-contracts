@@ -11,38 +11,18 @@ use ff_ce::PrimeField as Frce;
 use pairing_ce::bn256::Bn256;
 pub fn verify_zkp(
     proof_str: String,
-    inputs: &[&str],
+    inputs: Vec<String>,
     proof_type: String,
 ) -> Result<bool, bellman_ce::SynthesisError> {
     let pof = parse_bn_proof::<Bn256>(proof_str.to_string());
     let vk = parse_bn_vkey::<Bn256>(proof_type.to_string());
     let pvkv = prepare_verifying_key(&vk);
 
-    // Convert the string values to Frce using from_str or similar method
-    // let mut public_input = Vec::new();
-    // for input in inputs {
-    //     public_input.push(Frce::from_str(input).unwrap());
-    // }
-    // // let len = public_input.len();
-    // let fruits_array: [dyn Frce; 6] = public_input.try_into().unwrap();
+    let public_input1: Vec<bellman_ce::bn256::Fr> =
+        inputs.iter().map(|x| Frce::from_str(&x).unwrap()).collect();
 
-    // TODO remove hardcoing...
-    let public_input = [
-        Frce::from_str(inputs[0]).unwrap(),
-        Frce::from_str(inputs[1]).unwrap(),
-        Frce::from_str(inputs[2]).unwrap(),
-        Frce::from_str(inputs[3]).unwrap(),
-        Frce::from_str(inputs[4]).unwrap(),
-        Frce::from_str(inputs[5]).unwrap(),
-    ];
+    let public_input: &[bellman_ce::bn256::Fr] = public_input1.as_slice();
 
-    // let public_input = [Frce::from_str("30").unwrap()];
-    print!("{:?}\n", public_input);
-
-    // let public_input = [Frce::from_str("").unwrap()];
-    // print!("{:?}\n", public_input);
-
-    // let result =
     let result = verify_proof(&pvkv, &pof, &public_input);
     print!("result is {:?}\n", result);
     return result;

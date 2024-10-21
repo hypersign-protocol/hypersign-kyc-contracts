@@ -30,8 +30,8 @@ pub enum HypersignKYCProofTypes {
     #[strum(serialize = "ProofOfPersonhood")]
     ProofOfPersonhood,
 
-    #[strum(serialize = "ProofOfKYC")]
-    ProofOfKYC,
+    #[strum(serialize = "zkProofOfKYC")]
+    zkProofOfKYC,
     // not-supported-yet
     #[strum(serialize = "ProofOfCitizenship")]
     ProofOfCitizenship,
@@ -39,8 +39,8 @@ pub enum HypersignKYCProofTypes {
     #[strum(serialize = "ProofOfDateofBirth")]
     ProofOfDateofBirth,
 
-    #[strum(serialize = "ProofOfAge")]
-    ProofOfAge,
+    #[strum(serialize = "zkProofOfAge")]
+    zkProofOfAge,
 
     #[strum(serialize = "ProofOfNonMembershipCountry")]
     ProofOfNonMembershipCountry,
@@ -67,13 +67,21 @@ pub enum HypersignKYCProofTypes {
 // }
 
 #[cw_serde]
+pub struct ZkProof {
+    pub proof: String,
+    pub public_signales: Vec<String>,
+    pub proof_type: HypersignKYCProofTypes,
+}
+
+#[cw_serde]
 pub struct HypersignKYCProof {
-    pub proof_type: HypersignKYCProofTypes, // Proof Of Personhood
-    pub description: String,                // Proves that user is not a bot
-    pub sbt_code: String,                   // T1
-    pub credential_id: Option<String>,      // verifiable credential id linked with this proof
-    pub data: Option<String>,               // an optional field which may contain any data like zkp
-    pub proof_type_image: Option<String>,   // optional field which store image
+    // pub proof_type: HypersignKYCProofTypes, // Proof Of Personhood
+    pub description: String,              // Proves that user is not a bot
+    pub sbt_code: String,                 // T1
+    pub credential_id: Option<String>,    // verifiable credential id linked with this proof
+    pub data: Option<String>,             // an optional field which may contain any data like zkp
+    pub proof_type_image: Option<String>, // optional field which store image
+    pub zk_proof: ZkProof,
 }
 
 #[cw_serde]

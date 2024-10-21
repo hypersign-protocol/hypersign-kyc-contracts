@@ -179,26 +179,10 @@ pub mod exec {
         // TODO: check if sbt_contract_address is not set
         //if(sbt_contract_address)
 
-        // TODO verify zk proof sent by users..
-        // tODO pass proof...
-        let proof_string = r#"
-            {"pi_a":[40,92,159,239,135,71,131,180,248,147,169,222,232,97,48,105,217,165,250,185,7,60,74,90,135,68,142,168,205,253,76,96,15,217,143,188,100,205,0,41,220,68,189,168,247,105,81,239,21,251,38,244,193,42,110,83,49,160,238,190,131,198,159,67],"pi_b":[24,247,33,247,208,58,206,103,45,36,80,164,234,255,191,187,147,112,19,133,188,230,6,38,69,69,64,139,233,90,118,8,27,225,72,30,105,245,158,141,143,237,117,50,31,254,51,110,158,224,8,185,60,212,8,113,168,227,149,144,77,216,105,105,24,210,243,58,123,237,21,248,101,190,236,130,230,29,162,115,116,24,162,247,140,111,129,87,114,50,97,221,35,162,146,90,31,252,83,232,106,217,108,29,137,233,11,150,187,45,90,212,232,8,251,86,187,112,123,29,64,182,237,107,169,28,129,145],"pi_c":[7,227,99,82,182,142,207,181,216,239,108,223,37,105,149,62,227,167,64,136,119,23,180,153,245,38,38,254,54,10,71,99,48,64,56,8,200,111,39,153,41,97,2,11,48,230,70,149,245,40,15,48,29,74,92,191,234,202,117,80,119,168,252,2],"protocol":"groth16","curve":"bn128"}
-        "#;
-
-        let public_signal = [
-            "1",
-            "18955587923911110975324593921788466916679894646588172021082202393332121293343",
-            "11370393776179332609488947571879226318156480814724305073726489837302371244311",
-            "3502129987681126598706754762542340737175834041097740797030651868926291943299",
-            "16689638488897210389721526189894955938148630429690598708199340667708642425048",
-            "18",
-        ];
-
-        let proof_type = "zkProofOfAge";
         match zkpverify::verify_zkp(
-            proof_string.to_string(),
-            &public_signal,
-            proof_type.to_string(),
+            hypersign_proof.zk_proof.proof.to_string(),
+            hypersign_proof.zk_proof.public_signales,
+            hypersign_proof.zk_proof.proof_type.to_string(),
         ) {
             Ok(result) => {
                 if result {
@@ -239,7 +223,7 @@ pub mod exec {
         // For string traits, you don't have to worry about display_type.
 
         /// Creating all traits
-        let prooftype = hypersign_proof.proof_type; //HypersignKYCProofTypes::ProofOfAge;
+        let prooftype = hypersign_proof.zk_proof.proof_type; //HypersignKYCProofTypes::ProofOfAge;
         let proof_type_trait = cw721_metadata_onchain::Trait {
             display_type: None, // No display type
             trait_type: "proof-type".to_string(),
