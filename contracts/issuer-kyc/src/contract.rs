@@ -117,6 +117,7 @@ pub mod exec {
         COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
         SBT_SYMBOL,
     };
+    use bellman_ce::SynthesisError;
     use cosmwasm_std::Empty;
     use strum_macros::ToString;
     pub type ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
@@ -191,8 +192,10 @@ pub mod exec {
                     return Err(KycContractError::ZkProofVerificationFailure {});
                 }
             }
-            Err(err) => {
-                return Err(KycContractError::ZkProofFailure {});
+            Err(_err) => {
+                return Err(KycContractError::ZkProofFailure {
+                    err: _err.to_string(),
+                });
             }
         }
         ////

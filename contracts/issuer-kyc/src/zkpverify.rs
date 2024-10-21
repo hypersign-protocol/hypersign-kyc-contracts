@@ -24,6 +24,6 @@ pub fn verify_zkp(
     let public_input: &[bellman_ce::bn256::Fr] = public_input1.as_slice();
 
     let result = verify_proof(&pvkv, &pof, &public_input);
-    print!("result is {:?}\n", result);
+
     return result;
 }

@@ -58,7 +58,7 @@ where
     config_path.push(proof_type.to_string()); // make it dynamic
     config_path.push("ver_key.json");
 
-    print!("Path = {:?}", config_path.as_path());
+    // print!("Path = {:?}", config_path.as_path());
     let str = fs::read_to_string(config_path.as_path()).unwrap();
     let vk: VkeyStr = serde_json::from_str(&str).unwrap();
 

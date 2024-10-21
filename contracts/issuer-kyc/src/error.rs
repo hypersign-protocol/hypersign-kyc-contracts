@@ -26,6 +26,8 @@ pub enum KycContractError {
     #[error("Zk Proof Verification Failed")]
     ZkProofVerificationFailure {},
 
+    // #[error("{0}")]
+    // ZkProofError(#[from] String),
     #[error("Zk Proof Failed")]
-    ZkProofFailure {},
+    ZkProofFailure { err: String },
 }
