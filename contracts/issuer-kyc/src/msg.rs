@@ -36,30 +36,56 @@ pub enum HypersignKYCProofTypes {
     // not-supported-yet
     #[strum(serialize = "zkProofOfAge")]
     zkProofOfAge,
-
     // not-supported-yet
-    #[strum(serialize = "ProofOfCitizenship")]
-    ProofOfCitizenship,
+    // #[strum(serialize = "ProofOfCitizenship")]
+    // ProofOfCitizenship,
 
-    #[strum(serialize = "ProofOfDateofBirth")]
-    ProofOfDateofBirth,
+    // #[strum(serialize = "ProofOfDateofBirth")]
+    // ProofOfDateofBirth,
 
-    #[strum(serialize = "ProofOfNonMembershipCountry")]
-    ProofOfNonMembershipCountry,
+    // #[strum(serialize = "ProofOfNonMembershipCountry")]
+    // ProofOfNonMembershipCountry,
 
-    #[strum(serialize = "ProofOfOnchainAML")]
-    ProofOfOnchainAML,
+    // #[strum(serialize = "ProofOfOnchainAML")]
+    // ProofOfOnchainAML,
 
-    #[strum(serialize = "ProofOfTransaction")]
-    ProofOfTransaction,
+    // #[strum(serialize = "ProofOfTransaction")]
+    // ProofOfTransaction,
 
-    #[strum(serialize = "ProofOfUSAccrediatedInvestor")]
-    ProofOfUSAccrediatedInvestor,
+    // #[strum(serialize = "ProofOfUSAccrediatedInvestor")]
+    // ProofOfUSAccrediatedInvestor,
 
-    #[strum(serialize = "ProofOfNonPEP")]
-    ProofOfNonPEP,
+    // #[strum(serialize = "ProofOfNonPEP")]
+    // ProofOfNonPEP,
 }
 
+impl HypersignKYCProofTypes {
+    // Method to get color of the proof type
+    pub fn get_color(&self) -> &'static str {
+        match self {
+            HypersignKYCProofTypes::zkProofOfAge => "#ff0000", // red
+            HypersignKYCProofTypes::zkProofOfKYC => "#00ff00", // green
+            HypersignKYCProofTypes::zkProofOfPersonhood => "#0000ff", // blue
+        }
+    }
+
+    // Method to get logo of the proof type
+    pub fn get_sbt_code(&self) -> &'static str {
+        match self {
+            HypersignKYCProofTypes::zkProofOfAge => "T1",
+            HypersignKYCProofTypes::zkProofOfKYC => "T2",
+            HypersignKYCProofTypes::zkProofOfPersonhood => "T3",
+        }
+    }
+
+    pub fn get_logo(&self) -> &'static str {
+        match self {
+            HypersignKYCProofTypes::zkProofOfAge => "T1",
+            HypersignKYCProofTypes::zkProofOfKYC => "T2",
+            HypersignKYCProofTypes::zkProofOfPersonhood => "T3",
+        }
+    }
+}
 // fn animal_to_string(animal: &Animal) -> &str {
 //     match animal {
 //         Animal::Dog => "Dog",
@@ -78,11 +104,11 @@ pub struct ZkProof {
 #[cw_serde]
 pub struct HypersignKYCProof {
     // pub proof_type: HypersignKYCProofTypes, // Proof Of Personhood
-    pub description: String,              // Proves that user is not a bot
-    pub sbt_code: String,                 // T1
-    pub credential_id: Option<String>,    // verifiable credential id linked with this proof
-    pub data: Option<String>,             // an optional field which may contain any data like zkp
-    pub proof_type_image: Option<String>, // optional field which store image
+    pub description: String, // Proves that user is not a bot
+    // pub sbt_code: String,              // T1
+    pub credential_id: Option<String>, // verifiable credential id linked with this proof
+    pub data: Option<String>,          // an optional field which may contain any data like zkp
+    // pub proof_type_image: Option<String>, // optional field which store image
     pub zk_proof: ZkProof,
 }
 

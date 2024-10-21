@@ -245,10 +245,10 @@ pub mod test {
         let hypersign_proof = HypersignKYCProof {
             // proof_type: HypersignKYCProofTypes::zkProofOfKYC,
             description: "Proves that user has finished his/her KYC".to_string(),
-            sbt_code: "T2".to_string(),
+            // sbt_code: "T2".to_string(),
             credential_id: None,
             data: None,
-            proof_type_image: Some("".to_string()),
+            // proof_type_image: Some("".to_string()),
             zk_proof: zk_proof,
         };
         app.execute_contract(

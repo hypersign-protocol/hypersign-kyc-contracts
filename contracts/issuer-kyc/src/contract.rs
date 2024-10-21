@@ -236,15 +236,14 @@ pub mod exec {
         let sbt_code_trait = cw721_metadata_onchain::Trait {
             display_type: None,
             trait_type: "sbt-code".to_string(),
-            value: hypersign_proof.sbt_code.to_string(),
+            value: prooftype.get_sbt_code().to_string(),
         };
 
         let extension = Some(cw721_metadata_onchain::Metadata {
             description: Some(hypersign_proof.description.to_string()),
             name: Some(prooftype.to_string()),
-            // image_data: "", // use this if you are not using image. you can store svg image
-            image: Some(hypersign_proof.proof_type_image.expect("Error")),
-            background_color: Some("#ffttwww".to_string()),
+            image: None,
+            background_color: Some(prooftype.get_color().to_string()),
             attributes: Some(vec![proof_type_trait, sbt_code_trait]),
             ..cw721_metadata_onchain::Metadata::default()
         });
@@ -252,7 +251,7 @@ pub mod exec {
         let mint_msg = cw721_metadata_onchain::MintMsg {
             token_id: value.to_string(),
             owner: env.contract.address.to_string(),
-            token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
+            token_uri: None,
             extension: extension.clone(),
         };
 
