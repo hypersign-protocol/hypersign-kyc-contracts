@@ -27,20 +27,22 @@ pub enum QueryMsg {
 #[derive(ToString)]
 pub enum HypersignKYCProofTypes {
     // supported
-    #[strum(serialize = "ProofOfPersonhood")]
-    ProofOfPersonhood,
+    #[strum(serialize = "zkProofOfPersonhood")]
+    zkProofOfPersonhood,
 
     #[strum(serialize = "zkProofOfKYC")]
     zkProofOfKYC,
+
+    // not-supported-yet
+    #[strum(serialize = "zkProofOfAge")]
+    zkProofOfAge,
+
     // not-supported-yet
     #[strum(serialize = "ProofOfCitizenship")]
     ProofOfCitizenship,
 
     #[strum(serialize = "ProofOfDateofBirth")]
     ProofOfDateofBirth,
-
-    #[strum(serialize = "zkProofOfAge")]
-    zkProofOfAge,
 
     #[strum(serialize = "ProofOfNonMembershipCountry")]
     ProofOfNonMembershipCountry,
