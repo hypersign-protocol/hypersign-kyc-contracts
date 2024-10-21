@@ -197,7 +197,7 @@ pub mod exec {
         let proof_type = "zkProofOfAge";
         match zkpverify::verify_zkp(
             proof_string.to_string(),
-            public_signal,
+            &public_signal,
             proof_type.to_string(),
         ) {
             Ok(result) => {
