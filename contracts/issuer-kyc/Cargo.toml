@@ -34,7 +34,9 @@ ssi-manager     = { workspace = true, features = ["library"] }
 
 strum_macros = "0.26"
 cw721 = "0.18.0"
-
+bellman_ce = { git = "https://github.com/DoraFactory/bellman.git" }
+pairing_ce = { git = "https://github.com/matter-labs/pairing.git" }
+ff_ce = "0.14.3"
 
 # cosmwasm-crypto = "2.0.3"
 

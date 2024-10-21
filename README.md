@@ -100,5 +100,4 @@ cargo install cosmwasm-check
 - https://book.cosmwasm.com/
 - https://docs.burnt.com/xion/develop/cosmwasm-resources/contract-semantics/message/submessages#transmitting-context-between-contracts
 - https://book.cosmwasm.com/cross-contract/map-storage.html
-- 
 

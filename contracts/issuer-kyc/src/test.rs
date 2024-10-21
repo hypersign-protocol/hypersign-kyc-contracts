@@ -284,4 +284,18 @@ pub mod test {
 
         // TODO: assert taht token was transfered to the user
     }
+
+    // #[test]
+    // fn verify_zk_proofs() {
+    //     //crate::zkpverify::verify_zkp();
+
+    //     match crate::zkpverify::verify_zkp() {
+    //         Ok(result) => {
+    //             assert_eq!(result, true);
+    //         }
+    //         Err(err) => {
+    //             println!("{:?}", err);
+    //         }
+    //     }
+    // }
 }

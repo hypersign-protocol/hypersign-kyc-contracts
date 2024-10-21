@@ -22,4 +22,10 @@ pub enum KycContractError {
 
     #[error("Unexpected failure")]
     UnexpectedFailure {},
+
+    #[error("Zk Proof Verification Failed")]
+    ZkProofVerificationFailure {},
+
+    #[error("Zk Proof Failed")]
+    ZkProofFailure {},
 }
