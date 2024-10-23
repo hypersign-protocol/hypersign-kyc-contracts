@@ -4,7 +4,7 @@ pub mod test {
     use crate::entry::{self, *};
     use crate::msg::{
         ExecMsg, HypersignAdminDIDResp, InstantiateMsg, Issuer, IssuerKycContractCodeResp,
-        QueryMsg, RegistredIssuerResp, SSIManagerContractAddressResp, ValueResp, ValueRespProxy,
+        QueryMsg, RegistredIssuerResp, ValueResp, ValueRespProxy,
     };
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
@@ -149,7 +149,7 @@ pub mod test {
                 sender.clone(),
                 &InstantiateMsg {
                     counter: 0,
-                    hypersign_ssi_manager_contract_address: ssi_manager_contract_addr.to_string(),
+                    // hypersign_ssi_manager_contract_address: ssi_manager_contract_addr.to_string(),
                     kyc_contract_code_id: kyc_contract_code_id,
 
                     // Identity
@@ -286,19 +286,19 @@ pub mod test {
 
         //----------------------------------------------------------------
 
-        let resp2: SSIManagerContractAddressResp = app
-            .wrap()
-            .query_wasm_smart(
-                contract_addr.clone(),
-                &QueryMsg::GetSSIManagerContractAddress {},
-            )
-            .unwrap();
+        // let resp2: SSIManagerContractAddressResp = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         contract_addr.clone(),
+        //         &QueryMsg::GetSSIManagerContractAddress {},
+        //     )
+        //     .unwrap();
 
-        assert_eq!(
-            resp2,
-            SSIManagerContractAddressResp {
-                contract_address: ssi_manager_contract_addr.to_string()
-            }
-        );
+        // assert_eq!(
+        //     resp2,
+        //     SSIManagerContractAddressResp {
+        //         contract_address: ssi_manager_contract_addr.to_string()
+        //     }
+        // );
     }
 }

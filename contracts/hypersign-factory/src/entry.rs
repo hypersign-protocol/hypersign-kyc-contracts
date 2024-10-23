@@ -67,10 +67,6 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
             to_binary(&query::get_registred_issuer(deps, issuer_did)?)
         }
 
-        GetSSIManagerContractAddress {} => {
-            to_binary(&query::get_ssi_manager_contract_address(deps)?)
-        }
-
         GetHypersignAdminDID {} => to_binary(&query::get_hypersign_admin_did(deps)?),
 
         GetIssuerKYCContractCodeID {} => to_binary(&query::get_issuer_kyc_contract_code_id(deps)?),
