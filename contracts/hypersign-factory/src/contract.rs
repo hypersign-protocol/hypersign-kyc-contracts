@@ -54,6 +54,7 @@ pub fn instantiate(
 
 pub mod query {
     use crate::error::FactoryContractError;
+    use crate::msg::IssuerKycContractCodeResp;
     use crate::{
         msg::{
             HypersignAdminDIDResp, RegistredIssuerResp, SSIManagerContractAddressResp, ValueResp,
@@ -63,6 +64,8 @@ pub mod query {
     };
     use cosmwasm_std::{Deps, Response, StdError, StdResult};
     use serde::de::value::Error;
+
+    use super::ISSUER_KYC_CONTRACT_CODE_ID;
 
     pub fn get_registred_issuer(deps: Deps, issuer_did: String) -> StdResult<RegistredIssuerResp> {
         Ok(RegistredIssuerResp {
@@ -83,12 +86,18 @@ pub mod query {
             did: HYPERSIGN_ADMIN_DID.load(deps.storage)?,
         })
     }
+
+    pub fn get_issuer_kyc_contract_code_id(deps: Deps) -> StdResult<IssuerKycContractCodeResp> {
+        Ok(IssuerKycContractCodeResp {
+            kyc_contract_code_id: ISSUER_KYC_CONTRACT_CODE_ID.load(deps.storage)?,
+        })
+    }
 }
 
 pub mod exec {
     use super::{
-        COUNTER, HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS,
-        ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID,
+        COUNTER, HYPERSIGN_ADMIN_DID, HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS,
+        INSTANTIATE_TOKEN_REPLY_ID, ISSUERS, ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID,
     };
     use crate::{
         error::FactoryContractError,
@@ -107,9 +116,10 @@ pub mod exec {
         env: Env,
         did_doc_str: String,
         did_doc_proof_str: String,
-        signature: String, // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
-                           // hypersign_authorization: String // proof json(string)
-                           // Take Issuer DID_doc
+        signature: String,
+        // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
+        // hypersign_authorization: String // proof json(string)
+        // Take Issuer DID_doc
     ) -> Result<Response, FactoryContractError> {
         let ssi_manager_contract_address =
             HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS.load(deps.storage)?;
@@ -182,5 +192,83 @@ pub mod exec {
         Ok(resp)
     }
 
+    pub fn update_issuer_kyc_contract_code(
+        deps: DepsMut,
+        info: MessageInfo,
+        env: Env,
+        did_doc_str: String,
+        did_doc_proof_str: String,
+        signature: String,
+        kyc_contract_code_id: u64,
+    ) -> Result<Response, FactoryContractError> {
+        match ssi_manager::ed25519_signature_2020::verify(
+            did_doc_str.to_owned(),
+            did_doc_proof_str.to_owned(),
+            signature.to_owned(),
+            &deps,
+        ) {
+            Ok(is_valid) => {
+                if is_valid {
+                    let did_json: Value = serde_json::from_str(&did_doc_str).expect("Invalid JSON");
+                    let did: String = ssi_manager::lib_json_ld::get_did_value(&did_json);
+                    let hypersign_admin_did = HYPERSIGN_ADMIN_DID.load(deps.storage)?;
+                    if hypersign_admin_did != did {
+                        return Err(FactoryContractError::Unauthorized {
+                            owner: hypersign_admin_did,
+                        });
+                    }
+
+                    ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &kyc_contract_code_id)?;
+                    Ok(Response::new())
+                } else {
+                    return Err(FactoryContractError::SignatureMissmatch {});
+                }
+            }
+            Err(err) => {
+                // If there's an error, propagate it as a StdError
+                Err(FactoryContractError::UnexpectedFailure {})
+            }
+        }
+    }
+
+    pub fn update_ssi_manager_contract_address(
+        deps: DepsMut,
+        info: MessageInfo,
+        env: Env,
+        did_doc_str: String,
+        did_doc_proof_str: String,
+        signature: String,
+        hypersign_ssi_manager_contract_address: String,
+    ) -> Result<Response, FactoryContractError> {
+        match ssi_manager::ed25519_signature_2020::verify(
+            did_doc_str.to_owned(),
+            did_doc_proof_str.to_owned(),
+            signature.to_owned(),
+            &deps,
+        ) {
+            Ok(is_valid) => {
+                if is_valid {
+                    let did_json: Value = serde_json::from_str(&did_doc_str).expect("Invalid JSON");
+                    let did: String = ssi_manager::lib_json_ld::get_did_value(&did_json);
+                    let hypersign_admin_did = HYPERSIGN_ADMIN_DID.load(deps.storage)?;
+                    if hypersign_admin_did != did {
+                        return Err(FactoryContractError::Unauthorized {
+                            owner: hypersign_admin_did,
+                        });
+                    }
+
+                    HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS
+                        .save(deps.storage, &hypersign_ssi_manager_contract_address)?;
+                    Ok(Response::new())
+                } else {
+                    return Err(FactoryContractError::SignatureMissmatch {});
+                }
+            }
+            Err(err) => {
+                // If there's an error, propagate it as a StdError
+                Err(FactoryContractError::UnexpectedFailure {})
+            }
+        }
+    }
     //
 }

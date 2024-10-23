@@ -38,6 +38,22 @@ pub fn execute(
             signature,
         } => exec::onboard_issuer(_deps, _info, _env, did_doc, did_doc_proof, signature)
             .map_err(FactoryContractError::from),
+
+        UpdateIssuerContractCode {
+            did_doc,
+            did_doc_proof,
+            signature,
+            kyc_contract_code_id,
+        } => exec::update_issuer_kyc_contract_code(
+            _deps,
+            _info,
+            _env,
+            did_doc,
+            did_doc_proof,
+            signature,
+            kyc_contract_code_id,
+        )
+        .map_err(FactoryContractError::from),
     }
 }
 
@@ -56,6 +72,8 @@ pub fn query(deps: Deps, _env: Env, msg: msg::QueryMsg) -> StdResult<Binary> {
         }
 
         GetHypersignAdminDID {} => to_binary(&query::get_hypersign_admin_did(deps)?),
+
+        GetIssuerKYCContractCodeID {} => to_binary(&query::get_issuer_kyc_contract_code_id(deps)?),
     }
 }
 

@@ -37,6 +37,9 @@ pub enum QueryMsg {
 
     #[returns(HypersignAdminDIDResp)]
     GetHypersignAdminDID {},
+
+    #[returns(IssuerKycContractCodeResp)]
+    GetIssuerKYCContractCodeID {},
 }
 
 #[cw_serde]
@@ -45,6 +48,13 @@ pub enum ExecMsg {
         did_doc: String,
         did_doc_proof: String,
         signature: String,
+    },
+
+    UpdateIssuerContractCode {
+        did_doc: String,
+        did_doc_proof: String,
+        signature: String,
+        kyc_contract_code_id: u64,
     },
 }
 
@@ -77,6 +87,11 @@ pub struct NftInstantiateMsg {
 #[cw_serde]
 pub struct HypersignAdminDIDResp {
     pub did: String,
+}
+
+#[cw_serde]
+pub struct IssuerKycContractCodeResp {
+    pub kyc_contract_code_id: u64,
 }
 
 // impl InitCallback for  NftInstantiateMsg {

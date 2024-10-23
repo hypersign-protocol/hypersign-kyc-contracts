@@ -1,6 +1,9 @@
 
 nibid config chain-id nibiru-localnet-0 && nibid config node http://localhost:26657
 
+
+nibid config chain-id nibiru-testnet-1 && nibid config node https://rpc.testnet-1.nibiru.fi:443
+
 ## Key-Materials
 
 ### Issuer IDentity
@@ -69,9 +72,8 @@ nibid q bank balances nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l | jq
 ### Uploads SSI contract code
 ```bash
 nibid tx wasm store ./artifacts/ssi_manager.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
-nibid q tx F2EEB4B3FD4B9A008E8CB74E05E425B4A15D57B3B845515FE359F42326877260 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-
-#1310
+nibid q tx C83C855B257284604E13DE24D28F8D819C289A17BF88E33FFF33E58D366B8B2D | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#15
 ```
 
 
@@ -79,16 +81,18 @@ nibid q tx F2EEB4B3FD4B9A008E8CB74E05E425B4A15D57B3B845515FE359F42326877260 | jq
 
 ```bash
 nibid tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
-nibid q tx 126C10344066750CA9C4C922728812B20F5BFA2D0DCB975CA5C8868F555E8B71 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#1311
+# nibid q tx 126C10344066750CA9C4C922728812B20F5BFA2D0DCB975CA5C8868F555E8B71 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+
+nibid q tx 28DD180EA5AEE901B802208B6DE783A1CDD641C567FC74EE219AB983C38AC675 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#16
 ```
 
 ### Uploads factory contract code
 
 ```bash
 nibid tx wasm store ./artifacts/hypersign_factory.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
-nibid q tx B49EB81C83FDE405B6A474B1ABA0C82CD7682D03FC3B252CBAAD8A5692DFC39E | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#1312
+nibid q tx 09FB198651D1F127EFB50BFCF6EC121037287FF8BECC9035E002276A5C887B9B | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#17
 ```
 
 
@@ -97,8 +101,8 @@ nibid q tx B49EB81C83FDE405B6A474B1ABA0C82CD7682D03FC3B252CBAAD8A5692DFC39E | jq
 ```bash
 ## this artifact is present in /Users/hermit/code/hm/hs/kyc/cw-nfts/artifacts folder
 nibid tx wasm store /Users/hermit/code/hm/hs/kyc/cw-nfts/artifacts/cw721_metadata_onchain.wasm --from validator --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
-nibid q tx 2A25E9FD9C32123C1ABF6CDA20F5C53C1B8416C0E88F16ED66347481927DEEEE | jq -rcs '.[0].logs[0].events[1].attributes[1].value' 
-#1313
+nibid q tx 420132F6BC55A31B0764E0F960B05609E2345BBE74C19055EB30F8BE17244152 | jq -rcs '.[0].logs[0].events[1].attributes[1].value' 
+#18
 ```
 
 
@@ -107,9 +111,9 @@ nibid q tx 2A25E9FD9C32123C1ABF6CDA20F5C53C1B8416C0E88F16ED66347481927DEEEE | jq
 ### Instnatiate SSI Contract
 
 ```bash
-nibid tx wasm instantiate 1310 '{"owner_did": "did:hid:123123123", "did_method": "did:hid:testnet" }' --label "SSI" --no-admin --from validator   --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
-nibid q tx CCF027D11A45F5F4EA60693D31BD8EF2653A4B3F7FC223C2E561D7ED6EF5CE6C | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
-#nibi1ffq5s3ghw2aghgks98hqxexsdn736ec9jc96rzjhwpwyxz5wcjuqwslhmn
+nibid tx wasm instantiate 15 '{"owner_did": "did:hid:123123123", "did_method": "did:hid:testnet" }' --label "SSI" --no-admin --from validator   --gas auto --gas-adjustment 1.5 --gas-prices 0.25unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx 8B128B3638A37960BA6147CFEA882C441ED85F96BADAA487FFD86C33E0AF90DC | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
+#nibi1w3kngdapu0keaame9596wnfztxvv6zm29knnqeznax4z7nwcuk6syrc45w
 ```
 
 ### Register DID
@@ -133,31 +137,16 @@ nibid query wasm contract-state smart nibi15tu27v983k0my76k4e6r4z6y7sjvussctwe0a
 ### Admin instantiate the factory contract
 
 ```bash
-nibid tx wasm instantiate 1312 '{"counter": 0, "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq", "hypersign_ssi_manager_contract_address": "nibi1ffq5s3ghw2aghgks98hqxexsdn736ec9jc96rzjhwpwyxz5wcjuqwslhmn", "kyc_contract_code_id": 1311 }' --label "Activity" --no-admin --from validator   --gas auto --gas-adjustment 1.5 --gas-prices 0.025unibi --yes | jq -rcs '.[0].txhash'
-nibid q tx 047A683EFD2CA7280AE3B04DCEAD86DB502F306ED08A32F7E3B53B33E0ACEA56 | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
-#nibi19c3tpkj9dr3wakehywh8mxkua56d0l5nrkzx35uyt6jxuy686yrqlr6q2u
+nibid tx wasm instantiate 17 '{"counter": 0, "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq", "hypersign_ssi_manager_contract_address": "nibi1w3kngdapu0keaame9596wnfztxvv6zm29knnqeznax4z7nwcuk6syrc45w", "kyc_contract_code_id": 16 }' --label "Activity" --no-admin --from validator   --gas auto --gas-adjustment 1.5 --gas-prices 0.25unibi --yes | jq -rcs '.[0].txhash'
+nibid q tx 64A233E4FE838FE4027453A73F938A37301DE7E51A6E3C99670A53A3710EEEAA | jq -rcs '.[0].logs[0].events[1].attributes[0].value'
+#nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg
 ```
-
-
-
-
-
-
-
-
-
-
-
 ==============
-
-
-
-
 
 ### Query hypersign admin did
 
 ```bash
-nibid query wasm contract-state smart nibi1qfdeqsc4m8jhz8zxch2vmsqr0fx7zspc54w8r7sj880n9l75qrlsfqynf5 '{"get_hypersign_admin_d_i_d":{}}'
+nibid query wasm contract-state smart nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg '{"get_hypersign_admin_d_i_d":{}}'
 ```
 
 ## Issuer 
@@ -172,35 +161,35 @@ nibid q tx 7C447FEB3200F5F4ABA33D9B4AB4B2ACC85C69685DAF72D691E0A0B2DCD16F4F | jq
 ### Issuer onboard himself
 
 ```bash
-# nibid tx wasm execute nibi1qfdeqsc4m8jhz8zxch2vmsqr0fx7zspc54w8r7sj880n9l75qrlsfqynf5 '{"onboard_issuer": { "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq" }}' --from issuer  --keyring-backend test  --gas 100000000 
-# nibid q tx 3F271F63FD063C4F48A0887AA516DFA5992F3C3678614AA86B931E024DC15B08 | jq
+nibid tx wasm execute nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg '{"onboard_issuer": { "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq" }}' --from validator  --keyring-backend test  --gas 100000000 
+# nibid q tx BD5CC2A682A903F4432B039B35806692CE0C55F796448F0B81C2D5A2E0506DAE | jq
 ```
 
 ### Query hypersign admin did
 
 ```bash
-nibid query wasm contract-state smart nibi1qfdeqsc4m8jhz8zxch2vmsqr0fx7zspc54w8r7sj880n9l75qrlsfqynf5 '{"get_registered_issuer":{"issuer_did": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"}}'
-# {"data":{"issuer":{"id":"issuer-1","did":"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp","kyc_contract_address":"nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87","kyc_contract_code_id":71}}}
+nibid query wasm contract-state smart nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg '{"get_registered_issuer":{"issuer_did": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"}}'
+# {"data":{"issuer":{"id":"issuer-1","did":"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp","kyc_contract_address":"nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg","kyc_contract_code_id":71}}}
 ```
 
 ### Query Issuer Contract about its data 
 
 ```bash
-nibid query wasm contract-state smart nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87 '{"owner_d_i_d":{}}'
+nibid query wasm contract-state smart nibi16yhg0alwt30g7e5pe3jwnn48kywrdry0xknylufv4l27c9s9w0xsvqprt4 '{"owner_d_i_d":{}}'
 # {"data":{"owner_did":"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"}} 
 ```
 
 ### Issuer inistalizes his SBT contract 
 
 ```bash
-nibid tx wasm execute nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87 '{"init": { "token_code_id": 75 }}' --from issuer  --keyring-backend test  --gas 100000000 
-nibid q tx 6C450BB6BA03E503488AD91C4EB7E87BC30E5B7DE88FE0067C6DE91CA5A47E1D | jq
+nibid tx wasm execute nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg '{"init": { "token_code_id": 18 }}' --from validator  --keyring-backend test  --gas 100000000 
+nibid q tx 486EFDD86C8824F031F84582CA878D9DA6469EF0EA6E787A581FBF713D73198C | jq
 ```
 
 
 ### Issuer query his SBY contact data
 ```bash
-nibid query wasm contract-state smart nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87 '{"s_b_t_contract_address":{}}'
+nibid query wasm contract-state smart nibi12qk972qrrqudgqjavk3anyu4yu795wtun3rzk08jdft6wwl32kgsc9j6eg '{"s_b_t_contract_address":{}}'
 # {"data":{"sbt_contract_address":"nibi1afk9dd5rdqsjasz3v73jurufujfwm57jc7eznl8udwx9je0d34fqvhkkjx"}}
 ```
 
@@ -209,7 +198,7 @@ nibid query wasm contract-state smart nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdf
 
 ```bash 
 nibid query wasm contract-state smart nibi1afk9dd5rdqsjasz3v73jurufujfwm57jc7eznl8udwx9je0d34fqvhkkjx '{"minter":{}}'
-#{"data":{"minter":"nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87"}}
+#{"data":{"minter":"nibi16yhg0alwt30g7e5pe3jwnn48kywrdry0xknylufv4l27c9s9w0xsvqprt4"}}
 
 #nibid query wasm contract-state smart nibi1afk9dd5rdqsjasz3v73jurufujfwm57jc7eznl8udwx9je0d34fqvhkkjx '{"contract_info":{}}'
 ```
@@ -219,8 +208,8 @@ nibid query wasm contract-state smart nibi1afk9dd5rdqsjasz3v73jurufujfwm57jc7ezn
 ### User mints his NFT
 
 ```bash
-nibid tx wasm execute nibi14gnnxyp9fms2hxyuxs8ajd4e7uvw30fge0zdfe67yxs7n3rwq6gquqdt87 '{"mint": {"hypersign_proof": {"credential_id": "", "data": "","description": "Proves that user has finished his/her KYC", "proof_type_image": "https://cdn.mos.cms.futurecdn.net/mpGh6USjRkE3dPQnF8tXRC-1200-80.jpg", "sbt_code": "T1" , "proof_type" : "proof_of_personhood" }}}' --from nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l --gas 100000000 --keyring-backend test 
-nibid q tx CCDBC03684655596B95E13E56F67E97A553981514F2F8D6E1B81B27E09C43AE1 | jq
+nibid tx wasm execute nibi16yhg0alwt30g7e5pe3jwnn48kywrdry0xknylufv4l27c9s9w0xsvqprt4 '{"mint": {"hypersign_proof": {"credential_id": "", "data": "","description": "Proves that user has finished his/her KYC", "zk_proof": { "proof_type": "zk_proof_of_age", "public_signales": ["1","18955587923911110975324593921788466916679894646588172021082202393332121293343","11370393776179332609488947571879226318156480814724305073726489837302371244311","3502129987681126598706754762542340737175834041097740797030651868926291943299","16689638488897210389721526189894955938148630429690598708199340667708642425048","18"], "proof": "{\"pi_a\":[40,92,159,239,135,71,131,180,248,147,169,222,232,97,48,105,217,165,250,185,7,60,74,90,135,68,142,168,205,253,76,96,15,217,143,188,100,205,0,41,220,68,189,168,247,105,81,239,21,251,38,244,193,42,110,83,49,160,238,190,131,198,159,67],\"pi_b\":[24,247,33,247,208,58,206,103,45,36,80,164,234,255,191,187,147,112,19,133,188,230,6,38,69,69,64,139,233,90,118,8,27,225,72,30,105,245,158,141,143,237,117,50,31,254,51,110,158,224,8,185,60,212,8,113,168,227,149,144,77,216,105,105,24,210,243,58,123,237,21,248,101,190,236,130,230,29,162,115,116,24,162,247,140,111,129,87,114,50,97,221,35,162,146,90,31,252,83,232,106,217,108,29,137,233,11,150,187,45,90,212,232,8,251,86,187,112,123,29,64,182,237,107,169,28,129,145],\"pi_c\":[7,227,99,82,182,142,207,181,216,239,108,223,37,105,149,62,227,167,64,136,119,23,180,153,245,38,38,254,54,10,71,99,48,64,56,8,200,111,39,153,41,97,2,11,48,230,70,149,245,40,15,48,29,74,92,191,234,202,117,80,119,168,252,2],\"protocol\":\"groth16\",\"curve\":\"bn128\"}"}}}}' --from validator --gas 100000000 --keyring-backend test  -y
+nibid q tx 79DBFFE9B49C5AB4BA1187ACDF36FA62D545E2AB9077C3E3DD4D56DA50513BA3 | jq
 ```
 
 ### USer checks his balance in nft contract

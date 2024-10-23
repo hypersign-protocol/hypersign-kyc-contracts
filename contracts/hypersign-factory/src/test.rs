@@ -3,8 +3,8 @@ pub mod test {
     use super::*;
     use crate::entry::{self, *};
     use crate::msg::{
-        ExecMsg, HypersignAdminDIDResp, InstantiateMsg, Issuer, QueryMsg, RegistredIssuerResp,
-        SSIManagerContractAddressResp, ValueResp, ValueRespProxy,
+        ExecMsg, HypersignAdminDIDResp, InstantiateMsg, Issuer, IssuerKycContractCodeResp,
+        QueryMsg, RegistredIssuerResp, SSIManagerContractAddressResp, ValueResp, ValueRespProxy,
     };
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
@@ -97,52 +97,52 @@ pub mod test {
         //// Implement register_did({did, signed_did_doc})
         let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq";
 
-        // let msg = &ssi_manager::msg::ExecMsg::RegisterDID {
-        //     did_doc: serde_json::to_string(&did_doc_string).unwrap(),
-        //     did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
-        //     signature: signature.to_string(),
-        // };
-        // // println!("msg = {:?}", msg.clone());
-        // app.execute_contract(sender.clone(), ssi_manager_contract_addr.clone(), msg, &[])
-        //     .unwrap();
+        let msg = &ssi_manager::msg::ExecMsg::RegisterDID {
+            did_doc: serde_json::to_string(&did_doc_string).unwrap(),
+            did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
+            signature: signature.to_string(),
+        };
+        // println!("msg = {:?}", msg.clone());
+        app.execute_contract(sender.clone(), ssi_manager_contract_addr.clone(), msg, &[])
+            .unwrap();
 
-        // // resolve this did
-        // println!("did = {:?}", did.to_string());
-        // let qresp2: ssi_manager::msg::ValueResp = app
-        //     .wrap()
-        //     .query_wasm_smart(
-        //         ssi_manager_contract_addr.clone(),
-        //         &ssi_manager::msg::QueryMsg::OwnerDID {},
-        //     )
-        //     .unwrap();
-        // // println!("qresp = {:?}", qresp.to_string());
-        // assert_eq!(
-        //     qresp2,
-        //     ssi_manager::msg::ValueResp {
-        //         owner_did: "did:hid:12313123123".to_string()
-        //     }
-        // );
+        // resolve this did
+        println!("did = {:?}", did.to_string());
+        let qresp2: ssi_manager::msg::ValueResp = app
+            .wrap()
+            .query_wasm_smart(
+                ssi_manager_contract_addr.clone(),
+                &ssi_manager::msg::QueryMsg::OwnerDID {},
+            )
+            .unwrap();
+        // println!("qresp = {:?}", qresp.to_string());
+        assert_eq!(
+            qresp2,
+            ssi_manager::msg::ValueResp {
+                owner_did: "did:hid:12313123123".to_string()
+            }
+        );
 
-        // let qresp: ssi_manager::msg::ResolveDIDResp = app
-        //     .wrap()
-        //     .query_wasm_smart(
-        //         ssi_manager_contract_addr.clone(),
-        //         &ssi_manager::msg::QueryMsg::ResolveDID {
-        //             did: did.to_string(),
-        //         },
-        //     )
-        //     .unwrap();
+        let qresp: ssi_manager::msg::ResolveDIDResp = app
+            .wrap()
+            .query_wasm_smart(
+                ssi_manager_contract_addr.clone(),
+                &ssi_manager::msg::QueryMsg::ResolveDID {
+                    did: did.to_string(),
+                },
+            )
+            .unwrap();
 
-        // assert_eq!(
-        //     qresp,
-        //     ssi_manager::msg::ResolveDIDResp {
-        //         did_doc: did_doc_string.to_string()
-        //     }
-        // );
+        assert_eq!(
+            qresp,
+            ssi_manager::msg::ResolveDIDResp {
+                did_doc: did_doc_string.to_string()
+            }
+        );
 
         // ----------------------------------------------------------------
 
-        //// Improve instantiation({SSI_manager_contract, hs_admin_did, hs_admin_did_doc, hs_admin_did_doc_proof}) of Hypersign_KYC_factory_Contract to whitelist SSI_manager_contract address and whitelist hypersign_did
+        // Improve instantiation({SSI_manager_contract, hs_admin_did, hs_admin_did_doc, hs_admin_did_doc_proof}) of Hypersign_KYC_factory_Contract to whitelist SSI_manager_contract address and whitelist hypersign_did
         let contract_addr = app
             .instantiate_contract(
                 hypersign_kyc_factory_contract_code_id,
@@ -180,8 +180,57 @@ pub mod test {
             }
         );
 
-        // ----------------------------------------------------------------
+        let resp_code_id: IssuerKycContractCodeResp = app
+            .wrap()
+            .query_wasm_smart(
+                contract_addr.clone(),
+                &QueryMsg::GetIssuerKYCContractCodeID {},
+            )
+            .unwrap();
 
+        assert_eq!(
+            resp_code_id,
+            IssuerKycContractCodeResp {
+                kyc_contract_code_id: kyc_contract_code_id
+            }
+        );
+
+        // // deploy once again
+        let kyc_contract_code_id2 = app.store_code(issuer_kyc_contract());
+        println!("kyc_contract_code_id = {:?}", kyc_contract_code_id2);
+
+        // // update the code in factory
+        app.execute_contract(
+            sender.clone(),
+            contract_addr.clone(),
+            &ExecMsg::UpdateIssuerContractCode {
+                did_doc: serde_json::to_string(&did_doc_string).unwrap(),
+                did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
+                signature: signature.to_string(),
+                kyc_contract_code_id: kyc_contract_code_id2, // need to verify proof from hypersign_admin
+                                                             // authorization letter from hypersign_admin
+            },
+            &[],
+        )
+        .unwrap();
+
+        // // check if the code is properly updated
+        let resp_code_id2: IssuerKycContractCodeResp = app
+            .wrap()
+            .query_wasm_smart(
+                contract_addr.clone(),
+                &QueryMsg::GetIssuerKYCContractCodeID {},
+            )
+            .unwrap();
+
+        assert_eq!(
+            resp_code_id2,
+            IssuerKycContractCodeResp {
+                kyc_contract_code_id: kyc_contract_code_id2
+            }
+        );
+
+        // ----------------------------------------------------------------
         // Onboarding a user by deploying a contaract for him
         let mut issuer_did = did; // "did:hid:1234";
         app.execute_contract(
@@ -217,12 +266,12 @@ pub mod test {
                     id: "issuer-1".into(),
                     did: issuer_did.clone().into(),
                     kyc_contract_address: Some("contract2".to_string()),
-                    kyc_contract_code_id: kyc_contract_code_id
+                    kyc_contract_code_id: kyc_contract_code_id2
                 }
             }
         );
 
-        // re registert the same issuer should not work
+        //re registert the same issuer should not work
         // issuer_did = "did:hid:12344";
         // let resp_fail = app
         //     .execute_contract(
@@ -235,7 +284,7 @@ pub mod test {
         //     )
         //     .unwrap();
 
-        // ----------------------------------------------------------------
+        //----------------------------------------------------------------
 
         let resp2: SSIManagerContractAddressResp = app
             .wrap()
