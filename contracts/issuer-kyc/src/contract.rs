@@ -7,7 +7,6 @@ use cosmwasm_std::{
     StdError, StdResult, SubMsg, WasmMsg,
 };
 use serde_json::{from_slice, from_str, Value};
-// use crate::ssi_manager::ed25519_signature_2020;
 
 pub fn instantiate(
     deps: DepsMut,
@@ -133,15 +132,16 @@ pub mod exec {
         to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn,
         Response, StdError, StdResult, SubMsg, WasmMsg,
     };
+
+    /**
+     * Init
+     */
     pub fn init(
         deps: DepsMut,
         info: MessageInfo,
         env: Env,
         token_code_id: u64,
     ) -> Result<Response, KycContractError> {
-        // let token_code_id = SBT_CODE_ID.load(deps.storage)?;
-        // println!("token_code_id {:?}", token_code_id);
-
         SBT_CODE_ID.save(deps.storage, &token_code_id)?;
 
         // Instantiating a new SBT contract
@@ -167,6 +167,10 @@ pub mod exec {
         Ok(resp)
     }
 
+    /**
+     * Mint
+     * To mint SBT
+     */
     pub fn mint(
         deps: DepsMut,
         info: MessageInfo,

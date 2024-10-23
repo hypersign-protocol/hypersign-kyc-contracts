@@ -127,26 +127,4 @@ pub struct SBTcontractAddressResp {
     pub sbt_contract_address: String,
 }
 
-// use std::string::ToString;
-// pub impl ToString for HypersignKYCProofTypes {
-//     fn to_string(&self) -> String {
-//         match self {
-//             HypersignKYCProofTypes::ProofOfPersonhood => "ProofOfPersonhood".to_string(),
-//             HypersignKYCProofTypes::ProofOfKYC => "ProofOfKYC".to_string(),
-//             HypersignKYCProofTypes::ProofOfCitizenship => "ProofOfCitizenship".to_string(),
-//             HypersignKYCProofTypes::ProofOfDateofBirth => "ProofOfDateofBirth".to_string(),
-//             HypersignKYCProofTypes::ProofOfAge => "ProofOfAge".to_string(),
-//             HypersignKYCProofTypes::ProofOfNonMembershipCountry => {
-//                 "ProofOfNonMembershipCountry".to_string()
-//             }
-//             HypersignKYCProofTypes::ProofOfOnchainAML => "ProofOfOnchainAML".to_string(),
-//             HypersignKYCProofTypes::ProofOfTransaction => "ProofOfTransaction".to_string(),
-//             HypersignKYCProofTypes::ProofOfUSAccrediatedInvestor => {
-//                 "ProofOfUSAccrediatedInvestor".to_string()
-//             }
-//             HypersignKYCProofTypes::ProofOfNonPEP => "ProofOfNonPEP".to_string(),
-//         }
-//     }
-// }
-
 pub type CW721OnChainMetadataInstantiateMsg = cw721_metadata_onchain::InstantiateMsg;
