@@ -84,10 +84,7 @@ pub mod query {
 }
 
 pub mod exec {
-    use super::{
-        COUNTER, HYPERSIGN_ADMIN_DID, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS, ISSUERS_TEMP,
-        ISSUER_KYC_CONTRACT_CODE_ID,
-    };
+    use super::{COUNTER, HYPERSIGN_ADMIN_DID, ISSUERS, ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID};
     use crate::{
         error::FactoryContractError,
         helper,

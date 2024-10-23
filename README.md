@@ -59,7 +59,9 @@ cargo install cosmwasm-check
 ----------------------------------------------------------------
 - [x] Figure out how can we verify issuer_did (over IBC / ORacle etc.)
 - [x] Figure out how to canonize a json ld
-- [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an issuer
+- [x] Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an 
+
+issuer
 ----------------------------------------------------------------
 - [x] Implement `SSI_manager_contract` with constructor params `{ did_method: "did:testnet:hid" }`
     - [x] Implement helper method - `verify_proof() -> true`
@@ -79,7 +81,6 @@ cargo install cosmwasm-check
 - [ ] Implement request did-auth for user_did in mint NFT page in widget during performing KYC
 - [ ] Implement request `issuer_authorization_credential` in mint NFT page in widget during performing KYC
 - [ ] Update new contract address in widget and dashboard and test the entire flow.
-----------------------------------------------------------------
 - [x] Onchain data models (what exact data will go in the metadata of NFT)
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
@@ -101,7 +102,7 @@ cargo install cosmwasm-check
 - [ ] Implement test cases for all other kind of proofs
 - [ ] Implement a authorization (using verifiable credential verifications) from hypersign admin 
 - [ ] Implement how to stop users to re-transfer the token to other users? 
- 
+
 ## Resources
 
 - [Hypersign On-chain kyc documentation](https://docs.google.com/document/d/1Gso6w9mbkRlv6bvyQDnrhqZhmoD9WOhleY3p2LVIJOQ/edit#heading=h.1krz9xs6n001)

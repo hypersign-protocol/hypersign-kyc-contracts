@@ -2,7 +2,7 @@ use self::error::FactoryContractError;
 use self::state::ISSUERS_TEMP;
 use super::*;
 use msg::{InstantiateMsg, Issuer};
-use state::{DUMMY_ISSUER_ID, INSTANTIATE_TOKEN_REPLY_ID, ISSUERS};
+use state::ISSUERS;
 
 use cosmwasm_std::{
     entry_point, to_binary, Addr, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response,

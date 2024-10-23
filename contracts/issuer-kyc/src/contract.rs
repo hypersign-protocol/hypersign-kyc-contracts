@@ -1,5 +1,5 @@
 use crate::error::KycContractError;
-use crate::state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, OWNERDID, SBT_CODE_ID};
+use crate::state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNERDID, SBT_CODE_ID};
 use crate::{msg::InstantiateMsg, state::*};
 
 use cosmwasm_std::{
@@ -51,7 +51,6 @@ pub fn instantiate(
                 COUNTER.save(deps.storage, &0)?;
 
                 //    SBT_CODE_ID.save(deps.storage, &msg.token_code_id)?;
-
                 // let sub_msg: Vec<SubMsg> = vec![SubMsg {
                 //     msg: WasmMsg::Instantiate {
                 //         code_id: msg.token_code_id,
@@ -113,7 +112,7 @@ pub mod query {
 
 pub mod exec {
     use super::{
-        COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNER, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
+        COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
         SBT_SYMBOL,
     };
     use bellman_ce::SynthesisError;
