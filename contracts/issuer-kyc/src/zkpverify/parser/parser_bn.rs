@@ -1,3 +1,4 @@
+use crate::msg::HsZkProof;
 use crate::zkpverify::types::{ProofStr, VkeyStr};
 use bellman_ce::groth16::{Proof, VerifyingKey};
 use pairing_ce::bn256::{G1Affine, G1Uncompressed, G2Affine, G2Uncompressed};
@@ -5,14 +6,13 @@ use pairing_ce::{CurveAffine, EncodedPoint, Engine};
 use std::fs;
 use std::path::PathBuf;
 
-pub fn parse_bn_proof<E>(proof_str: String) -> Proof<E>
+pub fn parse_bn_proof<E>(pof: HsZkProof) -> Proof<E>
 where
     E: Engine<G1Affine = G1Affine, G2Affine = G2Affine>,
 {
-    let pof: ProofStr = serde_json::from_str(&proof_str).unwrap();
+    // let pof: ProofStr = serde_json::from_str(&proof_str).unwrap();
 
     //serde_json::from_str("").unwrap();
-
     let pi_a = pof.pi_a;
     let pi_b = pof.pi_b;
     let pi_c = pof.pi_c;

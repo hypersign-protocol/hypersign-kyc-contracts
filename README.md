@@ -100,4 +100,9 @@ cargo install cosmwasm-check
 - https://book.cosmwasm.com/
 - https://docs.burnt.com/xion/develop/cosmwasm-resources/contract-semantics/message/submessages#transmitting-context-between-contracts
 - https://book.cosmwasm.com/cross-contract/map-storage.html
+- Metadata
+    - https://docs.opensea.io/docs/metadata-standards
+    - https://github.com/public-awesome/cw-nfts/tree/v0.9.3/contracts/cw721-metadata-onchain
+    - https://docs.opensea.io/docs/metadata-standards#metadata-structure
+    - https://docs.opensea.io/docs/metadata-standards#attributes
 

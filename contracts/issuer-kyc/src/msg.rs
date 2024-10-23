@@ -33,30 +33,10 @@ pub enum HypersignKYCProofTypes {
     #[strum(serialize = "zkProofOfKYC")]
     zkProofOfKYC,
 
-    // not-supported-yet
     #[strum(serialize = "zkProofOfAge")]
     zkProofOfAge,
-    // not-supported-yet
-    // #[strum(serialize = "ProofOfCitizenship")]
-    // ProofOfCitizenship,
-
-    // #[strum(serialize = "ProofOfDateofBirth")]
-    // ProofOfDateofBirth,
-
     // #[strum(serialize = "ProofOfNonMembershipCountry")]
     // ProofOfNonMembershipCountry,
-
-    // #[strum(serialize = "ProofOfOnchainAML")]
-    // ProofOfOnchainAML,
-
-    // #[strum(serialize = "ProofOfTransaction")]
-    // ProofOfTransaction,
-
-    // #[strum(serialize = "ProofOfUSAccrediatedInvestor")]
-    // ProofOfUSAccrediatedInvestor,
-
-    // #[strum(serialize = "ProofOfNonPEP")]
-    // ProofOfNonPEP,
 }
 
 impl HypersignKYCProofTypes {
@@ -69,7 +49,6 @@ impl HypersignKYCProofTypes {
         }
     }
 
-    // Method to get logo of the proof type
     pub fn get_sbt_code(&self) -> &'static str {
         match self {
             HypersignKYCProofTypes::zkProofOfAge => "T1",
@@ -78,37 +57,57 @@ impl HypersignKYCProofTypes {
         }
     }
 
+    pub fn get_decription(&self) -> &'static str {
+        match self {
+            HypersignKYCProofTypes::zkProofOfAge => "Proves user is above or below certain age",
+            HypersignKYCProofTypes::zkProofOfKYC => "Proves that user has finished his/her KYC",
+            HypersignKYCProofTypes::zkProofOfPersonhood => "Proves that user is not a bot",
+        }
+    }
+
+    // TODO: need to add logo urls here.
     pub fn get_logo(&self) -> &'static str {
         match self {
-            HypersignKYCProofTypes::zkProofOfAge => "T1",
-            HypersignKYCProofTypes::zkProofOfKYC => "T2",
-            HypersignKYCProofTypes::zkProofOfPersonhood => "T3",
+            HypersignKYCProofTypes::zkProofOfAge => "",
+            HypersignKYCProofTypes::zkProofOfKYC => "",
+            HypersignKYCProofTypes::zkProofOfPersonhood => "",
         }
     }
 }
-// fn animal_to_string(animal: &Animal) -> &str {
-//     match animal {
-//         Animal::Dog => "Dog",
-//         Animal::Cat => "Cat",
-//         Animal::Bird => "Bird",
-//     }
-// }
+
+#[cw_serde]
+#[derive(ToString)]
+pub enum HsZkProtocols {
+    #[strum(serialize = "groth16")]
+    groth16,
+}
+
+#[cw_serde]
+#[derive(ToString)]
+pub enum HsZkProtocolsCurvs {
+    #[strum(serialize = "bn128")]
+    bn128,
+}
+
+#[cw_serde]
+pub struct HsZkProof {
+    pub pi_a: Vec<u8>,
+    pub pi_b: Vec<u8>,
+    pub pi_c: Vec<u8>,
+    pub protocol: HsZkProtocols,
+    pub curve: HsZkProtocolsCurvs,
+}
 
 #[cw_serde]
 pub struct ZkProof {
-    pub proof: String,
+    pub proof: HsZkProof,
     pub public_signales: Vec<String>,
     pub proof_type: HypersignKYCProofTypes,
 }
 
 #[cw_serde]
 pub struct HypersignKYCProof {
-    // pub proof_type: HypersignKYCProofTypes, // Proof Of Personhood
-    pub description: String, // Proves that user is not a bot
-    // pub sbt_code: String,              // T1
     pub credential_id: Option<String>, // verifiable credential id linked with this proof
-    pub data: Option<String>,          // an optional field which may contain any data like zkp
-    // pub proof_type_image: Option<String>, // optional field which store image
     pub zk_proof: ZkProof,
 }
 

@@ -175,13 +175,9 @@ pub mod exec {
     ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
-        let sbt_contract_address = SBT_CONTRACT_ADDRESS.load(deps.storage)?;
-
-        // TODO: check if sbt_contract_address is not set
-        //if(sbt_contract_address)
-
+        /// Verify the proof
         match zkpverify::verify_zkp(
-            hypersign_proof.zk_proof.proof.to_string(),
+            hypersign_proof.zk_proof.proof,
             hypersign_proof.zk_proof.public_signales,
             hypersign_proof.zk_proof.proof_type.to_string(),
         ) {
@@ -198,56 +194,47 @@ pub mod exec {
                 });
             }
         }
-        ////
 
-        // fetch the counter
-        let value: u64 = COUNTER.load(deps.storage)? + 1;
-        COUNTER.save(deps.storage, &value)?;
+        let prooftype = hypersign_proof.zk_proof.proof_type;
 
-        // {
-        //     token_id: token_id.to_string(),
-        //     owner: "john".to_string(),
-        //     token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
-        //     extension: Some(Metadata {
-        //         description: Some("Spaceship with Warp Drive".into()),
-        //         name: Some("Starship USS Enterprise".to_string()),
-        //         ..Metadata::default()
-        //     }),
-        // }
-
-        // https://docs.opensea.io/docs/metadata-standards
-        // https://github.com/public-awesome/cw-nfts/tree/v0.9.3/contracts/cw721-metadata-onchain
-
-        //// https://docs.opensea.io/docs/metadata-standards#metadata-structure
-
-        //// https://docs.opensea.io/docs/metadata-standards#attributes
-        // Here trait_type is the name of the trait, value is the value of the trait,
-        // and display_type is a field indicating how you would like it to be displayed.
-        // For string traits, you don't have to worry about display_type.
-
+        /// Traits types
+        /// Here trait_type is the name of the trait, value is the value of the trait,
+        /// and display_type is a field indicating how you would like it to be displayed.
+        /// For string traits, you don't have to worry about display_type.
         /// Creating all traits
-        let prooftype = hypersign_proof.zk_proof.proof_type; //HypersignKYCProofTypes::ProofOfAge;
+        /// Trait - 1: proof-type
         let proof_type_trait = cw721_metadata_onchain::Trait {
-            display_type: None, // No display type
+            display_type: Some("Hypersign ZKProof Type".to_string()), // No display type
             trait_type: "proof-type".to_string(),
             value: prooftype.to_string(),
         };
 
+        /// Trait - 2 [optional]: sbt-code - we probably dont need this
         let sbt_code_trait = cw721_metadata_onchain::Trait {
-            display_type: None,
+            display_type: Some("Hypersign SBTCode Type".to_string()),
             trait_type: "sbt-code".to_string(),
             value: prooftype.get_sbt_code().to_string(),
         };
 
+        /// Trait - 3: Associated credential-id
+        let credential_id_trait = cw721_metadata_onchain::Trait {
+            display_type: Some("Hypersign Credential Id".to_string()),
+            trait_type: "credential-id".to_string(),
+            value: hypersign_proof.credential_id.unwrap_or("".to_string()),
+        };
+
+        /// Extensions
         let extension = Some(cw721_metadata_onchain::Metadata {
-            description: Some(hypersign_proof.description.to_string()),
+            description: Some(prooftype.get_decription().to_string()),
             name: Some(prooftype.to_string()),
-            image: None,
+            image: Some(prooftype.get_logo().to_string()),
             background_color: Some(prooftype.get_color().to_string()),
-            attributes: Some(vec![proof_type_trait, sbt_code_trait]),
+            attributes: Some(vec![proof_type_trait, sbt_code_trait, credential_id_trait]),
             ..cw721_metadata_onchain::Metadata::default()
         });
 
+        //// NFT
+        let value: u64 = COUNTER.load(deps.storage)? + 1;
         let mint_msg = cw721_metadata_onchain::MintMsg {
             token_id: value.to_string(),
             owner: env.contract.address.to_string(),
@@ -255,20 +242,10 @@ pub mod exec {
             extension: extension.clone(),
         };
 
-        // {
-        //     token_id: "1",
-        //     owner: "contract0",
-        //     token_uri: None,
-        //     extension: Some(Metadata { image: Some(""), image_data: None, external_url: None, description: Some("Proves that user has finished his/her KYC"), name: Some("ProofOfKYC"), attributes: Some([Trait { display_type: None, trait_type: "proof-type", value: "ProofOfKYC" }, Trait { display_type: None, trait_type: "sbt-code", value: "T2" }]), background_color: Some("#ffttwww"), animation_url: None, youtube_url: None })
-        // }
-
-        println!(
-            "Beofre cw721_metadata_onchain::MintMsg {:?}",
-            mint_msg.clone()
-        );
-
         let exec_msg = cw721_metadata_onchain::ExecuteMsg::Mint(mint_msg.clone());
-        // Mint SBT to the issuer_kyc_contract
+
+        //// Mint SBT to the issuer_kyc_contract
+        let sbt_contract_address = SBT_CONTRACT_ADDRESS.load(deps.storage)?;
         let mint_nft_msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
             msg: to_json_binary(&exec_msg)?,
@@ -276,7 +253,12 @@ pub mod exec {
         };
         resp = resp.add_message(mint_nft_msg);
 
-        // transfer SBT to the user
+        //// transfer SBT to the user
+        /// // fetch the counter
+
+        /// TODO this should up updated in the call back - like may be in the reply.
+        COUNTER.save(deps.storage, &value)?;
+
         let transfer_nft_msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
             msg: to_json_binary(&cw721_metadata_onchain::ExecuteMsg::TransferNft {
@@ -286,10 +268,8 @@ pub mod exec {
             funds: (&[]).to_vec(),
         };
 
-        println!("transfer_nft_msg = {:?}", transfer_nft_msg.clone());
-
+        //// TODO: need to find out how can use should not be able to re-transfer to other users.
         resp = resp.add_message(transfer_nft_msg);
-
         resp = resp
             .add_attribute("action", "donate")
             .add_attribute("sender", info.sender.as_str())
