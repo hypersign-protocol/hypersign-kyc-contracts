@@ -1,4 +1,4 @@
-use crate::msg::HsZkProof;
+use crate::msg::{HsZkProof, HypersignKYCProofTypes};
 use crate::zkpverify::types::{ProofStr, VkeyStr};
 use bellman_ce::groth16::{Proof, VerifyingKey};
 use pairing_ce::bn256::{G1Affine, G1Uncompressed, G2Affine, G2Uncompressed};
@@ -44,22 +44,23 @@ where
     }
 }
 
-pub fn parse_bn_vkey<E>(proof_type: String) -> VerifyingKey<E>
+pub fn parse_bn_vkey<E>(proof_type: HypersignKYCProofTypes) -> VerifyingKey<E>
 where
     E: Engine<G1Affine = G1Affine, G2Affine = G2Affine>,
 {
-    let mut config_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    config_path.pop();
-    // config_path.push("contracts");
-    config_path.push("issuer-kyc");
-    config_path.push("src");
-    config_path.push("zkpverify");
-    config_path.push("hypersign-circuits");
-    config_path.push(proof_type.to_string()); // make it dynamic
-    config_path.push("ver_key.json");
+    // let mut config_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    // config_path.pop();
+    // // config_path.push("contracts");
+    // config_path.push("issuer-kyc");
+    // config_path.push("src");
+    // config_path.push("zkpverify");
+    // config_path.push("hypersign-circuits");
+    // config_path.push(proof_type.to_string()); // make it dynamic
+    // config_path.push("ver_key.json");
 
     // print!("Path = {:?}", config_path.as_path());
-    let str = fs::read_to_string(config_path.as_path()).unwrap();
+    //fs::read_to_string(config_path.as_path()).unwrap();
+    let str = proof_type.get_ver_key();
     let vk: VkeyStr = serde_json::from_str(&str).unwrap();
 
     let vk_alpha_1 = vk.alpha_1;

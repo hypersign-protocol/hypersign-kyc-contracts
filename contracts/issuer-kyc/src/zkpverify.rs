@@ -10,14 +10,14 @@ use bellman_ce::groth16::{prepare_verifying_key, verify_proof};
 use ff_ce::PrimeField as Frce;
 use pairing_ce::bn256::Bn256;
 
-use crate::msg::HsZkProof;
+use crate::msg::{HsZkProof, HypersignKYCProofTypes};
 pub fn verify_zkp(
     proof_str: HsZkProof,
     inputs: Vec<String>,
-    proof_type: String,
+    proof_type: HypersignKYCProofTypes,
 ) -> Result<bool, bellman_ce::SynthesisError> {
     let pof = parse_bn_proof::<Bn256>(proof_str);
-    let vk = parse_bn_vkey::<Bn256>(proof_type.to_string());
+    let vk = parse_bn_vkey::<Bn256>(proof_type);
     let pvkv = prepare_verifying_key(&vk);
 
     let public_input1: Vec<bellman_ce::bn256::Fr> =

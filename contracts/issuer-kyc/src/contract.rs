@@ -179,11 +179,12 @@ pub mod exec {
     ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
+        let prooftype = hypersign_proof.zk_proof.proof_type;
         /// Verify the proof
         match zkpverify::verify_zkp(
             hypersign_proof.zk_proof.proof,
             hypersign_proof.zk_proof.public_signales,
-            hypersign_proof.zk_proof.proof_type.to_string(),
+            prooftype.clone(),
         ) {
             Ok(result) => {
                 if result {
@@ -198,8 +199,6 @@ pub mod exec {
                 });
             }
         }
-
-        let prooftype = hypersign_proof.zk_proof.proof_type;
 
         /// Traits types
         /// Here trait_type is the name of the trait, value is the value of the trait,
