@@ -68,7 +68,7 @@ cargo install cosmwasm-check
     - [x] Implement helper method - `canonize_ld_doc({ld_doc, context}) -> string`
 - [x] Improve `instantiation({SSI_manager_contract, hs_admin_did, hs_admin_did_doc, hs_admin_did_doc_proof})` of `Hypersign_KYC_factory_Contract` to whitelist `SSI_manager_contract` address and whitelist hypersign_did
 - [ ] Improve `deploy_your_Kyc({issuer_did_proof, hs_authorization_presentation, issuer_did})` in `Hypersign_KYC_factory_Contract` 
-    - [ ] to verify issuer_did before onboarding.
+    - [x] to verify issuer_did before onboarding.
     - [ ] to verify presentation signed by hypersign_did (only allow those issuers who have authorization)
 - [ ] Improve `mint({user_did, user_did_proof, issuer_authorization_presentation})` of `Issuer_KYC_Contract` 
     - [ ] to verify user_did
@@ -80,7 +80,7 @@ cargo install cosmwasm-check
 - [ ] Implement request `issuer_authorization_credential` in mint NFT page in widget during performing KYC
 - [ ] Update new contract address in widget and dashboard and test the entire flow.
 ----------------------------------------------------------------
-- [ ] Onchain data models (what exact data will go in the metadata of NFT)
+- [x] Onchain data models (what exact data will go in the metadata of NFT)
 ----------------------------------------------------------------
 - [ ] Backward compatibility with the old version
 - [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
@@ -89,9 +89,19 @@ cargo install cosmwasm-check
 - [ ] Refator code; use wrappers
 - [ ] Implement multitest cases 
 - [ ] Work on all edge cases of smart contract
-- [ ] Contract optimization; see how we can improve gas fee, 
+- [x] Contract optimization; see how we can improve gas fee, 
 - [ ] Check for any security loopholes
 
+## Security Issues
+
+- [ ] zk proofs can be prone to replay attacks
+- [ ] All DID signatures are also prone to replay attacks
+- [ ] Implement exectue function to update Hypersign Admin DID
+- [ ] Update ver-keys for all other proofs
+- [ ] Implement test cases for all other kind of proofs
+- [ ] Implement a authorization (using verifiable credential verifications) from hypersign admin 
+- [ ] Implement how to stop users to re-transfer the token to other users? 
+ 
 ## Resources
 
 - [Hypersign On-chain kyc documentation](https://docs.google.com/document/d/1Gso6w9mbkRlv6bvyQDnrhqZhmoD9WOhleY3p2LVIJOQ/edit#heading=h.1krz9xs6n001)
