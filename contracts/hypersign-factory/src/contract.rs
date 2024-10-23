@@ -151,19 +151,17 @@ pub mod exec {
             gas_limit: None,
             reply_on: ReplyOn::Success,
         }];
-        println!("--------------2------------------");
 
+        counter += 1;
         let issuer = Issuer {
-            id: "issuer-1".into(),         // TODO: make the number dynamic
+            id: "hs-issuer-" + counter.into(), // TODO: make the number dynamic
             did: owner_did.clone().into(), // TODO: this need to be updated only whne contract is deployed..
             kyc_contract_address: None,
             kyc_contract_code_id: issuer_kyc_code_id,
         };
 
         ISSUERS_TEMP.save(deps.storage, counter, &issuer);
-        counter += 1;
         COUNTER.save(deps.storage, &counter);
-
         let mut resp = Response::new().add_submessages(sub_msg);
 
         // .add_event(Event::new("admin_added").add_attribute("issuer_did", issuer_did.clone()))
@@ -207,10 +205,7 @@ pub mod exec {
                     return Err(FactoryContractError::SignatureMissmatch {});
                 }
             }
-            Err(err) => {
-                // If there's an error, propagate it as a StdError
-                Err(FactoryContractError::UnexpectedFailure {})
-            }
+            Err(err) => Err(FactoryContractError::UnexpectedFailure {}),
         }
     }
 }
