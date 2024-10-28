@@ -179,6 +179,9 @@ pub mod exec {
         let mut resp = Response::new();
 
         let prooftype = hypersign_proof.zk_proof.proof_type;
+
+        /// TODO: verify nullifier to avoid replay attack.
+        /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
         /// Verify the proof
         match zkpverify::verify_zkp(
             hypersign_proof.zk_proof.proof,
@@ -198,6 +201,8 @@ pub mod exec {
                 });
             }
         }
+
+        ///
 
         /// Traits types
         /// Here trait_type is the name of the trait, value is the value of the trait,
