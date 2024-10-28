@@ -154,7 +154,7 @@ pub mod exec {
 
         counter += 1;
         let issuer = Issuer {
-            id: "hs-issuer-" + counter.into(), // TODO: make the number dynamic
+            id: "hs-issuer-".to_owned() + &counter.to_string(), // TODO: make the number dynamic
             did: owner_did.clone().into(), // TODO: this need to be updated only whne contract is deployed..
             kyc_contract_address: None,
             kyc_contract_code_id: issuer_kyc_code_id,
