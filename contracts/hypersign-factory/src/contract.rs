@@ -152,7 +152,6 @@ pub mod exec {
             reply_on: ReplyOn::Success,
         }];
 
-        counter += 1;
         let issuer = Issuer {
             id: "hs-issuer-".to_owned() + &counter.to_string(), // TODO: make the number dynamic
             did: owner_did.clone().into(), // TODO: this need to be updated only whne contract is deployed..
@@ -161,6 +160,7 @@ pub mod exec {
         };
 
         ISSUERS_TEMP.save(deps.storage, counter, &issuer);
+        counter += 1;
         COUNTER.save(deps.storage, &counter);
         let mut resp = Response::new().add_submessages(sub_msg);
 

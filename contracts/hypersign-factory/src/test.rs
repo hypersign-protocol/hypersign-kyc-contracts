@@ -263,7 +263,7 @@ pub mod test {
             resp,
             RegistredIssuerResp {
                 issuer: Issuer {
-                    id: "issuer-1".into(),
+                    id: "hs-issuer-0".into(),
                     did: issuer_did.clone().into(),
                     kyc_contract_address: Some("contract2".to_string()),
                     kyc_contract_code_id: kyc_contract_code_id2
