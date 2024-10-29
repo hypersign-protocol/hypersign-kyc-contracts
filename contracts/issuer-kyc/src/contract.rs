@@ -182,6 +182,7 @@ pub mod exec {
 
         /// TODO: verify nullifier to avoid replay attack.
         /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
+        /// TODO: For Age criteria check if we get true in the public signal
         /// Verify the proof
         match zkpverify::verify_zkp(
             hypersign_proof.zk_proof.proof,
