@@ -103,9 +103,9 @@ pub mod exec {
         did_doc_str: String,
         did_doc_proof_str: String,
         signature: String,
-        // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
-        // hypersign_authorization: String // proof json(string)
-        // Take Issuer DID_doc
+        label: Option<String>, // hypersign_authorization_proof: String // authorization json (string) from hypersign admin
+                               // hypersign_authorization: String // proof json(string)
+                               // Take Issuer DID_doc
     ) -> Result<Response, FactoryContractError> {
         // [Optional] TODO check if this issuer did is registed in did registry, if not throw error
         // let resolve_did =
@@ -144,7 +144,7 @@ pub mod exec {
                 })?,
                 funds: vec![],
                 admin: Some(info.sender.to_string()),
-                label: String::from("Instantiate fixed price NFT contract"),
+                label: label.unwrap_or("Hypersign KYC Issuer".to_string()),
             }
             .into(),
             id: counter,

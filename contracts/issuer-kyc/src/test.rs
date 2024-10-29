@@ -143,6 +143,7 @@ pub mod test {
             contract_addr.clone(),
             &ExecMsg::Init {
                 token_code_id: sbt_contract_code_id,
+                label: None,
             },
             &[],
         )
@@ -206,6 +207,7 @@ pub mod test {
             contract_addr.clone(),
             &ExecMsg::Init {
                 token_code_id: sbt_contract_code_id,
+                label: None,
             },
             &[],
         )

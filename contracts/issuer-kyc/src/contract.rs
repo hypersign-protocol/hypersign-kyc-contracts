@@ -140,6 +140,7 @@ pub mod exec {
         info: MessageInfo,
         env: Env,
         token_code_id: u64,
+        label: Option<String>,
     ) -> Result<Response, KycContractError> {
         SBT_CODE_ID.save(deps.storage, &token_code_id)?;
 
@@ -154,7 +155,7 @@ pub mod exec {
                 })?,
                 funds: vec![],
                 admin: Some(env.contract.address.clone().into()),
-                label: String::from("Instantiate fixed NFT contract"),
+                label: label.unwrap_or("Hypersign KYC Token".to_string()),
             }
             .into(),
             id: INSTANTIATE_TOKEN_REPLY_ID,

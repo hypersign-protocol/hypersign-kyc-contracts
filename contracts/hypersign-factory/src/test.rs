@@ -240,6 +240,7 @@ pub mod test {
                 did_doc: serde_json::to_string(&did_doc_string).unwrap(),
                 did_doc_proof: serde_json::to_string(&did_doc_proof_string).unwrap(),
                 signature: signature.to_string(),
+                label: None,
                 // need to verify proof from hypersign_admin
                 // authorization letter from hypersign_admin
             },

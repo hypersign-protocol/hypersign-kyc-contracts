@@ -44,6 +44,7 @@ pub enum ExecMsg {
         did_doc: String,
         did_doc_proof: String,
         signature: String,
+        label: Option<String>,
     },
 
     UpdateIssuerContractCode {

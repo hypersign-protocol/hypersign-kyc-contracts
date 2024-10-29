@@ -36,7 +36,8 @@ pub fn execute(
             did_doc,
             did_doc_proof,
             signature,
-        } => exec::onboard_issuer(_deps, _info, _env, did_doc, did_doc_proof, signature)
+            label,
+        } => exec::onboard_issuer(_deps, _info, _env, did_doc, did_doc_proof, signature, label)
             .map_err(FactoryContractError::from),
 
         UpdateIssuerContractCode {
