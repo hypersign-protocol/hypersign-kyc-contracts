@@ -18,7 +18,7 @@ pub struct Issuer {
 #[cw_serde]
 pub struct InstantiateMsg {
     #[serde(default)]
-    pub counter: u64,
+    pub counter: u64, // TODO redundant... remove it
     pub kyc_contract_code_id: u64,
     pub did_doc: String,
     pub did_doc_proof: String,

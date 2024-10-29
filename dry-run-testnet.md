@@ -189,7 +189,7 @@ nibid q tx 618ED82F55839D71A86B3D3BF1AA58CE734A50AA58D72A2B12A732934B72FEA0 | jq
 
 ### Issuer query his SBY contact data
 ```bash
-nibid query wasm contract-state smart nibi1g44zacllp4j0k4yjjsp66rtlvwedfzymaejl3p5lfq8htn2xrrsqau8f8p '{"s_b_t_contract_address":{}}'
+nibid query wasm contract-state smart nibi1u7gaw4alm2zjj7ad3n7lqgcxduwhrln894ekxk0t9fxz4qzxt0zq9l85pv '{"s_b_t_contract_address":{}}'
 # {"data":{"sbt_contract_address":"nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74est98gz2"}}
 ```
 
@@ -197,7 +197,7 @@ nibid query wasm contract-state smart nibi1g44zacllp4j0k4yjjsp66rtlvwedfzymaejl3
 
 
 ```bash 
-nibid query wasm contract-state smart nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74est98gz2 '{"minter":{}}'
+nibid query wasm contract-state smart nibi1u7gaw4alm2zjj7ad3n7lqgcxduwhrln894ekxk0t9fxz4qzxt0zq9l85pv '{"minter":{}}'
 #{"data":{"minter":"nibi16yhg0alwt30g7e5pe3jwnn48kywrdry0xknylufv4l27c9s9w0xsvqprt4"}}
 
 #nibid query wasm contract-state smart nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74est98gz2 '{"contract_info":{}}'
@@ -208,14 +208,14 @@ nibid query wasm contract-state smart nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2
 ### User mints his NFT
 
 ```bash
-nibid tx wasm execute nibi1g44zacllp4j0k4yjjsp66rtlvwedfzymaejl3p5lfq8htn2xrrsqau8f8p '{"mint": {"hypersign_proof": {"credential_id": "12132312", "zk_proof": { "proof_type": "zk_proof_of_age", "public_signales": ["1","18955587923911110975324593921788466916679894646588172021082202393332121293343","11370393776179332609488947571879226318156480814724305073726489837302371244311","3502129987681126598706754762542340737175834041097740797030651868926291943299","16689638488897210389721526189894955938148630429690598708199340667708642425048","18"], "proof": {"pi_a":[40,92,159,239,135,71,131,180,248,147,169,222,232,97,48,105,217,165,250,185,7,60,74,90,135,68,142,168,205,253,76,96,15,217,143,188,100,205,0,41,220,68,189,168,247,105,81,239,21,251,38,244,193,42,110,83,49,160,238,190,131,198,159,67],"pi_b":[24,247,33,247,208,58,206,103,45,36,80,164,234,255,191,187,147,112,19,133,188,230,6,38,69,69,64,139,233,90,118,8,27,225,72,30,105,245,158,141,143,237,117,50,31,254,51,110,158,224,8,185,60,212,8,113,168,227,149,144,77,216,105,105,24,210,243,58,123,237,21,248,101,190,236,130,230,29,162,115,116,24,162,247,140,111,129,87,114,50,97,221,35,162,146,90,31,252,83,232,106,217,108,29,137,233,11,150,187,45,90,212,232,8,251,86,187,112,123,29,64,182,237,107,169,28,129,145],"pi_c":[7,227,99,82,182,142,207,181,216,239,108,223,37,105,149,62,227,167,64,136,119,23,180,153,245,38,38,254,54,10,71,99,48,64,56,8,200,111,39,153,41,97,2,11,48,230,70,149,245,40,15,48,29,74,92,191,234,202,117,80,119,168,252,2],"protocol":"groth16","curve":"bn128"}}}}}' --from validator --gas 100000000 --keyring-backend test  -y
-nibid q tx 925F97A74CF859BC627DBCA80ADA46A0A18C889FC40D6640FC68B86917DD2904 | jq
+nibid tx wasm execute nibi1u7gaw4alm2zjj7ad3n7lqgcxduwhrln894ekxk0t9fxz4qzxt0zq9l85pv '{"mint": {"hypersign_proof": {"credential_id": "12132312", "zk_proof": { "proof_type": "zk_proof_of_age", "public_signales": ["1","18955587923911110975324593921788466916679894646588172021082202393332121293343","11370393776179332609488947571879226318156480814724305073726489837302371244311","3502129987681126598706754762542340737175834041097740797030651868926291943299","16689638488897210389721526189894955938148630429690598708199340667708642425048","18"], "proof": {"pi_a":[40,92,159,239,135,71,131,180,248,147,169,222,232,97,48,105,217,165,250,185,7,60,74,90,135,68,142,168,205,253,76,96,15,217,143,188,100,205,0,41,220,68,189,168,247,105,81,239,21,251,38,244,193,42,110,83,49,160,238,190,131,198,159,67],"pi_b":[24,247,33,247,208,58,206,103,45,36,80,164,234,255,191,187,147,112,19,133,188,230,6,38,69,69,64,139,233,90,118,8,27,225,72,30,105,245,158,141,143,237,117,50,31,254,51,110,158,224,8,185,60,212,8,113,168,227,149,144,77,216,105,105,24,210,243,58,123,237,21,248,101,190,236,130,230,29,162,115,116,24,162,247,140,111,129,87,114,50,97,221,35,162,146,90,31,252,83,232,106,217,108,29,137,233,11,150,187,45,90,212,232,8,251,86,187,112,123,29,64,182,237,107,169,28,129,145],"pi_c":[7,227,99,82,182,142,207,181,216,239,108,223,37,105,149,62,227,167,64,136,119,23,180,153,245,38,38,254,54,10,71,99,48,64,56,8,200,111,39,153,41,97,2,11,48,230,70,149,245,40,15,48,29,74,92,191,234,202,117,80,119,168,252,2],"protocol":"groth16","curve":"bn128"}}}}}' --from validator --gas-prices 0.1unibi --gas auto --gas-adjustment 1.3  --yes  --keyring-backend test   
+nibid q tx D2797BD74826B5EE2EF93B19DF9826D10B65409D747EF5B73636BFB373D61C43 | jq
 ```
 
 ### USer checks his balance in nft contract
 
 ```bash 
-nibid query wasm contract-state smart nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74est98gz2 '{"num_tokens":{}}'
+nibid query wasm contract-state smart nibi1wm73ngvprx6suu9t93zvwtszeqt7c67w9vl8emkj7ws5ryd332lsn66n2n '{"num_tokens":{}}'
 ```
 
 ```bash
@@ -223,7 +223,7 @@ nibid query wasm contract-state smart nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2
 ```
 
 ```bash
-nibid query wasm contract-state smart nibi105w0chel9d69cdzj62m4h2vqtj6vfuh7yzty2en825t2nyxw74est98gz2 '{"all_nft_info":{"token_id": "1"}}'
+nibid query wasm contract-state smart nibi1wm73ngvprx6suu9t93zvwtszeqt7c67w9vl8emkj7ws5ryd332lsn66n2n '{"all_nft_info":{"token_id": "1"}}'
 ```
 
 ```bash
