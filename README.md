@@ -57,7 +57,6 @@ cargo install cosmwasm-check
 - :white_check_mark: Implement feature in caach server to capture user's miniing step
 - :white_check_mark: Implement widget configuration page in Entity KYC dashboard
 ----------------------------------------------------------------
-- :white_check_mark: Figure out how can we verify issuer_did (over IBC / ORacle etc.)
 - :white_check_mark: Figure out how to canonize a json ld
 - :white_check_mark: Figure out how can we verify DID of issuer in the factory contract while onboarding/deboarding an 
 
@@ -100,6 +99,7 @@ General
 - :white_check_mark: Update ver-keys for all other proofs
 - :white_check_mark: Implement test cases for all other kind of proofs
 - [ ] Implement exectue function to update Hypersign Admin DID
+- [ ] Figure out how can we verify issuer_did (over IBC / ORacle etc.)
 
 Security Issues
 -------
