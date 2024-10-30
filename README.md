@@ -85,18 +85,17 @@ Hypersign Admin Authorization
 - [ ] Implement request did-auth for user_did in mint NFT page in widget during performing KYC
 - [ ] Implement request `issuer_authorization_credential` in mint NFT page in widget during performing KYC
 - [ ] Update new contract address in widget and dashboard and test the entire flow.
-- :white_check_mark: Onchain data models (what exact data will go in the metadata of NFT)
 - [ ] Implement a authorization (using verifiable credential verifications) from hypersign admin 
 
 General
 -------
+- :white_check_mark: Onchain data models (what exact data will go in the metadata of NFT)
 - [ ] Backward compatibility with the old version (when upgrading the contracts states should not change)
 - [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
 - :white_check_mark: Integrate facefi API backend
 - [ ] The widget URL should be signed and then sent given to the user for security purposess
 - [ ] Refator code; use wrappers
 - [ ] Implement multitest cases 
-- [ ] Work on all edge cases of smart contract
 - :white_check_mark: Contract optimization; see how we can improve gas fee, 
 - :white_check_mark: Update ver-keys for all other proofs
 - :white_check_mark: Implement test cases for all other kind of proofs
@@ -109,6 +108,7 @@ Security Issues
 - [ ] All DID signatures are also prone to replay attacks
 - [ ] Check for any security loopholes
 - [ ] Implement how to stop users to re-transfer the token to other users? 
+- [ ] Work on all edge cases of smart contract
 
 ## Resources
 
