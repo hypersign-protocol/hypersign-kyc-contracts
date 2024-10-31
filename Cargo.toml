@@ -28,5 +28,7 @@ multibase       = "0.8"
 
 issuer-kyc      = { version = "*", path = "./contracts/issuer-kyc"} 
 ssi-manager     = { version = "*", path = "./contracts/ssi-manager"}
+hypersign-kyc-token     = { version = "*", path = "./contracts/hypersign-kyc-token"}
+# zk-verifier     = { version = "*", path = "./contracts/zk-verifier"} 
 # cw721-base      = { version = "*", path = "./contracts/cw721-base" }
 

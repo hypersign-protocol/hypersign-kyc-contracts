@@ -20,8 +20,8 @@ tests = ["library", "cw-multi-test"]
 cosmwasm-schema = { workspace = true }
 cosmwasm-std    = { workspace = true }
 cw-storage-plus = { workspace = true }
-cw721-base      = { workspace = true, features = ["library"] }
 cw721-metadata-onchain = { workspace = true, features = ["library"] }
+hypersign-kyc-token = { workspace = true, features = ["library"] }
 schemars        = { workspace = true }
 serde           = { workspace = true }
 serde_json      = { workspace = true }
@@ -31,11 +31,10 @@ cw-utils        = { workspace = true }
 hex             = { workspace = true }
 multibase       = { workspace = true }
 ssi-manager     = { workspace = true, features = ["library"] }
-
 strum_macros = "0.26"
-cw721 = "0.18.0"
 bellman_ce = { git = "https://github.com/DoraFactory/bellman.git" }
 pairing_ce = { git = "https://github.com/matter-labs/pairing.git" }
+cw721           = { version = "*", path = "/Users/hermit/code/hm/hs/kyc/cw-nfts/packages/cw721" }
 ff_ce = "0.14.3"
 
 # cosmwasm-crypto = "2.0.3"

@@ -1,11 +1,11 @@
 use crate::error::KycContractError;
 use crate::state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNERDID, SBT_CODE_ID};
 use crate::{msg::InstantiateMsg, state::*};
-
 use cosmwasm_std::{
     to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn, Response,
     StdError, StdResult, SubMsg, WasmMsg,
 };
+use hypersign_kyc_token::msg::ExecuteMsg;
 use serde_json::{from_slice, from_str, Value};
 
 pub fn instantiate(
@@ -111,6 +111,7 @@ pub mod query {
 }
 
 pub mod exec {
+    use super::*;
     use super::{
         COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
         SBT_SYMBOL,
@@ -118,7 +119,8 @@ pub mod exec {
     use bellman_ce::SynthesisError;
     use cosmwasm_std::Empty;
     use strum_macros::ToString;
-    pub type ExecuteMsg = cw721_metadata_onchain::ExecuteMsg;
+
+    pub type ExecuteMsg = hypersign_kyc_token::msg::ExecuteMsg;
 
     use crate::{
         error::KycContractError,
@@ -131,6 +133,8 @@ pub mod exec {
         to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn,
         Response, StdError, StdResult, SubMsg, WasmMsg,
     };
+
+    use cw721::{msg::NftExtensionMsg, state::Trait, NftExtension};
 
     /**
      * Init
@@ -151,10 +155,13 @@ pub mod exec {
                 msg: to_json_binary(&CW721OnChainMetadataInstantiateMsg {
                     name: SBT_NAME.to_owned(),
                     symbol: SBT_SYMBOL.to_owned(),
-                    minter: env.contract.address.clone().into(), //
+                    minter: Some(env.contract.address.clone().to_string()),
+                    creator: Some(env.contract.address.clone().to_string()),
+                    withdraw_address: None,
+                    collection_info_extension: None,
                 })?,
                 funds: vec![],
-                admin: Some(env.contract.address.clone().into()),
+                admin: Some(env.contract.address.clone().to_string()),
                 label: label.unwrap_or("Hypersign KYC Token".to_string()),
             }
             .into(),
@@ -212,46 +219,51 @@ pub mod exec {
         /// For string traits, you don't have to worry about display_type.
         /// Creating all traits
         /// Trait - 1: proof-type
-        let proof_type_trait = cw721_metadata_onchain::Trait {
+        let proof_type_trait = Trait {
             display_type: Some("Hypersign ZKProof Type".to_string()), // No display type
             trait_type: "proof-type".to_string(),
             value: prooftype.to_string(),
         };
 
         /// Trait - 2 [optional]: sbt-code - we probably dont need this
-        let sbt_code_trait = cw721_metadata_onchain::Trait {
+        let sbt_code_trait = Trait {
             display_type: Some("Hypersign SBTCode Type".to_string()),
             trait_type: "sbt-code".to_string(),
             value: prooftype.get_sbt_code().to_string(),
         };
 
         /// Trait - 3: Associated credential-id
-        let credential_id_trait = cw721_metadata_onchain::Trait {
+        let credential_id_trait = Trait {
             display_type: Some("Hypersign Credential Id".to_string()),
             trait_type: "credential-id".to_string(),
             value: hypersign_proof.credential_id.unwrap_or("".to_string()),
         };
 
         /// Extensions
-        let extension = Some(cw721_metadata_onchain::Metadata {
+        let extension = Some(NftExtensionMsg {
             description: Some(prooftype.get_decription().to_string()),
             name: Some(prooftype.to_string()),
             image: Some(prooftype.get_logo().to_string()),
             background_color: Some(prooftype.get_color().to_string()),
             attributes: Some(vec![proof_type_trait, sbt_code_trait, credential_id_trait]),
-            ..cw721_metadata_onchain::Metadata::default()
+            ..NftExtensionMsg::default()
         });
 
         //// NFT
         let value: u64 = COUNTER.load(deps.storage)? + 1;
-        let mint_msg = cw721_metadata_onchain::MintMsg {
+        // let mint_msg = cw721_metadata_onchain::MintMsg {
+        //     token_id: value.to_string(),
+        //     owner: env.contract.address.to_string(),
+        //     token_uri: None,
+        //     extension: extension.clone(),
+        // };
+
+        let exec_msg = hypersign_kyc_token::msg::ExecuteMsg::Mint {
             token_id: value.to_string(),
             owner: env.contract.address.to_string(),
             token_uri: None,
             extension: extension.clone(),
         };
-
-        let exec_msg = cw721_metadata_onchain::ExecuteMsg::Mint(mint_msg.clone());
 
         //// Mint SBT to the issuer_kyc_contract
         let sbt_contract_address = SBT_CONTRACT_ADDRESS.load(deps.storage)?;
@@ -270,7 +282,7 @@ pub mod exec {
 
         let transfer_nft_msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
-            msg: to_json_binary(&cw721_metadata_onchain::ExecuteMsg::TransferNft {
+            msg: to_json_binary(&hypersign_kyc_token::msg::ExecuteMsg::TransferNft {
                 recipient: info.sender.to_string(),
                 token_id: value.clone().to_string(),
             })?,

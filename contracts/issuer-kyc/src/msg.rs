@@ -156,4 +156,4 @@ pub struct SBTcontractAddressResp {
     pub sbt_contract_address: String,
 }
 
-pub type CW721OnChainMetadataInstantiateMsg = cw721_metadata_onchain::InstantiateMsg;
+pub type CW721OnChainMetadataInstantiateMsg = hypersign_kyc_token::msg::InstantiateMsg;

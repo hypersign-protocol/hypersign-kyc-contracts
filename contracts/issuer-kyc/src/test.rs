@@ -11,6 +11,7 @@ pub mod test {
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw721;
+    use cw721::msg::{NumTokensResponse, OwnerOfResponse};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
     use serde_json::{from_slice, from_str, Value};
     use std::fs;
@@ -21,9 +22,9 @@ pub mod test {
 
     fn cw_721_contract() -> Box<dyn Contract<Empty>> {
         let contract = ContractWrapper::new(
-            cw721_base::entry::execute,
-            cw721_base::entry::instantiate,
-            cw721_base::entry::query,
+            hypersign_kyc_token::entry::execute,
+            hypersign_kyc_token::entry::instantiate,
+            hypersign_kyc_token::entry::query,
         );
         Box::new(contract)
     }
@@ -273,7 +274,7 @@ pub mod test {
         // TODO: asset that a token was minited
         // Minitnig NFT contract
         let hypersign_proof = HypersignKYCProof {
-            credential_id: None,
+            credential_id: Some("123123".to_string()),
             zk_proof: zk_proof,
         };
         app.execute_contract(
@@ -284,7 +285,7 @@ pub mod test {
         )
         .unwrap();
 
-        let resp: cw721::NumTokensResponse = app
+        let resp: NumTokensResponse = app
             .wrap()
             .query_wasm_smart(
                 "contract1".clone(),
@@ -292,9 +293,9 @@ pub mod test {
             )
             .unwrap();
 
-        assert_eq!(resp, cw721::NumTokensResponse { count: 1 });
+        assert_eq!(resp, NumTokensResponse { count: 1 });
 
-        let resp: cw721::OwnerOfResponse = app
+        let resp: OwnerOfResponse = app
             .wrap()
             .query_wasm_smart(
                 "contract1".clone(),
@@ -307,7 +308,7 @@ pub mod test {
 
         assert_eq!(
             resp,
-            cw721::OwnerOfResponse {
+            OwnerOfResponse {
                 owner: "user".to_string(),
                 approvals: [].to_vec(),
             }
