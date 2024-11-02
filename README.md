@@ -107,7 +107,7 @@ Security Issues
 - [ ] zk proofs can be prone to replay attacks (Implement nullifiers)
 - [ ] All DID signatures are also prone to replay attacks
 - [ ] Check for any security loopholes
-- [ ] Implement how to stop users to re-transfer the token to other users? 
+- :white_check_mark: Implement how to stop users to re-transfer the token to other users? 
 - [ ] Work on all edge cases of smart contract
 
 ## Resources

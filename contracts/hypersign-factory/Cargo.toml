@@ -30,5 +30,7 @@ cw-utils        = { workspace = true }
 issuer-kyc      = { workspace = true, features = ["library"] }
 ssi-manager     = { workspace = true, features = ["library"] }
 
+
+
 [dev-dependencies]
 cw-multi-test = { workspace = true }

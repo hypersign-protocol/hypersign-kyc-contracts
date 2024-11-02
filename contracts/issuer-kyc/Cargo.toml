@@ -34,11 +34,8 @@ ssi-manager     = { workspace = true, features = ["library"] }
 strum_macros = "0.26"
 bellman_ce = { git = "https://github.com/DoraFactory/bellman.git" }
 pairing_ce = { git = "https://github.com/matter-labs/pairing.git" }
-cw721           = { version = "*", path = "/Users/hermit/code/hm/hs/kyc/cw-nfts/packages/cw721" }
+cw721           = { workspace = true}
 ff_ce = "0.14.3"
-
-# cosmwasm-crypto = "2.0.3"
-
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }
