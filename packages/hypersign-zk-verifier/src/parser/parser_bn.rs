@@ -1,5 +1,5 @@
 use crate::msg::{HsZkProof, HypersignKYCProofTypes};
-use crate::zkpverify::types::{ProofStr, VkeyStr};
+use crate::types::{ProofStr, VkeyStr};
 use bellman_ce::groth16::{Proof, VerifyingKey};
 use pairing_ce::bn256::{G1Affine, G1Uncompressed, G2Affine, G2Uncompressed};
 use pairing_ce::{CurveAffine, EncodedPoint, Engine};

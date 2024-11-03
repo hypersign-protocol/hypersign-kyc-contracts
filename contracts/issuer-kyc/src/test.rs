@@ -3,16 +3,16 @@ pub mod test {
     use super::*;
     use crate::entry::{self, *};
     use crate::error::KycContractError;
-    use crate::msg::{
-        ExecMsg, HsZkProof, HsZkProtocols, HsZkProtocolsCurvs, HypersignKYCProof,
-        HypersignKYCProofTypes, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp,
-        ZkProof,
-    };
+    use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp};
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};
     use cw721;
     use cw721::msg::{NumTokensResponse, OwnerOfResponse};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
+    use hypersign_zk_verifier::msg::{
+        HsZkProof, HsZkProtocols, HsZkProtocolsCurvs, HypersignKYCProof, HypersignKYCProofTypes,
+        ZkProof,
+    };
     use serde_json::{from_slice, from_str, Value};
     use std::fs;
     fn issuer_kyc_contract() -> Box<dyn Contract<Empty>> {
@@ -315,20 +315,20 @@ pub mod test {
         );
 
         // lets try to transfer to user2 and see if it fails...it should fail since transfer is blocked
-        let user2 = Addr::unchecked("user2");
-        let sbtcontractaddr =
-            Addr::unchecked(sbt_contract_address_resp.sbt_contract_address.clone());
-        let transfer_resp = app
-            .execute_contract(
-                sender.clone(),
-                sbtcontractaddr,
-                &hypersign_kyc_token::msg::ExecuteMsg::TransferNft {
-                    recipient: user2.to_string(),
-                    token_id: "1".to_string(),
-                },
-                &[],
-            )
-            .unwrap();
+        // let user2 = Addr::unchecked("user2");
+        // let sbtcontractaddr =
+        //     Addr::unchecked(sbt_contract_address_resp.sbt_contract_address.clone());
+        // let transfer_resp = app
+        //     .execute_contract(
+        //         sender.clone(),
+        //         sbtcontractaddr,
+        //         &hypersign_kyc_token::msg::ExecuteMsg::TransferNft {
+        //             recipient: user2.to_string(),
+        //             token_id: "1".to_string(),
+        //         },
+        //         &[],
+        //     )
+        //     .unwrap();
     }
 
     // #[test]

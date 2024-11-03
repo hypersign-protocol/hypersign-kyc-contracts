@@ -1438,6 +1438,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "hypersign-zk-verifier"
+version = "0.1.0"
+dependencies = [
+ "bellman_ce",
+ "cosmwasm-schema 2.0.1",
+ "cosmwasm-std",
+ "cw-multi-test",
+ "cw-storage-plus 1.2.0",
+ "cw-utils 1.0.3",
+ "cw721 0.1.0",
+ "ff_ce",
+ "hex",
+ "hypersign-kyc-token",
+ "multibase",
+ "pairing_ce",
+ "schemars",
+ "serde",
+ "serde_json",
+ "ssi-manager",
+ "strum_macros",
+ "thiserror",
+]
+
+[[package]]
 name = "idna"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1488,18 +1512,16 @@ dependencies = [
 name = "issuer-kyc"
 version = "0.1.0"
 dependencies = [
- "bellman_ce",
  "cosmwasm-schema 2.0.1",
  "cosmwasm-std",
  "cw-multi-test",
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
  "cw721 0.1.0",
- "ff_ce",
  "hex",
  "hypersign-kyc-token",
+ "hypersign-zk-verifier",
  "multibase",
- "pairing_ce",
  "schemars",
  "serde",
  "serde_json",

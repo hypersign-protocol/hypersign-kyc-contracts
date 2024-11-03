@@ -1,5 +1,5 @@
 [package]
-name = "issuer-kyc"
+name = "hypersign-zk-verifier"
 version       = { workspace = true }
 edition       = { workspace = true }
 license       = { workspace = true }
@@ -21,7 +21,6 @@ cosmwasm-schema = { workspace = true }
 cosmwasm-std    = { workspace = true }
 cw-storage-plus = { workspace = true }
 hypersign-kyc-token = { workspace = true, features = ["library"] }
-hypersign-zk-verifier = {workspace = true, features = ["library"] }
 schemars        = { workspace = true }
 serde           = { workspace = true }
 serde_json      = { workspace = true }
@@ -32,7 +31,11 @@ hex             = { workspace = true }
 multibase       = { workspace = true }
 ssi-manager     = { workspace = true, features = ["library"] }
 strum_macros = "0.26"
+bellman_ce = { git = "https://github.com/DoraFactory/bellman.git" }
+pairing_ce = { git = "https://github.com/matter-labs/pairing.git" }
 cw721           = { workspace = true}
+ff_ce = "0.14.3"
+
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }

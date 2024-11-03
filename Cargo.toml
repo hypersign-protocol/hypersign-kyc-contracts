@@ -28,8 +28,9 @@ multibase       = "0.8"
 cw2             = "^1.1"
 cw721           = { version = "*", path = "./packages/cw721" }
 ssi-manager     = { version = "*", path = "./packages/ssi-manager"}
+hypersign-zk-verifier = { version = "*", path = "./packages/hypersign-zk-verifier"} 
 issuer-kyc      = { version = "*", path = "./contracts/issuer-kyc"} 
 hypersign-kyc-token = {version = "*", path = "./contracts/hypersign-kyc-token"}
-# zk-verifier     = { version = "*", path = "./contracts/zk-verifier"} 
+
 
 

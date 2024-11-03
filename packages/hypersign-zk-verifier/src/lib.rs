@@ -1,16 +1,14 @@
+pub mod msg;
 mod parser;
-mod types;
-
-use std::result;
-
+pub mod types;
+use crate::msg::{HsZkProof, HypersignKYCProofTypes};
 use bellman_ce::domain::Scalar;
-use parser::parser_bn::{parse_bn_proof, parse_bn_vkey};
-
 use bellman_ce::groth16::{prepare_verifying_key, verify_proof};
 use ff_ce::PrimeField as Frce;
 use pairing_ce::bn256::Bn256;
+use parser::parser_bn::{parse_bn_proof, parse_bn_vkey};
+use std::result;
 
-use crate::msg::{HsZkProof, HypersignKYCProofTypes};
 pub fn verify_zkp(
     proof_str: HsZkProof,
     inputs: Vec<String>,

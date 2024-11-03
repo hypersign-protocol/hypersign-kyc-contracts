@@ -116,23 +116,21 @@ pub mod exec {
         COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
         SBT_SYMBOL,
     };
-    use bellman_ce::SynthesisError;
     use cosmwasm_std::Empty;
+    use hypersign_zk_verifier::msg::HypersignKYCProof;
     use strum_macros::ToString;
 
     pub type ExecuteMsg = hypersign_kyc_token::msg::ExecuteMsg;
 
     use crate::{
         error::KycContractError,
-        msg::{
-            CW721OnChainMetadataInstantiateMsg, ExecMsg, HypersignKYCProof, HypersignKYCProofTypes,
-        },
-        zkpverify,
+        msg::{CW721OnChainMetadataInstantiateMsg, ExecMsg},
     };
     use cosmwasm_std::{
         to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn,
         Response, StdError, StdResult, SubMsg, WasmMsg,
     };
+    use hypersign_zk_verifier::msg::HypersignKYCProofTypes;
 
     use cw721::{msg::NftExtensionMsg, state::Trait, NftExtension};
 
@@ -192,7 +190,7 @@ pub mod exec {
         /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
         /// TODO: For Age criteria check if we get true in the public signal
         /// Verify the proof
-        match zkpverify::verify_zkp(
+        match hypersign_zk_verifier::verify_zkp(
             hypersign_proof.zk_proof.proof,
             hypersign_proof.zk_proof.public_signales,
             prooftype.clone(),
