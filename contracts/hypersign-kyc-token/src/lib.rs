@@ -5,7 +5,7 @@ pub mod state;
 use cw721::traits::{Cw721Execute, Cw721Query};
 
 // Version info for migration
-const CONTRACT_NAME: &str = "hypersign.id:cw721-metadata-onchain";
+const CONTRACT_NAME: &str = "hypersign.id:hypersign-kyc-token";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 use cw721::extension::Cw721OnchainExtensions;
 pub type HypersignKYCToken<'a> = Cw721OnchainExtensions<'a>;
