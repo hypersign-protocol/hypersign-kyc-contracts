@@ -20,16 +20,21 @@ tests = ["library", "cw-multi-test"]
 cosmwasm-schema = { workspace = true }
 cosmwasm-std    = { workspace = true }
 cw-storage-plus = { workspace = true }
-cw721-base      = { workspace = true, features = ["library"] }
+hypersign-kyc-token = { workspace = true, features = ["library"] }
+hypersign-zk-verifier = {workspace = true, features = ["library"] }
 schemars        = { workspace = true }
 serde           = { workspace = true }
+serde_json      = { workspace = true }
 thiserror       = { workspace = true }
 cw-multi-test   = { workspace = true, optional = true  }
 cw-utils        = { workspace = true }
 hex             = { workspace = true }
 multibase       = { workspace = true }
-# cosmwasm-crypto = "2.0.3"
-
+ssi-manager     = { workspace = true, features = ["library"] }
+strum_macros = "0.26"
+cw2             = {workspace = true}
+semver          = {workspace = true}
+cw721           = { workspace = true}
 
 [dev-dependencies]
 cw-multi-test = { workspace = true }

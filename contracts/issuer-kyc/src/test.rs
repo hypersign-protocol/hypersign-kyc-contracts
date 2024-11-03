@@ -4,12 +4,17 @@ pub mod test {
     use crate::entry::{self, *};
     use crate::error::KycContractError;
     use crate::msg::{ExecMsg, InstantiateMsg, QueryMsg, SBTcontractAddressResp, ValueResp};
-    use crate::state::COUNTER;
-
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coin, coins, Addr, Empty};
-    use cw721_base::Cw721Contract;
+    use cw721;
+    use cw721::msg::{NumTokensResponse, OwnerOfResponse};
     use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
+    use hypersign_zk_verifier::msg::{
+        HsZkProof, HsZkProtocols, HsZkProtocolsCurvs, HypersignKYCProof, HypersignKYCProofTypes,
+        ZkProof,
+    };
+    use serde_json::{from_slice, from_str, Value};
+    use std::fs;
     fn issuer_kyc_contract() -> Box<dyn Contract<Empty>> {
         let contract = ContractWrapper::new(execute, instantiate, query).with_reply(entry::reply);
         Box::new(contract)
@@ -17,45 +22,35 @@ pub mod test {
 
     fn cw_721_contract() -> Box<dyn Contract<Empty>> {
         let contract = ContractWrapper::new(
-            cw721_base::entry::execute,
-            cw721_base::entry::instantiate,
-            cw721_base::entry::query,
+            hypersign_kyc_token::entry::execute,
+            hypersign_kyc_token::entry::instantiate,
+            hypersign_kyc_token::entry::query,
         );
         Box::new(contract)
     }
 
-    // #[test]
-    // fn test_initalization() {
-    //     let mut deps = mock_dependencies();
-    //     let mut app = App::default();
-    //     let sbt_contract_code_id = app.store_code(cw_721_contract());
+    fn get_did_key_materials() -> (Value, Value, String) {
+        // Read the expanded did
+        let expanded_did = "../../packages/ssi-manager/test/mock/expanded_did_doc.json";
+        let expanded_did_str: Value =
+            from_str(&fs::read_to_string(expanded_did).unwrap()).expect("Failed");
 
-    //     // _deps: DepsMut,
-    //     // _env: Env,
-    //     // _info: MessageInfo,
-    //     // _msg: InstantiateMsg,
+        // Read the expanded did proof
+        let expanded_did_proof = "../../packages/ssi-manager/test/mock/expanded_did_proof.json";
+        let expanded_did_proof_str: Value =
+            from_str(&fs::read_to_string(expanded_did_proof).unwrap()).expect("Failed");
 
-    //     // assert min expiration
-    //     instantiate(
-    //         deps.as_mut(),
-    //         mock_env(),
-    //         mock_info("mrt", &[]),
-    //         InstantiateMsg {
-    //             owner_did: "did:hid:12313123123".to_string(),
-    //             token_code_id: sbt_contract_code_id,
-    //         },
-    //     )
-    //     .unwrap();
-    //     // assert_eq!(error, KycContractError::MinExpiration {});
-    // }
+        let signature = "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq".to_string();
 
-    #[test]
-    fn kyc_sbt_contracts_initialization() {
+        (expanded_did_str, expanded_did_proof_str, signature)
+    }
+
+    fn initalize_get_blockchain() -> (App, Addr, u64, u64) {
         // App simulates blockhain
-        let mut app = App::default();
+        let mut app: App = App::default();
 
         // Let's create a dummy account
-        let sender = Addr::unchecked("sender");
+        let sender = Addr::unchecked("user");
 
         // storing contract code on blockhain
         let sbt_contract_code_id = app.store_code(cw_721_contract());
@@ -63,13 +58,26 @@ pub mod test {
 
         let kyc_contract_code_id = app.store_code(issuer_kyc_contract());
         println!("kyc_contract_code_id = {:?}", kyc_contract_code_id);
+        (app, sender, sbt_contract_code_id, kyc_contract_code_id)
+    }
+
+    #[test]
+    fn issuer_contract_instantiation() {
+        let (my_app, sender, sbt_contract_code_id, kyc_contract_code_id) =
+            initalize_get_blockchain();
+
+        let mut app = my_app;
+
+        let (expanded_did_str, expanded_did_proof_str, signature) = get_did_key_materials();
 
         let contract_addr = app
             .instantiate_contract(
                 kyc_contract_code_id,
                 sender.clone(), // simulating a blockchain address
                 &InstantiateMsg {
-                    owner_did: "did:hid:12313123123".to_string(),
+                    did_doc: serde_json::to_string(&expanded_did_str).unwrap(),
+                    did_doc_proof: serde_json::to_string(&expanded_did_proof_str).unwrap(),
+                    signature: signature.to_string(),
                 },
                 &[],
                 "Issuer contract",
@@ -77,12 +85,66 @@ pub mod test {
             )
             .unwrap();
 
+        // check if owner did properly set
+        let qresp: ValueResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::OwnerDID {})
+            .unwrap();
+
+        assert_eq!(
+            qresp,
+            ValueResp {
+                owner_did: "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+                    .to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn sbt_contract_instantiation() {
+        let (my_app, sender, sbt_contract_code_id, kyc_contract_code_id) =
+            initalize_get_blockchain();
+
+        let mut app = my_app;
+
+        let (expanded_did_str, expanded_did_proof_str, signature) = get_did_key_materials();
+
+        let contract_addr = app
+            .instantiate_contract(
+                kyc_contract_code_id,
+                sender.clone(), // simulating a blockchain address
+                &InstantiateMsg {
+                    did_doc: serde_json::to_string(&expanded_did_str).unwrap(),
+                    did_doc_proof: serde_json::to_string(&expanded_did_proof_str).unwrap(),
+                    signature: signature.to_string(),
+                },
+                &[],
+                "Issuer contract",
+                None,
+            )
+            .unwrap();
+
+        // check if owner did properly set
+        let qresp: ValueResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::OwnerDID {})
+            .unwrap();
+
+        assert_eq!(
+            qresp,
+            ValueResp {
+                owner_did: "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+                    .to_string()
+            }
+        );
+
         // Initialiing NFT contract
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
             &ExecMsg::Init {
                 token_code_id: sbt_contract_code_id,
+                label: None,
             },
             &[],
         )
@@ -100,227 +162,186 @@ pub mod test {
                 sbt_contract_address: "contract1".to_string()
             }
         );
+    }
 
-        // TODO: asset that a token was minited
-        // Minitnig NFT contract
+    #[test]
+    fn mint_sbt() {
+        let (my_app, sender, sbt_contract_code_id, kyc_contract_code_id) =
+            initalize_get_blockchain();
+
+        let mut app = my_app;
+
+        let (expanded_did_str, expanded_did_proof_str, signature) = get_did_key_materials();
+
+        let contract_addr = app
+            .instantiate_contract(
+                kyc_contract_code_id,
+                sender.clone(), // simulating a blockchain address
+                &InstantiateMsg {
+                    did_doc: serde_json::to_string(&expanded_did_str).unwrap(),
+                    did_doc_proof: serde_json::to_string(&expanded_did_proof_str).unwrap(),
+                    signature: signature.to_string(),
+                },
+                &[],
+                "Issuer contract",
+                None,
+            )
+            .unwrap();
+
+        // check if owner did properly set
+        let qresp: ValueResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::OwnerDID {})
+            .unwrap();
+
+        assert_eq!(
+            qresp,
+            ValueResp {
+                owner_did: "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+                    .to_string()
+            }
+        );
+
+        // Initialiing NFT contract
         app.execute_contract(
             sender.clone(),
             contract_addr.clone(),
-            &ExecMsg::Mint {},
+            &ExecMsg::Init {
+                token_code_id: sbt_contract_code_id,
+                label: None,
+            },
             &[],
         )
         .unwrap();
 
-        // TODO: assert taht token was transfered to the user
+        // // then test is counter has been incremented
+        let sbt_contract_address_resp: SBTcontractAddressResp = app
+            .wrap()
+            .query_wasm_smart(contract_addr.clone(), &QueryMsg::SBTContractAddress {})
+            .unwrap();
+
+        assert_eq!(
+            sbt_contract_address_resp,
+            SBTcontractAddressResp {
+                sbt_contract_address: "contract1".to_string()
+            }
+        );
+
+        let hs_zk_proof = HsZkProof {
+            pi_a: vec![
+                13, 217, 14, 229, 255, 80, 6, 7, 88, 98, 9, 220, 185, 162, 141, 90, 135, 140, 101,
+                191, 29, 89, 82, 117, 68, 245, 117, 102, 144, 77, 171, 104, 22, 107, 200, 36, 138,
+                164, 0, 251, 109, 167, 129, 143, 154, 34, 120, 23, 20, 118, 12, 12, 182, 201, 137,
+                168, 202, 199, 159, 75, 54, 253, 30, 225,
+            ],
+            pi_b: vec![
+                23, 175, 152, 25, 244, 84, 161, 42, 208, 177, 72, 224, 76, 175, 243, 168, 173, 76,
+                69, 248, 62, 126, 144, 139, 82, 2, 153, 70, 109, 41, 201, 204, 6, 243, 136, 40,
+                148, 84, 203, 195, 106, 7, 137, 71, 241, 120, 40, 146, 199, 143, 93, 13, 200, 229,
+                37, 225, 29, 163, 140, 227, 178, 7, 220, 154, 42, 109, 234, 103, 35, 233, 166, 127,
+                143, 131, 100, 160, 109, 33, 74, 154, 138, 200, 210, 131, 56, 206, 18, 120, 56,
+                123, 51, 30, 136, 200, 225, 80, 23, 11, 84, 7, 107, 86, 4, 60, 128, 15, 229, 137,
+                22, 206, 69, 99, 54, 63, 160, 235, 176, 67, 0, 195, 33, 202, 243, 132, 248, 47,
+                251, 222,
+            ],
+            pi_c: vec![
+                1, 196, 237, 169, 186, 214, 135, 209, 184, 3, 43, 101, 139, 78, 230, 249, 220, 53,
+                232, 194, 195, 12, 69, 137, 242, 185, 228, 202, 225, 176, 126, 245, 44, 60, 205,
+                29, 193, 59, 43, 34, 163, 215, 50, 217, 217, 9, 47, 108, 25, 201, 73, 217, 54, 0,
+                100, 90, 179, 220, 20, 61, 14, 166, 44, 45,
+            ],
+            protocol: HsZkProtocols::groth16,
+            curve: HsZkProtocolsCurvs::bn128,
+        };
+
+        let zk_proof = ZkProof {
+            proof: hs_zk_proof,
+            public_signales: vec![
+                "1".to_string(),
+                "12040884699199694350430421040574883160903448743611754661868587601688521091572"
+                    .to_string(),
+                "17402076351219241481156702044498624695626933249600419891544118840897244553492"
+                    .to_string(),
+                "10407708521482612808325680154257593139024275871119660778918312440159182133587"
+                    .to_string(),
+                "5198474275750008277983235026401485600136802015956123361274085143332394226688"
+                    .to_string(),
+                "18".to_string(),
+            ],
+            proof_type: HypersignKYCProofTypes::zkProofOfAge,
+        };
+
+        // TODO: asset that a token was minited
+        // Minitnig NFT contract
+        let hypersign_proof = HypersignKYCProof {
+            credential_id: Some("123123".to_string()),
+            zk_proof: zk_proof,
+        };
+        app.execute_contract(
+            sender.clone(),
+            contract_addr.clone(),
+            &ExecMsg::Mint { hypersign_proof },
+            &[],
+        )
+        .unwrap();
+
+        let resp: NumTokensResponse = app
+            .wrap()
+            .query_wasm_smart(
+                "contract1".clone(),
+                &hypersign_kyc_token::msg::QueryMsg::NumTokens {},
+            )
+            .unwrap();
+
+        assert_eq!(resp, NumTokensResponse { count: 1 });
+
+        let resp: OwnerOfResponse = app
+            .wrap()
+            .query_wasm_smart(
+                "contract1".clone(),
+                &hypersign_kyc_token::msg::QueryMsg::OwnerOf {
+                    token_id: "1".to_string(),
+                    include_expired: Some(true),
+                },
+            )
+            .unwrap();
+
+        assert_eq!(
+            resp,
+            OwnerOfResponse {
+                owner: "user".to_string(),
+                approvals: [].to_vec(),
+            }
+        );
+
+        // lets try to transfer to user2 and see if it fails...it should fail since transfer is blocked
+        // let user2 = Addr::unchecked("user2");
+        // let sbtcontractaddr =
+        //     Addr::unchecked(sbt_contract_address_resp.sbt_contract_address.clone());
+        // let transfer_resp = app
+        //     .execute_contract(
+        //         sender.clone(),
+        //         sbtcontractaddr,
+        //         &hypersign_kyc_token::msg::ExecuteMsg::TransferNft {
+        //             recipient: user2.to_string(),
+        //             token_id: "1".to_string(),
+        //         },
+        //         &[],
+        //     )
+        //     .unwrap();
     }
 
     // #[test]
-    // fn donate(){
-    //     // App simulates blockhain
-    //     // let mut app = App::default();
+    // fn verify_zk_proofs() {
+    //     //crate::zkpverify::verify_zkp();
 
-    //     // Let's create a dummy account
-    //     let sender = Addr::unchecked("sender");
-    //     // More sophisticated way of simulating blockhain
-    //     // need to put fund some tokens to this sender
-    //     let initialBalance = 10000;
-    //     let tokenDenom =  "uHID";
-    //     let mut app = AppBuilder::new().build(|router, _api, storage| {
-    //         router  // from router
-    //         .bank // extract bank module
-    //         .init_balance(storage, &sender, coins(initialBalance, tokenDenom)) // send some initial tokens to the sender account
-    //         .unwrap()
-    //     });
-
-    //     // storing contract code on blockhain
-    //     let contract_id = app.store_code(counting_contract());
-
-    //     let contract_addr = app.instantiate_contract(
-    //         contract_id,
-    //         sender.clone(), // simulating a blockchain address
-    //         &InstantiateMsg{
-    //             counter: 0,
-    //             minimal_donation: Some(coin(10, tokenDenom))
-    //         },
-    //         &[],
-    //         "Funding contract",
-    //         None,
-    //     ).unwrap();
-
-    //     // lets send some fund; which will also increase the coounter = 3
-    //     let amount_to_be_sent_to_contract = 10;
-    //     app.execute_contract(
-    //         sender.clone(),
-    //         contract_addr.clone(),
-    //         &ExecMsg::Donate {}, &coins(amount_to_be_sent_to_contract, tokenDenom))
-    //         .unwrap();
-
-    //     // then test is counter has been incremented
-    //     let resp: ValueResp = app
-    //                 .wrap()
-    //                 .query_wasm_smart(
-    //                     contract_addr.clone(),
-    //                     &QueryMsg::Value {  })
-    //                     .unwrap();
-
-    //     assert_eq!(resp, ValueResp {value: 1});
-
-    //     // lets check the balane of the cotnract as well....
-    //     assert_eq!(app.wrap().query_all_balances(contract_addr).unwrap(), coins(amount_to_be_sent_to_contract, tokenDenom));
-    //     // check if amount was deducted from sernder account or not
-    //     assert_eq!(app.wrap().query_all_balances(sender).unwrap(), coins(initialBalance -  amount_to_be_sent_to_contract, tokenDenom))
-    // }
-
-    // #[test]
-    // fn withdraw(){
-    //     // App simulates blockhain
-    //     // let mut app = App::default();
-
-    //     // Let's create a dummy account
-    //     let sender = Addr::unchecked("sender");
-    //     let sender2 = Addr::unchecked("sender"); // this guyshouuld not be able to withdraw funds from contract since he is not the owner
-    //     // More sophisticated way of simulating blockhain
-    //     // need to put fund some tokens to this sender
-    //     let initialBalance = 10000;
-    //     let tokenDenom =  "uHID";
-    //     let mut app = AppBuilder::new().build(|router, _api, storage| {
-    //         router  // from router
-    //         .bank // extract bank module
-    //         .init_balance(storage, &sender, coins(initialBalance, tokenDenom)) // send some initial tokens to the sender account
-    //         .unwrap();
-
-    //         router  // from router
-    //         .bank // extract bank module
-    //         .init_balance(storage, &sender2, coins(initialBalance, tokenDenom)) // send some initial tokens to the sender account
-    //         .unwrap()
-    //     });
-
-    //     // storing contract code on blockhain
-    //     let contract_id = app.store_code(counting_contract());
-
-    //     let contract_addr = app.instantiate_contract(
-    //         contract_id,
-    //         sender.clone(), // simulating a blockchain address
-    //         &InstantiateMsg{
-    //             counter: 0,
-    //             minimal_donation: Some(coin(10, tokenDenom))
-    //         },
-    //         &[],
-    //         "Funding contract",
-    //         None,
-    //     ).unwrap();
-
-    //     // lets send some fund; which will also increase the coounter = 3
-    //     let amount_to_be_sent_to_contract = 10;
-    //     app.execute_contract(
-    //         sender.clone(),
-    //         contract_addr.clone(),
-    //         &ExecMsg::Donate {}, &coins(amount_to_be_sent_to_contract, tokenDenom))
-    //         .unwrap();
-
-    //     // then test is counter has been incremented
-    //     let resp: ValueResp = app
-    //                 .wrap()
-    //                 .query_wasm_smart(
-    //                     contract_addr.clone(),
-    //                     &QueryMsg::Value {  })
-    //                     .unwrap();
-
-    //     assert_eq!(resp, ValueResp {value: 1});
-
-    //     // lets check the balane of the cotnract as well....
-    //     assert_eq!(app.wrap().query_all_balances(contract_addr.clone()).unwrap(), coins(amount_to_be_sent_to_contract, tokenDenom));
-    //     // check if amount was deducted from sernder account or not
-    //     assert_eq!(app.wrap().query_all_balances(sender.clone()).unwrap(), coins(initialBalance -  amount_to_be_sent_to_contract, tokenDenom));
-
-    //     // taking my funds back in my account
-    //     app.execute_contract(
-    //         sender.clone(),
-    //         contract_addr.clone(),
-    //         &ExecMsg::Withdraw {  },
-    //         &[])
-    //     .unwrap();
-
-    //     // lets check the balane of the cotnract as well....
-    //     assert_eq!(app.wrap().query_all_balances(contract_addr).unwrap(), &[]);
-    //     // check if amount was deducted from sernder account or not
-    //     assert_eq!(app.wrap().query_all_balances(sender).unwrap(), coins(initialBalance, tokenDenom));
-    // }
-
-    // #[test]
-    // fn unauthorize_withdraw(){
-    //     // App simulates blockhain
-    //     // let mut app = App::default();
-
-    //     // Let's create a dummy account
-    //     let sender = Addr::unchecked("sender");
-    //     let sender2 = Addr::unchecked("sender"); // this guyshouuld not be able to withdraw funds from contract since he is not the owner
-    //     // More sophisticated way of simulating blockhain
-    //     // need to put fund some tokens to this sender
-    //     let initialBalance = 10000;
-    //     let tokenDenom =  "uHID";
-    //     let mut app = AppBuilder::new().build(|router, _api, storage| {
-    //         router  // from router
-    //         .bank // extract bank module
-    //         .init_balance(storage, &sender, coins(initialBalance, tokenDenom)) // send some initial tokens to the sender account
-    //         .unwrap();
-
-    //         router  // from router
-    //         .bank // extract bank module
-    //         .init_balance(storage, &sender2, coins(initialBalance, tokenDenom)) // send some initial tokens to the sender account
-    //         .unwrap()
-    //     });
-
-    //     // storing contract code on blockhain
-    //     let contract_id = app.store_code(counting_contract());
-
-    //     let contract_addr = app.instantiate_contract(
-    //         contract_id,
-    //         sender.clone(), // simulating a blockchain address
-    //         &InstantiateMsg{
-    //             counter: 0,
-    //             minimal_donation: Some(coin(10, tokenDenom))
-    //         },
-    //         &[],
-    //         "Funding contract",
-    //         None,
-    //     ).unwrap();
-
-    //     // lets send some fund; which will also increase the coounter = 3
-    //     let amount_to_be_sent_to_contract = 10;
-    //     app.execute_contract(
-    //         sender.clone(),
-    //         contract_addr.clone(),
-    //         &ExecMsg::Donate {}, &coins(amount_to_be_sent_to_contract, tokenDenom))
-    //         .unwrap();
-
-    //     // then test is counter has been incremented
-    //     let resp: ValueResp = app
-    //                 .wrap()
-    //                 .query_wasm_smart(
-    //                     contract_addr.clone(),
-    //                     &QueryMsg::Value {  })
-    //                     .unwrap();
-
-    //     assert_eq!(resp, ValueResp {value: 1});
-
-    //     // lets check the balane of the cotnract as well....
-    //     assert_eq!(app.wrap().query_all_balances(contract_addr.clone()).unwrap(), coins(amount_to_be_sent_to_contract, tokenDenom));
-    //     // check if amount was deducted from sernder account or not
-    //     assert_eq!(app.wrap().query_all_balances(sender.clone()).unwrap(), coins(initialBalance -  amount_to_be_sent_to_contract, tokenDenom));
-
-    //     // this should fail becuase of unauthorized withdrawal from sender2
-    //     //     let err = app
-    //     //     .execute_contract(sender2, contract_addr.clone(), &ExecMsg::Withdraw {}, &[])
-    //     //     .unwrap_err();
-
-    //     // println!("err = {:?}", err);
-
-    //     //    assert_eq!(
-    //     //         ContractError::Unauthorized {
-    //     //             owner: sender.into()
-    //     //         },
-    //     //         err.downcast().unwrap()
-    //     //     );
+    //     match crate::zkpverify::verify_zkp() {
+    //         Ok(result) => {
+    //             assert_eq!(result, true);
+    //         }
+    //         Err(err) => {
+    //             println!("{:?}", err);
+    //         }
+    //     }
     // }
 }

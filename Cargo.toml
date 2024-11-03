@@ -1,5 +1,5 @@
 [workspace.package]
-version       = "0.1.0"
+version       = "0.1.1"
 edition       = "2021"
 license       = "Apache-2.0"
 repository    = "https://github.com/hypersign-protocol/hypersign-kyc-contracts"
@@ -7,9 +7,8 @@ homepage      = "https://github.com/hypersign-protocol/hypersign-kyc-contracts"
 documentation = "https://github.com/hypersign-protocol/hypersign-kyc-contracts"
 rust-version  = "1.65"
 
-
 [workspace]
-members = ["contracts/*"]
+members = ["packages/*","contracts/*"]
 
 [workspace.dependencies]
 cosmwasm-schema = "2.0.1"
@@ -21,11 +20,15 @@ thiserror       = "1.0.58"
 cw-multi-test   = "0.13.4"
 cw-utils        = "1.0.3"
 cw721-base      = "0.18.0"
+cw721-metadata-onchain = "0.15.0"
 serde_json      = "1.0.117"
 hex             = "0.4"
 multibase       = "0.8"
-
+cw2             = "^1.1"
+semver          = "1"
+cw721           = { version = "*", path = "./packages/cw721" }
+ssi-manager     = { version = "*", path = "./packages/ssi-manager"}
+hypersign-zk-verifier = { version = "*", path = "./packages/hypersign-zk-verifier"} 
 issuer-kyc      = { version = "*", path = "./contracts/issuer-kyc"} 
-ssi-manager     = { version = "*", path = "./contracts/ssi-manager"}
-# cw721-base      = { version = "*", path = "./contracts/cw721-base" }
+hypersign-kyc-token = {version = "*", path = "./contracts/hypersign-kyc-token"}
 

@@ -1,0 +1,23 @@
+[
+  {
+    "http://purl.org/dc/terms/created": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2024-09-13T06:35:07Z"
+      }
+    ],
+    "https://w3id.org/security#proofPurpose": [
+      {
+        "@id": "https://w3id.org/security#assertionMethod"
+      }
+    ],
+    "@type": [
+      "https://w3id.org/security#Ed25519Signature2020"
+    ],
+    "https://w3id.org/security#verificationMethod": [
+      {
+        "@id": "did:hid:testnet:36356b77-335f-40ff-a068-9f261ee1cb14#key-1"
+      }
+    ]
+  }
+]

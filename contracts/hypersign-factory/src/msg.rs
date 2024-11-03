@@ -18,10 +18,11 @@ pub struct Issuer {
 #[cw_serde]
 pub struct InstantiateMsg {
     #[serde(default)]
-    pub counter: u64,
-    pub hypersign_ssi_manager_contract_address: String,
+    pub counter: u64, // TODO redundant... remove it
     pub kyc_contract_code_id: u64,
-    pub hypersign_admin_did: String,
+    pub did_doc: String,
+    pub did_doc_proof: String,
+    pub signature: String,
 }
 
 #[cw_serde]
@@ -30,16 +31,28 @@ pub enum QueryMsg {
     #[returns(RegistredIssuerResp)]
     GetRegisteredIssuer { issuer_did: String },
 
-    #[returns(SSIManagerContractAddressResp)]
-    GetSSIManagerContractAddress {},
-
     #[returns(HypersignAdminDIDResp)]
     GetHypersignAdminDID {},
+
+    #[returns(IssuerKycContractCodeResp)]
+    GetIssuerKYCContractCodeID {},
 }
 
 #[cw_serde]
 pub enum ExecMsg {
-    OnboardIssuer { issuer_did: String },
+    OnboardIssuer {
+        did_doc: String,
+        did_doc_proof: String,
+        signature: String,
+        label: Option<String>,
+    },
+
+    UpdateIssuerContractCode {
+        did_doc: String,
+        did_doc_proof: String,
+        signature: String,
+        kyc_contract_code_id: u64,
+    },
 }
 
 #[cw_serde]
@@ -50,11 +63,6 @@ pub struct ValueResp {
 #[cw_serde]
 pub struct RegistredIssuerResp {
     pub issuer: Issuer,
-}
-
-#[cw_serde]
-pub struct SSIManagerContractAddressResp {
-    pub contract_address: String,
 }
 
 #[cw_serde]
@@ -73,14 +81,15 @@ pub struct HypersignAdminDIDResp {
     pub did: String,
 }
 
+#[cw_serde]
+pub struct IssuerKycContractCodeResp {
+    pub kyc_contract_code_id: u64,
+}
+
 // impl InitCallback for  NftInstantiateMsg {
 //     // https://github.com/srdtrk/secret-factory-contract/blob/e438495d79b4953c52044e668fa1b9362bfc2cfd/factory/src/state.rs#L10C44-L10C74
 //     const BLOCK_SIZE: usize = 256;
 // }
-
-pub type ExecuteNFTMsg = cw721_base::ExecuteMsg<Extension, Empty>;
-
-pub type Cw721InstantiateMsg = cw721_base::InstantiateMsg;
 
 pub type IssuerKycInstantiateMsg = issuer_kyc::msg::InstantiateMsg;
 

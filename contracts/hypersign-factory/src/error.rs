@@ -1,7 +1,7 @@
 use cosmwasm_std::StdError;
 use thiserror::Error;
 #[derive(Error, Debug, PartialEq)]
-pub enum ContractError {
+pub enum FactoryContractError {
     #[error("{0}")]
     Std(#[from] StdError),
 
@@ -16,4 +16,22 @@ pub enum ContractError {
 
     #[error("Issuer DID - {issuer_did} is already registered")]
     IssuerDIDAlreadyRegistred { issuer_did: String },
+
+    #[error("Could not verify the proof")]
+    SignatureMissmatch {},
+
+    #[error("Unexpected failure")]
+    UnexpectedFailure {},
+
+    #[error("Owner DID is required")]
+    OnwerDIDRequired {},
+
+    #[error("Semver parsing error: {0}")]
+    SemVer(String),
+}
+
+impl From<semver::Error> for FactoryContractError {
+    fn from(err: semver::Error) -> Self {
+        Self::SemVer(err.to_string())
+    }
 }

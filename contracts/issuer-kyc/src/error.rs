@@ -16,4 +16,27 @@ pub enum KycContractError {
 
     #[error("Code_Id is required")]
     CodeIdRequired {},
+
+    #[error("Could not verify the proof")]
+    SignatureMissmatch {},
+
+    #[error("Unexpected failure")]
+    UnexpectedFailure {},
+
+    #[error("Zk Proof Verification Failed")]
+    ZkProofVerificationFailure {},
+
+    // #[error("{0}")]
+    // ZkProofError(#[from] String),
+    #[error("Zk Proof Failed")]
+    ZkProofFailure { err: String },
+
+    #[error("Semver parsing error: {0}")]
+    SemVer(String),
+}
+
+impl From<semver::Error> for KycContractError {
+    fn from(err: semver::Error) -> Self {
+        Self::SemVer(err.to_string())
+    }
 }

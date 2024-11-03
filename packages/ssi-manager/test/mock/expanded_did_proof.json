@@ -1,0 +1,33 @@
+[
+  {
+    "https://w3id.org/security#challenge": [
+      {
+        "@value": "123123"
+      }
+    ],
+    "http://purl.org/dc/terms/created": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2024-09-01T17:44:11Z"
+      }
+    ],
+    "https://w3id.org/security#domain": [
+      {
+        "@value": "http:adsasd"
+      }
+    ],
+    "https://w3id.org/security#proofPurpose": [
+      {
+        "@id": "https://w3id.org/security#authenticationMethod"
+      }
+    ],
+    "@type": [
+      "https://w3id.org/security#Ed25519Signature2020"
+    ],
+    "https://w3id.org/security#verificationMethod": [
+      {
+        "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1"
+      }
+    ]
+  }
+]

@@ -1,0 +1,41 @@
+[package]
+name          = "cw721"
+description   = "Definition and types for the CosmWasm-721 NFT interface"
+authors       = [
+  "Ethan Frey <ethanfrey@users.noreply.github.com>",
+  "Orkun Külçe <orkun@deuslabs.fi>",
+]
+version       = { workspace = true }
+edition       = { workspace = true }
+license       = { workspace = true }
+repository    = { workspace = true }
+homepage      = { workspace = true }
+documentation = { workspace = true }
+
+[lib]
+doctest      = false # disable doc tests
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std    = { workspace = true }
+cw-ownable      = { git = "https://github.com/public-awesome/cw-plus-plus.git", rev = "28c1a09bfc6b4f1942fefe3eb0b50faf9d3b1523"} # TODO: switch to official https://github.com/larry0x/cw-plus-plus once merged
+cw-paginate-storage = { version = "^2.4", git = "https://github.com/DA0-DA0/dao-contracts.git" }
+cw-storage-plus = "^1.1"
+cw-utils        = { workspace = true }
+cw2             = "^1.1"
+cw721-016       = { git = "https://github.com/CosmWasm/cw-nfts", tag = "v0.16.0", package = "cw721" } # needed for backwards compatibility and legacy migration
+schemars        = { workspace = true }
+serde           = { workspace = true }
+thiserror       = "^1.0"
+url             = "^2.5"
+
+[dev-dependencies]
+anyhow = "^1.0"
+bech32 = "^0.11"
+cw-multi-test   = { workspace = true }
+cw721-base-015  = { git = "https://github.com/CosmWasm/cw-nfts", tag = "v0.15.0", package = "cw721-base" } # needed for testing legacy migration
+cw721-base-016  = { git = "https://github.com/CosmWasm/cw-nfts", tag = "v0.16.0", package = "cw721-base" } # needed for testing legacy migration
+cw721-metadata-onchain-016  = { git = "https://github.com/CosmWasm/cw-nfts", tag = "v0.16.0", package = "cw721-metadata-onchain" } # needed for testing legacy migration
+cw721-base-017  = { git = "https://github.com/CosmWasm/cw-nfts", tag = "v0.17.0", package = "cw721-base" } # needed for testing legacy migration
+cw721-base-018  = { git = "https://github.com/CosmWasm/cw-nfts", tag = "v0.18.0", package = "cw721-base" } # needed for testing legacy migration
+sha2 = "^0.10"

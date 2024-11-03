@@ -1,0 +1,56 @@
+[
+    {
+      "https://www.w3.org/ns/activitystreams#alsoKnownAs": [
+        {
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+        }
+      ],
+      "https://w3id.org/security#assertionMethod": [
+        {
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1"
+        }
+      ],
+      "https://w3id.org/security#authenticationMethod": [
+        {
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1"
+        }
+      ],
+      "https://w3id.org/security#capabilityDelegationMethod": [
+        {
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1"
+        }
+      ],
+      "https://w3id.org/security#capabilityInvocationMethod": [
+        {
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1"
+        }
+      ],
+      "https://w3id.org/security#controller": [
+        {
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+        }
+      ],
+      "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp",
+      "https://w3id.org/security#keyAgreementMethod": [],
+      "https://www.w3.org/ns/did#service": [],
+      "https://w3id.org/security#verificationMethod": [
+        {
+          "https://w3id.org/security#controller": [
+            {
+              "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+            }
+          ],
+          "@id": "did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1",
+          "https://w3id.org/security#publicKeyMultibase": [
+            {
+              "@type": "https://w3id.org/security#multibase",
+              "@value": "z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp"
+            }
+          ],
+          "@type": [
+            "https://w3id.org/security#Ed25519VerificationKey2020"
+          ]
+        }
+      ]
+    }
+  ]
