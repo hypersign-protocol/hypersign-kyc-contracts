@@ -89,7 +89,7 @@ Hypersign Admin Authorization
 General
 -------
 - :white_check_mark: Onchain data models (what exact data will go in the metadata of NFT)
-- [ ] Backward compatibility with the old version (when upgrading the contracts states should not change)
+- :white_check_mark: Backward compatibility with the old version (when upgrading the contracts states should not change)
 - [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
 - :white_check_mark: Integrate facefi API backend
 - [ ] The widget URL should be signed and then sent given to the user for security purposess

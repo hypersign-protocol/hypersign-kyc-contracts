@@ -14,13 +14,13 @@ pub mod entry {
     use super::*;
 
     use crate::state::{Config, CONFIG};
-    #[cfg(not(feature = "library"))]
     use cosmwasm_std::entry_point;
     use cosmwasm_std::{Addr, Binary, Deps, DepsMut, Env, MessageInfo, Response};
     use cw721::msg::Cw721MigrateMsg;
     use cw721::msg::{Cw721ExecuteMsg, Cw721InstantiateMsg};
     use error::ContractError;
     use msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+
     #[cfg_attr(not(feature = "library"), entry_point)]
     pub fn instantiate(
         mut deps: DepsMut,

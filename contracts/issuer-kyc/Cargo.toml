@@ -32,6 +32,8 @@ hex             = { workspace = true }
 multibase       = { workspace = true }
 ssi-manager     = { workspace = true, features = ["library"] }
 strum_macros = "0.26"
+cw2             = {workspace = true}
+semver          = {workspace = true}
 cw721           = { workspace = true}
 
 [dev-dependencies]
