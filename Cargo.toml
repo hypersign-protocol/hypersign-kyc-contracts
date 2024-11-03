@@ -9,7 +9,7 @@ rust-version  = "1.65"
 
 
 [workspace]
-members = ["contracts/*"]
+members = ["packages/*","contracts/*"]
 
 [workspace.dependencies]
 cosmwasm-schema = "2.0.1"
@@ -26,7 +26,7 @@ serde_json      = "1.0.117"
 hex             = "0.4"
 multibase       = "0.8"
 cw2             = "^1.1"
-cw721           = { version = "*", path = "./contracts/cw721" }
+cw721           = { version = "*", path = "./packages/cw721" }
 issuer-kyc      = { version = "*", path = "./contracts/issuer-kyc"} 
 ssi-manager     = { version = "*", path = "./contracts/ssi-manager"}
 hypersign-kyc-token = {version = "*", path = "./contracts/hypersign-kyc-token"}
