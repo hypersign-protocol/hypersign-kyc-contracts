@@ -741,7 +741,7 @@ dependencies = [
 
 [[package]]
 name = "cw721"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "bech32 0.11.0",
@@ -1405,16 +1405,18 @@ dependencies = [
 
 [[package]]
 name = "hypersign-factory"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cosmwasm-schema 2.0.1",
  "cosmwasm-std",
  "cw-multi-test",
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
+ "cw2 1.1.2",
  "cw721-base 0.18.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "issuer-kyc",
  "schemars",
+ "semver",
  "serde",
  "serde_json",
  "ssi-manager",
@@ -1423,7 +1425,7 @@ dependencies = [
 
 [[package]]
 name = "hypersign-kyc-token"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cosmwasm-schema 2.0.1",
  "cosmwasm-std",
@@ -1431,7 +1433,7 @@ dependencies = [
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
  "cw2 1.1.2",
- "cw721 0.1.0",
+ "cw721 0.1.1",
  "cw721-metadata-onchain 0.15.0",
  "schemars",
  "serde",
@@ -1439,7 +1441,7 @@ dependencies = [
 
 [[package]]
 name = "hypersign-zk-verifier"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bellman_ce",
  "cosmwasm-schema 2.0.1",
@@ -1447,7 +1449,7 @@ dependencies = [
  "cw-multi-test",
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
- "cw721 0.1.0",
+ "cw721 0.1.1",
  "ff_ce",
  "hex",
  "hypersign-kyc-token",
@@ -1510,14 +1512,14 @@ dependencies = [
 
 [[package]]
 name = "issuer-kyc"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cosmwasm-schema 2.0.1",
  "cosmwasm-std",
  "cw-multi-test",
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
- "cw721 0.1.0",
+ "cw721 0.1.1",
  "hex",
  "hypersign-kyc-token",
  "hypersign-zk-verifier",
@@ -2085,7 +2087,7 @@ dependencies = [
 
 [[package]]
 name = "ssi-manager"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "combination",
  "cosmwasm-schema 2.0.1",
