@@ -1,15 +1,13 @@
 #[cfg(any(test, feature = "tests"))]
 pub mod test {
-    use super::*;
-    use crate::entry::{self, *};
+    use crate::entry::{self};
     use crate::msg::{
         ExecMsg, HypersignAdminDIDResp, InstantiateMsg, Issuer, IssuerKycContractCodeResp,
-        QueryMsg, RegistredIssuerResp, ValueResp, ValueRespProxy,
+        QueryMsg, RegistredIssuerResp,
     };
-    use cosmwasm_std::{coin, coins, Addr, Empty};
-    use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
-
-    use serde_json::{from_slice, from_str, Value};
+    use cosmwasm_std::{Addr, Empty};
+    use cw_multi_test::{App, Contract, ContractWrapper, Executor};
+    use serde_json::{from_str, Value};
     use std::fs;
 
     fn hypersign_kyc_factory_contract() -> Box<dyn Contract<Empty>> {
@@ -143,6 +141,8 @@ pub mod test {
         // ----------------------------------------------------------------
 
         // Improve instantiation({SSI_manager_contract, hs_admin_did, hs_admin_did_doc, hs_admin_did_doc_proof}) of Hypersign_KYC_factory_Contract to whitelist SSI_manager_contract address and whitelist hypersign_did
+        let admin = Addr::unchecked("admin");
+        let label = "Hypersign KYC factory contract".to_string();
         let contract_addr = app
             .instantiate_contract(
                 hypersign_kyc_factory_contract_code_id,
@@ -155,8 +155,8 @@ pub mod test {
                     signature: signature.to_string(),
                 },
                 &[],
-                "Hypersign kyc factory contract",
-                None,
+                label.clone(),
+                Some(admin.to_string()), // the admin have ability to migrate the contract...
             )
             .unwrap();
 
@@ -296,6 +296,71 @@ pub mod test {
         //     resp2,
         //     SSIManagerContractAddressResp {
         //         contract_address: ssi_manager_contract_addr.to_string()
+        //     }
+        // );
+
+        ///// Testing Contract Migration...
+
+        // let hypersign_kyc_factory_contract_code_id2 =
+        //     app.store_code(hypersign_kyc_factory_contract());
+
+        // let response = app
+        //     .migrate_contract(
+        //         admin.clone(),
+        //         contract_addr.clone(),
+        //         &Empty {},
+        //         hypersign_kyc_factory_contract_code_id2,
+        //     )
+        //     .unwrap();
+
+        // println!("response.events {:?}", response.events);
+        // println!(
+        //     "hypersign_kyc_factory_contract_code_id2 = {:?}",
+        //     hypersign_kyc_factory_contract_code_id2
+        // );
+
+        // let data = app.contract_data(&contract_addr).unwrap();
+        // assert_eq!(data.admin, Some(admin.clone()));
+        // assert_eq!(data.label, label.clone());
+        // assert_eq!(data.code_id, 4);
+
+        // // lets check the state, if state is same..
+        // let resp_code_id3: IssuerKycContractCodeResp = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         contract_addr.clone(),
+        //         &QueryMsg::GetIssuerKYCContractCodeID {},
+        //     )
+        //     .unwrap();
+
+        // assert_eq!(
+        //     resp_code_id3,
+        //     IssuerKycContractCodeResp {
+        //         kyc_contract_code_id: kyc_contract_code_id2.clone()
+        //     }
+        // );
+        ////////////////////////////////////////////////////////////////
+
+        // let resp_: RegistredIssuerResp = app
+        //     .wrap()
+        //     .query_wasm_smart(
+        //         contract_addr.clone(),
+        //         &QueryMsg::GetRegisteredIssuer {
+        //             issuer_did: issuer_did.into(),
+        //         },
+        //     )
+        //     .unwrap();
+
+        // println!("resp {:?}", resp_);
+        // assert_eq!(
+        //     resp_,
+        //     RegistredIssuerResp {
+        //         issuer: Issuer {
+        //             id: "hs-issuer-0".into(),
+        //             did: issuer_did.clone().into(),
+        //             kyc_contract_address: Some("contract1".to_string()),
+        //             kyc_contract_code_id: kyc_contract_code_id2
+        //         }
         //     }
         // );
     }

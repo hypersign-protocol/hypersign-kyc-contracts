@@ -25,4 +25,13 @@ pub enum FactoryContractError {
 
     #[error("Owner DID is required")]
     OnwerDIDRequired {},
+
+    #[error("Semver parsing error: {0}")]
+    SemVer(String),
+}
+
+impl From<semver::Error> for FactoryContractError {
+    fn from(err: semver::Error) -> Self {
+        Self::SemVer(err.to_string())
+    }
 }

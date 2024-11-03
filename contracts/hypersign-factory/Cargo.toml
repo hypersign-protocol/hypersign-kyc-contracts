@@ -29,6 +29,8 @@ cw-multi-test   = { workspace = true, optional = true  }
 cw-utils        = { workspace = true }
 issuer-kyc      = { workspace = true, features = ["library"] }
 ssi-manager     = { workspace = true, features = ["library"] }
+cw2 = {workspace = true}
+semver = {workspace = true}
 
 
 
