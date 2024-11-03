@@ -215,13 +215,13 @@ pub mod test {
         .unwrap();
 
         // // then test is counter has been incremented
-        let resp: SBTcontractAddressResp = app
+        let sbt_contract_address_resp: SBTcontractAddressResp = app
             .wrap()
             .query_wasm_smart(contract_addr.clone(), &QueryMsg::SBTContractAddress {})
             .unwrap();
 
         assert_eq!(
-            resp,
+            sbt_contract_address_resp,
             SBTcontractAddressResp {
                 sbt_contract_address: "contract1".to_string()
             }
@@ -289,7 +289,7 @@ pub mod test {
             .wrap()
             .query_wasm_smart(
                 "contract1".clone(),
-                &cw721_metadata_onchain::QueryMsg::NumTokens {},
+                &hypersign_kyc_token::msg::QueryMsg::NumTokens {},
             )
             .unwrap();
 
@@ -299,7 +299,7 @@ pub mod test {
             .wrap()
             .query_wasm_smart(
                 "contract1".clone(),
-                &cw721_metadata_onchain::QueryMsg::OwnerOf {
+                &hypersign_kyc_token::msg::QueryMsg::OwnerOf {
                     token_id: "1".to_string(),
                     include_expired: Some(true),
                 },
@@ -314,19 +314,21 @@ pub mod test {
             }
         );
 
-        // let resp2: cw721_metadata_onchain::Metadata = app
-        //     .wrap()
-        //     .query_wasm_smart(
-        //         "contract1".clone(),
-        //         &cw721_metadata_onchain::QueryMsg::NftInfo {
-        //             token_id: "1".to_string(),
-        //         },
-        //     )
-        //     .unwrap();
-
-        // assert_eq!(resp2.description, Some("description1".into()));
-
-        // TODO: assert taht token was transfered to the user
+        // lets try to transfer to user2 and see if it fails...it should fail since transfer is blocked
+        let user2 = Addr::unchecked("user2");
+        let sbtcontractaddr =
+            Addr::unchecked(sbt_contract_address_resp.sbt_contract_address.clone());
+        let transfer_resp = app
+            .execute_contract(
+                sender.clone(),
+                sbtcontractaddr,
+                &hypersign_kyc_token::msg::ExecuteMsg::TransferNft {
+                    recipient: user2.to_string(),
+                    token_id: "1".to_string(),
+                },
+                &[],
+            )
+            .unwrap();
     }
 
     // #[test]

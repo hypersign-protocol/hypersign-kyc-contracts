@@ -95,16 +95,16 @@ osmosisd q tx 4B6C1C6B41DC9B1808E7013DBCF1E7668AC28EB4D17B38C584D7CDCB5342AA0C -
 
 ```bash
 osmosisd tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas-prices 0.025uosmo --gas auto --gas-adjustment 1.3 --node https://rpc.testnet.osmosis.zone:443 --yes | jq -rcs '.[0].txhash'
-osmosisd q tx D4E57377FE55CF4CDBA10BBC55118E4FC03951BD41D00D55856C4D53D23277AE | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#11345
+osmosisd q tx 4FF8A0FC3F8C6C1A73AC13345FADEA42DA447CC730D87701D8A36272A370013E | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#11346
 ```
 
 ### Uploads factory contract code
 
 ```bash
 osmosisd tx wasm store ./artifacts/hypersign_factory.wasm --from validator --gas-prices 0.025uosmo --gas auto --gas-adjustment 1.3 --node https://rpc.testnet.osmosis.zone:443 --yes | jq -rcs '.[0].txhash'
-osmosisd q tx E37DB557E63ED4B0B197A5143C5912ADF82B0D45006370D3EECB774CEAE8005A | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
-#11343
+osmosisd q tx 12D2ED6FC438EDF106A8B39BB549F9FF4CF4D939B47A7880D1F775EED4E19B31 | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
+#11347
 ```
 
 
@@ -113,8 +113,8 @@ osmosisd q tx E37DB557E63ED4B0B197A5143C5912ADF82B0D45006370D3EECB774CEAE8005A |
 ```bash
 ## this artifact is present in /Users/hermit/code/hm/hs/kyc/cw-nfts/artifacts folder
 osmosisd tx wasm store ./artifacts/hypersign_kyc_token.wasm --from validator --gas-prices 0.025uosmo --gas auto --gas-adjustment 1.3 --node https://rpc.testnet.osmosis.zone:443 --yes | jq -rcs '.[0].txhash'
-osmosisd q tx 464556AAC46E9AF0D18183D8875322EA445CF2EC1EE7B8FAE27078F62FF6084F | jq -rcs '.[0].logs[0].events[1].attributes[1].value' 
-#11344
+osmosisd q tx 10D7C61CCFA9DF481B085E232CA5243ED7BFC2F6720ADD8023B889CB88522D98 | jq -rcs '.[0].logs[0].events[1].attributes[1].value' 
+#11348
 ```
 
 
@@ -147,8 +147,10 @@ osmosisd query wasm contract-state smart osmo1mm5gfhtpu7xc27dawf5hdykazrdf36nurh
 ### Admin instantiate the factory contract
 
 ```bash
-osmosisd tx wasm instantiate 11343 '{"counter": 0, "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq", "kyc_contract_code_id": 11345 }' --label "Hypersign KYC Factory" --no-admin --from validator --gas-prices 0.1uosmo --gas auto --gas-adjustment 1.3 --node https://rpc.testnet.osmosis.zone:443 --yes | jq -rcs '.[0].txhash'
-## https://celatone.osmosis.zone/osmo-test-5/contracts/osmo1mw0w823wrpj4fh7e8jg84gsxd2dvktxwkvghe9d4qmsaq98289jq3hvrvp
+osmosisd tx wasm instantiate 11347 '{"counter": 0, "did_doc": "[{\"https://www.w3.org/ns/activitystreams#alsoKnownAs\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"https://w3id.org/security#assertionMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#authenticationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityDelegationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#capabilityInvocationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}],\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\",\"https://w3id.org/security#keyAgreementMethod\":[],\"https://www.w3.org/ns/did#service\":[],\"https://w3id.org/security#verificationMethod\":[{\"https://w3id.org/security#controller\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\",\"https://w3id.org/security#publicKeyMultibase\":[{\"@type\":\"https://w3id.org/security#multibase\",\"@value\":\"z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp\"}],\"@type\":[\"https://w3id.org/security#Ed25519VerificationKey2020\"]}]}]", "did_doc_proof": "[{\"https://w3id.org/security#challenge\":[{\"@value\":\"123123\"}],\"http://purl.org/dc/terms/created\":[{\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\",\"@value\":\"2024-09-01T17:44:11Z\"}],\"https://w3id.org/security#domain\":[{\"@value\":\"http:adsasd\"}],\"https://w3id.org/security#proofPurpose\":[{\"@id\":\"https://w3id.org/security#authenticationMethod\"}],\"@type\":[\"https://w3id.org/security#Ed25519Signature2020\"],\"https://w3id.org/security#verificationMethod\":[{\"@id\":\"did:hid:testnet:z6Mkk8qQLgMmLKDq6ER9BYGycFEdSaPqy9JPWKUaPGWzJeNp#key-1\"}]}]", "signature": "z3aY71DPQAqiiV5Q4UYZ6EYeWYa3MjeEHeEZMxcNfYxTqyn6r14yy1K3eYpuNuPQDX2mjh2BJ8VaPj5UKKMcAjtSq", "kyc_contract_code_id": 11346 }' --label "Hypersign KYC Factory" --no-admin --from validator --gas-prices 0.1uosmo --gas auto --gas-adjustment 1.3 --node https://rpc.testnet.osmosis.zone:443 --yes | jq -rcs '.[0].txhash'
+
+https://celatone.osmosis.zone/osmo-test-5/8C33B672FCAEDDFC36BB5C2CCA81F30AAA0666D98F1A6634E3AE8EDF48C58676
+## https://celatone.osmosis.zone/osmo-test-5/contracts/osmo1l5ad26lq4636cyqah4rw8ga3aywungkgerm75cgfj9chu5mexncs2atwnr
 ## https://celatone.osmosis.zone/osmo-test-5/contracts/osmo1try0nrtnevevyx0t8vn5ukrqynhmjfzq64rrz6ytcdhfwjtjjygqftgl6t
 #osmo1mw0w823wrpj4fh7e8jg84gsxd2dvktxwkvghe9d4qmsaq98289jq3hvrvp
 ```
