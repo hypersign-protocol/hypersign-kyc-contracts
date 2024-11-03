@@ -1,3 +1,7 @@
+/**
+ * TODO: remove these states later we are using ssi-manager as package and not contract any more.
+ *
+ * */
 use cosmwasm_std::Addr;
 // use didkit::ssi::did::Document;
 use cw_storage_plus::{Item, Map};

@@ -31,12 +31,12 @@ pub mod test {
 
     fn get_did_key_materials() -> (Value, Value, String) {
         // Read the expanded did
-        let expanded_did = "../ssi-manager/test/mock/expanded_did_doc.json";
+        let expanded_did = "../../packages/ssi-manager/test/mock/expanded_did_doc.json";
         let expanded_did_str: Value =
             from_str(&fs::read_to_string(expanded_did).unwrap()).expect("Failed");
 
         // Read the expanded did proof
-        let expanded_did_proof = "../ssi-manager/test/mock/expanded_did_proof.json";
+        let expanded_did_proof = "../../packages/ssi-manager/test/mock/expanded_did_proof.json";
         let expanded_did_proof_str: Value =
             from_str(&fs::read_to_string(expanded_did_proof).unwrap()).expect("Failed");
 
