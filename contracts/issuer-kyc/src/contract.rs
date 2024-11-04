@@ -1,5 +1,5 @@
 use crate::error::KycContractError;
-use crate::state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, OWNERDID, SBT_CODE_ID};
+use crate::state::{COUNTER, INSTANTIATE_TOKEN_REPLY_ID, NULLIFIER, OWNERDID, SBT_CODE_ID};
 use crate::{msg::InstantiateMsg, state::*};
 use cosmwasm_std::{
     to_binary, to_json_binary, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, ReplyOn, Response,
@@ -22,6 +22,15 @@ pub fn instantiate(
     /// TODO: take DID signature as parameter...
     /// TODO: [optionally] We can reject issuer if their DID is not registerd.
     ///
+    let cannonized_did_proof =
+        ssi_manager::lib_json_ld::get_cannonized_str(msg.did_doc_proof.to_string());
+    let cannonized_did_proof_hash = ssi_manager::lib_json_ld::hash_string(&cannonized_did_proof);
+    let nullifier = NULLIFIER
+        .load(deps.storage, &cannonized_did_proof_hash)
+        .unwrap_or(0);
+    if nullifier == 1 {
+        return Err(KycContractError::ChallengeInvalid {});
+    }
 
     /// TODO: verify DID signature
     match ssi_manager::ed25519_signature_2020::verify(
@@ -72,6 +81,9 @@ pub fn instantiate(
                 // let resp = Response::new().add_submessages(sub_msg);
                 // Ok(resp);
                 // resp = resp.add_attribute("owner_did", owner_did.to_string());
+
+                //// Nullifying the signature
+                NULLIFIER.save(deps.storage, &cannonized_did_proof_hash, &1);
 
                 Ok(Response::new())
             } else {
@@ -190,6 +202,7 @@ pub mod exec {
         /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
         /// TODO: For Age criteria check if we get true in the public signal
         /// Verify the proof
+        /// public_signales last 3: nullifier,issuer, holder, type
         match hypersign_zk_verifier::verify_zkp(
             hypersign_proof.zk_proof.proof,
             hypersign_proof.zk_proof.public_signales,

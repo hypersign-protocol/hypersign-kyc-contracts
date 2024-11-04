@@ -28,6 +28,9 @@ pub enum FactoryContractError {
 
     #[error("Semver parsing error: {0}")]
     SemVer(String),
+
+    #[error("This signature was already verified")]
+    ChallengeInvalid {},
 }
 
 impl From<semver::Error> for FactoryContractError {

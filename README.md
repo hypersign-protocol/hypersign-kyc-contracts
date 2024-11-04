@@ -2,8 +2,6 @@
 
 ![img](./docs/hypersign-kyc-cosm-wasm-contracts-Page-3.drawio.png)
 
-
-
 ## How to install 
 
 ```
@@ -38,7 +36,6 @@ cargo install cosmwasm-check
     - User calls `mintNFT()` of the `Issuer_KYC_Contract` (user pays the gas - fee for the entire transaction)
         - which then will call `mint()` of `Issuer_NFT_Contract` (`Issuer_KYC_Contract` becomes the owner of NFT)
         - Which then will call `transfer()` of `Issuer_NFT_Contract` (transfering NFT from `Issuer_KYC_Contract` to user)
-
 
 # TODOs
 
