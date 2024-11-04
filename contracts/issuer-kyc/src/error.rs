@@ -23,12 +23,12 @@ pub enum KycContractError {
     #[error("Unexpected failure")]
     UnexpectedFailure {},
 
-    #[error("Zk Proof Verification Failed")]
+    #[error("ZK Proof Verification Failed")]
     ZkProofVerificationFailure {},
 
     // #[error("{0}")]
     // ZkProofError(#[from] String),
-    #[error("Zk Proof Failed")]
+    #[error("ZK proof type invalid")]
     ZkProofFailure { err: String },
 
     #[error("Semver parsing error: {0}")]
@@ -36,6 +36,12 @@ pub enum KycContractError {
 
     #[error("This signature was already verified")]
     ChallengeInvalid {},
+
+    #[error("This zk proof was already verified")]
+    ZkProofInvalid {},
+
+    #[error("Age zk proof is invalid")]
+    ZkAgeProofInvalid {},
 }
 
 impl From<semver::Error> for KycContractError {

@@ -196,13 +196,24 @@ pub mod exec {
     ) -> Result<Response, KycContractError> {
         let mut resp = Response::new();
 
-        let prooftype = hypersign_proof.zk_proof.proof_type;
+        /// TODO: verify nullifier to avoid replay attack. (zeroth index is nullifier)
+        let nullifier = hypersign_proof.zk_proof.public_signales[0].clone();
+        let nullifier_result = NULLIFIER_ZK.load(deps.storage, &nullifier).unwrap_or(0);
+        if nullifier_result == 1 {
+            return Err(KycContractError::ZkProofInvalid {});
+        }
 
-        /// TODO: verify nullifier to avoid replay attack.
-        /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
         /// TODO: For Age criteria check if we get true in the public signal
-        /// Verify the proof
-        /// public_signales last 3: nullifier,issuer, holder, type
+        let prooftype: HypersignKYCProofTypes = hypersign_proof.zk_proof.proof_type;
+        if prooftype == HypersignKYCProofTypes::zkProofOfAge {
+            if hypersign_proof.zk_proof.public_signales[1] != "1".to_string() {
+                return Err(KycContractError::ZkAgeProofInvalid {});
+            }
+        }
+
+        /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
+
+        /// TODO: Verify the proof
         match hypersign_zk_verifier::verify_zkp(
             hypersign_proof.zk_proof.proof,
             hypersign_proof.zk_proof.public_signales,
@@ -290,6 +301,8 @@ pub mod exec {
 
         /// TODO this should up updated in the call back - like may be in the reply.
         COUNTER.save(deps.storage, &value)?;
+
+        NULLIFIER_ZK.save(deps.storage, &nullifier, &1);
 
         let transfer_nft_msg = WasmMsg::Execute {
             contract_addr: sbt_contract_address.clone(),
