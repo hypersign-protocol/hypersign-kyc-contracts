@@ -9,3 +9,4 @@ pub const COUNTER: Item<u64> = Item::new("counter");
 pub const COUNTER_PROXY_ADDR: Item<String> = Item::new("counter_proxy_contract_address");
 pub const HYPERSIGN_ADMIN_DID: Item<String> = Item::new("hypersign_admin_did");
 pub const ISSUER_KYC_CONTRACT_CODE_ID: Item<u64> = Item::new("issuer_kyc_contract_code_id");
+pub const NULLIFIER: Map<&str, u8> = Map::new("ssi-sig-nullifiers");

@@ -9,3 +9,5 @@ pub const SBT_CODE_ID: Item<u64> = Item::new("sbt_code_id");
 pub const INSTANTIATE_TOKEN_REPLY_ID: u64 = 1;
 pub const SBT_NAME: &str = "Hypersign KYC Token";
 pub const SBT_SYMBOL: &str = "HSKYC";
+pub const NULLIFIER: Map<&str, u8> = Map::new("ssi-sig-nullifiers");
+pub const NULLIFIER_ZK: Map<&str, u8> = Map::new("zk-proof-nullifiers");

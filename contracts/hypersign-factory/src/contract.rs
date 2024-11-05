@@ -1,19 +1,45 @@
-use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult, WasmMsg};
+use cosmwasm_std::{DepsMut, MessageInfo, Response, StdResult, Storage, WasmMsg};
 use cw721_base::ContractError;
 
 use crate::error::FactoryContractError;
+use crate::state::NULLIFIER;
 use crate::{helper, msg::InstantiateMsg, state::*};
 use serde_json::{from_slice, from_str, Value};
+
+// pub fn check_for_nullifier(
+//     cannonized_did_proof: &str,
+//     storage: &dyn Storage,
+// ) -> Result<str, FactoryContractError> {
+//     let cannonized_did_proof =
+//         ssi_manager::lib_json_ld::get_cannonized_str(cannonized_did_proof.to_string());
+//     let cannonized_did_proof_hash = ssi_manager::lib_json_ld::hash_string(&cannonized_did_proof);
+
+//     let nullifier = NULLIFIER
+//         .load(storage, &cannonized_did_proof_hash)
+//         .unwrap_or(0);
+//     if nullifier == 1 {
+//         return Err(FactoryContractError::ChallengeInvalid {});
+//     }
+//     Ok(cannonized_did_proof_hash)
+// }
+
 pub fn instantiate(
     deps: DepsMut,
     msg: InstantiateMsg,
     info: MessageInfo,
 ) -> Result<Response, FactoryContractError> {
+    // TODO what is its use?
     COUNTER.save(deps.storage, &msg.counter)?;
-
-    // HYPERSIGN_SSI_MANAGER_CONTRACT_ADDRESS
-    //     .save(deps.storage, &msg.hypersign_ssi_manager_contract_address)?;
-
+    /// check if signature is not being replay attacked
+    let cannonized_did_proof =
+        ssi_manager::lib_json_ld::get_cannonized_str(msg.did_doc_proof.to_string());
+    let cannonized_did_proof_hash = ssi_manager::lib_json_ld::hash_string(&cannonized_did_proof);
+    let nullifier = NULLIFIER
+        .load(deps.storage, &cannonized_did_proof_hash)
+        .unwrap_or(0);
+    if nullifier == 1 {
+        return Err(FactoryContractError::ChallengeInvalid {});
+    }
     // checking id DID is registered or not is not required actually, we can simply verify if did proofs are provided
     // or not - you ARE the owner of this did, thats it!
     match ssi_manager::ed25519_signature_2020::verify(
@@ -37,7 +63,7 @@ pub fn instantiate(
                 HYPERSIGN_ADMIN_DID.save(deps.storage, &hypersign_admin_did)?;
 
                 ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &msg.kyc_contract_code_id)?;
-
+                NULLIFIER.save(deps.storage, &cannonized_did_proof_hash, &1);
                 Ok(Response::new())
             } else {
                 // If invalid, return a response with a failure attribute
@@ -55,14 +81,13 @@ pub fn instantiate(
 pub mod query {
     use crate::error::FactoryContractError;
     use crate::msg::IssuerKycContractCodeResp;
+    use crate::state::ISSUER_KYC_CONTRACT_CODE_ID;
     use crate::{
         msg::{HypersignAdminDIDResp, RegistredIssuerResp, ValueResp, ValueRespProxy},
         state::{HYPERSIGN_ADMIN_DID, ISSUERS},
     };
     use cosmwasm_std::{Deps, Response, StdError, StdResult};
     use serde::de::value::Error;
-
-    use super::ISSUER_KYC_CONTRACT_CODE_ID;
 
     pub fn get_registred_issuer(deps: Deps, issuer_did: String) -> StdResult<RegistredIssuerResp> {
         Ok(RegistredIssuerResp {
@@ -84,7 +109,9 @@ pub mod query {
 }
 
 pub mod exec {
-    use super::{COUNTER, HYPERSIGN_ADMIN_DID, ISSUERS, ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID};
+    use crate::state::{
+        COUNTER, HYPERSIGN_ADMIN_DID, ISSUERS, ISSUERS_TEMP, ISSUER_KYC_CONTRACT_CODE_ID, NULLIFIER,
+    };
     use crate::{
         error::FactoryContractError,
         helper,
@@ -107,15 +134,16 @@ pub mod exec {
                                // hypersign_authorization: String // proof json(string)
                                // Take Issuer DID_doc
     ) -> Result<Response, FactoryContractError> {
-        // [Optional] TODO check if this issuer did is registed in did registry, if not throw error
-        // let resolve_did =
-        //     helper::resolve_a_did(&deps.querier, &issuer_did, &ssi_manager_contract_address)?;
-
-        // TODO: throw readable error if the did is not already registered
-        // if resolve_did_query_resp {
-        // } else {
-        //     return Err(FactoryContractError::InvalidIssuerDID { issuer_did });
-        // }
+        let cannonized_did_proof =
+            ssi_manager::lib_json_ld::get_cannonized_str(did_doc_proof_str.to_string());
+        let cannonized_did_proof_hash =
+            ssi_manager::lib_json_ld::hash_string(&cannonized_did_proof);
+        let nullifier = NULLIFIER
+            .load(deps.storage, &cannonized_did_proof_hash)
+            .unwrap_or(0);
+        if nullifier == 1 {
+            return Err(FactoryContractError::ChallengeInvalid {});
+        }
 
         // TODO verify authorization letter from the admin
         /// TODO extract hypersign admin did, check if the hypersign admin did is whitelisted (HYPERSIGN_ADMIN_DID) already in this contract
@@ -162,6 +190,7 @@ pub mod exec {
         ISSUERS_TEMP.save(deps.storage, counter, &issuer);
         counter += 1;
         COUNTER.save(deps.storage, &counter);
+        NULLIFIER.save(deps.storage, &cannonized_did_proof_hash, &1);
         let mut resp = Response::new().add_submessages(sub_msg);
 
         // .add_event(Event::new("admin_added").add_attribute("issuer_did", issuer_did.clone()))
@@ -182,6 +211,17 @@ pub mod exec {
         signature: String,
         kyc_contract_code_id: u64,
     ) -> Result<Response, FactoryContractError> {
+        let cannonized_did_proof =
+            ssi_manager::lib_json_ld::get_cannonized_str(did_doc_proof_str.to_string());
+        let cannonized_did_proof_hash =
+            ssi_manager::lib_json_ld::hash_string(&cannonized_did_proof);
+        let nullifier = NULLIFIER
+            .load(deps.storage, &cannonized_did_proof_hash)
+            .unwrap_or(0);
+        if nullifier == 1 {
+            return Err(FactoryContractError::ChallengeInvalid {});
+        }
+
         match ssi_manager::ed25519_signature_2020::verify(
             did_doc_str.to_owned(),
             did_doc_proof_str.to_owned(),
@@ -198,8 +238,8 @@ pub mod exec {
                             owner: hypersign_admin_did,
                         });
                     }
-
                     ISSUER_KYC_CONTRACT_CODE_ID.save(deps.storage, &kyc_contract_code_id)?;
+                    NULLIFIER.save(deps.storage, &cannonized_did_proof_hash, &1);
                     Ok(Response::new())
                 } else {
                     return Err(FactoryContractError::SignatureMissmatch {});
