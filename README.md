@@ -87,24 +87,25 @@ General
 -------
 - :white_check_mark: Onchain data models (what exact data will go in the metadata of NFT)
 - :white_check_mark: Backward compatibility with the old version (when upgrading the contracts states should not change)
-- [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
 - :white_check_mark: Integrate facefi API backend
-- [ ] The widget URL should be signed and then sent given to the user for security purposess
-- [ ] Refator code; use wrappers
-- [ ] Implement multitest cases 
 - :white_check_mark: Contract optimization; see how we can improve gas fee, 
 - :white_check_mark: Update ver-keys for all other proofs
 - :white_check_mark: Implement test cases for all other kind of proofs
+- [ ] Verify if the user has actually done the minitng by calling the contract in the `verify()` of `SbtMintService` service
+- [ ] The widget URL should be signed and then sent given to the user for security purposess
+- [ ] Refator code; use wrappers
+- [ ] Implement multitest cases 
 - [ ] Implement exectue function to update Hypersign Admin DID
 - [ ] Figure out how can we verify issuer_did (over IBC / ORacle etc.)
+
 
 Security Issues
 -------
 
-- [ ] zk proofs can be prone to replay attacks (Implement nullifiers)
-- [ ] All DID signatures are also prone to replay attacks
-- [ ] Check for any security loopholes
+- :white_check_mark: zk proofs can be prone to replay attacks (Implement nullifiers)
+- :white_check_mark: All DID signatures are also prone to replay attacks
 - :white_check_mark: Implement how to stop users to re-transfer the token to other users? 
+- [ ] Check for any security loopholes
 - [ ] Work on all edge cases of smart contract
 
 ## Resources
