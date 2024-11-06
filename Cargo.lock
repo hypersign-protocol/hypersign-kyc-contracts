@@ -170,6 +170,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "bloock-poseidon-rs"
+version = "0.1.5"
+source = "git+https://github.com/bloock/bloock-poseidon-rs#17549e877c90b3e4f2a7a9ae654246b11c30515c"
+dependencies = [
+ "ff_ce 0.13.1",
+ "hex",
+ "lazy_static",
+ "num-bigint",
+ "num-traits",
+ "rand",
+]
+
+[[package]]
 name = "bnum"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1540,6 +1553,7 @@ dependencies = [
 name = "issuer-kyc"
 version = "0.1.1"
 dependencies = [
+ "bloock-poseidon-rs",
  "cosmwasm-schema 2.0.1",
  "cosmwasm-std",
  "cw-multi-test",
@@ -1551,7 +1565,6 @@ dependencies = [
  "hypersign-kyc-token",
  "hypersign-zk-verifier",
  "multibase",
- "poseidon-rust",
  "schemars",
  "semver",
  "serde",
@@ -1778,19 +1791,6 @@ checksum = "f950b2377845cebe5cf8b5165cb3cc1a5e0fa5cfa3e1f7f55707d8fd82e0a7b7"
 dependencies = [
  "der",
  "spki",
-]
-
-[[package]]
-name = "poseidon-rust"
-version = "0.1.5"
-source = "git+https://github.com/Pratap2018/poseidon-rust#6e23163cb13a4e79986ac6e03a841f8c93a01553"
-dependencies = [
- "ff_ce 0.13.1",
- "hex",
- "lazy_static",
- "num-bigint",
- "num-traits",
- "rand",
 ]
 
 [[package]]

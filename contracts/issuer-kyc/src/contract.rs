@@ -128,9 +128,9 @@ pub mod exec {
         COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
         SBT_SYMBOL,
     };
+    use bloock_poseidon_rs::poseidon::Poseidon;
     use cosmwasm_std::Empty;
     use hypersign_zk_verifier::msg::HypersignKYCProof;
-    use poseidon_rust::poseidon::Poseidon;
     use strum_macros::ToString;
 
     pub type ExecuteMsg = hypersign_kyc_token::msg::ExecuteMsg;
