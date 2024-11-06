@@ -1,6 +1,29 @@
-# Hypersign On-Chain KYC Contract Architecture
+## Hypersign On-Chain KYC
+
+The on-chain KYC feature enables you to verify users' identities in a privacy-preserving manner, granting access to your dApps without compromising sensitive information. For example, if you need to verify a user’s identity before allowing access to your smart contract, this can be done in three key steps:
+
+### On-chain KYC Configuration
+- dApps deploy the on-chain KYC contracts via the Entity Studio dashboard on their preferred (supported) blockchains.
+- dApps activate the on-chain KYC settings and configure zero-knowledge (zk) proof options within the widget configuration.
+
+### Token Minting
+- Users generate the required zk proofs from their identity credentials.
+- Users mint Soulbound Tokens (SBTs) tied to their zk proofs.
+### Token Verification
+- The dApp’s smart contract queries and verifies the user's SBT directly on-chain, confirming identity before granting access.
+- This process provides decentralised, privacy-respecting identity verification for secure dApp access.
+
+## The Architecture
+
+The architecture of on-chain KYC contracts is straightforward, consisting primarily of three smart contracts and a set of libraries. Initially, the Hypersign Admin deploys the **Hypersign KYC Factory** contract on the blockchain. This KYC Factory contract manages a registry of issuers and maintains the contract addresses of their respective KYC Issuer contracts.
+
+For any dApp that wishes to implement an on-chain KYC system, they simply call the **Hypersign KYC Factory** contract to initiate the deployment of their dedicated **Hypersign KYC Issuer** contract. The contract serves two primary purposes: (a) Deploying the **Hypersign KYC Token** contract, and (b) Verifying zero-knowledge (zk) proofs to mint the **Hypersign KYC Token** for users. Once a dApp deploys its own **Hypersign KYC Issuer** contract, it needs to call the **Hypersign KYC Token** contract to instantiate its respective KYC token contract. Users then mint their on-chain ID—a  Soulbound Token (SBT)—through the **Hypersign KYC Issuer** contract, establishing their verified identity on-chain.
 
 ![img](./docs/hypersign-kyc-cosm-wasm-contracts-Page-3.drawio.png)
+
+Finally, The **Hypersign KYC Token** contract is responsible for managing all on-chain identities for users. dApps that need to confirm a user’s completion of the KYC process can call this contract to verify their status.
+
+> As a dApp, you do not need to worry about **Hypersign KYC Factory** Contract. You only need to deploy the KYC Issuer and KYC Token contract through [Entity Studio Dashboard](https://docs.hypersign.id/hypersign-kyc/on-chain-kyc) in few button clicks. 
 
 ## How to install 
 
