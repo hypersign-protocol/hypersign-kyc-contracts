@@ -25,7 +25,11 @@ Finally, The **Hypersign KYC Token** contract is responsible for managing all on
 
 > As a dApp, you do not need to worry about **Hypersign KYC Factory** Contract. You only need to deploy the KYC Issuer and KYC Token contract through [Entity Studio Dashboard](https://docs.hypersign.id/hypersign-kyc/on-chain-kyc/contracts-deployment) in few button clicks. 
 
-The repository contains contracts and packages necessary for deploying on-chain KYC on Cosmos-based blockchains.
+## Bit of History 
+
+We started working on this project after we recieved some appreciation on our work in [Delphi Hackathon 2023](https://devpost.com/software/eclipse-fi?ref_content=my-projects-tab&ref_feature=my_projects). We even received token of appreciation of few thousands dollar (;p). The proposed idea was to make token transactions compliant, in the most privaccy preserving way. In the hackathon we not only used zero knowledge proofs but also sent and verfied proof across blockchains using IBC. But ofcourse we hacked some of thing related to KYC and data capturing during the hackathon due to lack to time and funds. I encourage you to checkout that [zk-kyc-using-ibc repository](https://github.com/hypersign-protocol/zk-kyc-using-ibc) as well. 
+
+That hackathon motivated us to pursue the usecase and build it as a product. This particular repository contains contracts and packages necessary for deploying on-chain KYC on Cosmos-based blockchains.
 
 ## Folder St. 
 
