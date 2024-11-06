@@ -128,6 +128,7 @@ pub mod exec {
         COUNTER, INSTANTIATE_TOKEN_REPLY_ID, SBT_CODE_ID, SBT_CONTRACT_ADDRESS, SBT_NAME,
         SBT_SYMBOL,
     };
+    use bloock_poseidon_rs::poseidon::Poseidon;
     use cosmwasm_std::Empty;
     use hypersign_zk_verifier::msg::HypersignKYCProof;
     use strum_macros::ToString;
@@ -212,6 +213,21 @@ pub mod exec {
         }
 
         /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
+        /// IssuerId will be at position pub_signl.len()-3 position
+        let issuer_id = hypersign_proof.zk_proof.public_signales
+            [hypersign_proof.zk_proof.public_signales.len() - 3]
+            .clone();
+
+        let poseidon = Poseidon::default();
+        let issuer_id_in_state = OWNERDID.load(deps.storage)?;
+        let issuer_id_state_hash = poseidon
+            .hash_bytes(issuer_id_in_state.as_bytes())
+            .unwrap()
+            .string();
+
+        if (issuer_id != issuer_id_state_hash) {
+            return Err(KycContractError::ZkProofInvalidIssuer {});
+        }
 
         /// TODO: Verify the proof
         match hypersign_zk_verifier::verify_zkp(

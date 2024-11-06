@@ -31,7 +31,7 @@ hex             = { workspace = true }
 multibase       = { workspace = true }
 ssi-manager     = { workspace = true, features = ["library"] }
 strum_macros = "0.26"
-bellman_ce = { git = "https://github.com/DoraFactory/bellman.git" }
+bellman_ce = { git = "https://github.com/DoraFactory/bellman.git#", rev = "135ea382722778065b140963f5fb0a7bd1e46375"}
 pairing_ce = { git = "https://github.com/matter-labs/pairing.git" }
 cw721           = { workspace = true}
 ff_ce = "0.14.3"

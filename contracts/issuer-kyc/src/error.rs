@@ -40,6 +40,8 @@ pub enum KycContractError {
     #[error("This zk proof was already verified")]
     ZkProofInvalid {},
 
+    #[error("Proof was not generated from a credential issued by the trusted issuer.")]
+    ZkProofInvalidIssuer {},
     #[error("Age zk proof is invalid")]
     ZkAgeProofInvalid {},
 }
