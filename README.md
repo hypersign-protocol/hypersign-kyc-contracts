@@ -9,6 +9,7 @@ The on-chain KYC feature enables you to verify users' identities in a privacy-pr
 ### Token Minting
 - Users generate the required zk proofs from their identity credentials.
 - Users mint Soulbound Tokens (SBTs) tied to their zk proofs.
+
 ### Token Verification
 - The dApp’s smart contract queries and verifies the user's SBT directly on-chain, confirming identity before granting access.
 - This process provides decentralised, privacy-respecting identity verification for secure dApp access.
@@ -66,5 +67,63 @@ cargo install cosmwasm-check
 
 We maintain list of blockchains that we support in the [Chain metadata repository](https://github.com/hypersign-protocol/hypersign-kyc-chains-metadata).
 
-## How to contribute?
+## What's Next?
+
+As you may have noticed if you've reviewed our codebase, the current implementation is quite basic and requires significant improvements in areas such as coding standards, optimization, and testing.
+
+Here's our roadmap for enhancements:
+
+1. Address all security-related edge cases.
+2. Optimize the contracts (currently written by non-Rust developers).
+3. Implement IBC interactions for zk-proof verification, so contracts only need to be deployed on a single blockchain rather than on every chain.
+4. Conduct a thorough code audit.
+5. Any other suggestions? We’d love your input!
+
+We’re a small team of just two developers, and with limited funding, we're planning to open-source the project to invite Cosmos developers to contribute and help build something valuable for the community.
+
+Feel free to add comments or report issues on our [issue tracker](https://github.com/hypersign-protocol/hypersign-kyc-contracts/issues). We'll address them as best we can. I am always available on Telegram [(@Hermit_taken)](https://t.me/Hermit_taken), please do not hesitate to ping me. Thank you!
+
+
+## Contributors ✨
+
+Also, thanks to these wonderful people (including me :p):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+   <tr>
+      <td align="center">
+         <a href="https://github.com/Vishwas1">
+            <img src="https://avatars.githubusercontent.com/u/15328561?v=4" width="100px;" alt=""/>
+            <br />
+            <sub><b>Vishwas Bhushan</b></sub>
+         </a>
+         <br />
+         <a href="#Vishwas1" title="Code">💻</a>
+      </td>
+      <td align="center">
+         <a href="https://github.com/Pratap2018">
+            <img src="https://avatars.githubusercontent.com/u/39677673?v=4" width="100px;" alt=""/>
+            <br />
+            <sub><b>Pratap Mridha</b></sub>
+         </a>
+         <br />
+         <a href="#Pratap2018" title="Code">💻</a>
+      </td>
+      <td align="center">
+         <a href="https://github.com/kjvenky">
+            <img src="https://avatars.githubusercontent.com/u/3108588?v=4" width="100px;" alt=""/>
+            <br />
+            <sub><b>kjvenky</b></sub>
+         </a>
+         <br />
+         <a href="#kjvenky" title="Code">💻</a>
+      </td>
+   </tr>
+</table>
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+
+
 
