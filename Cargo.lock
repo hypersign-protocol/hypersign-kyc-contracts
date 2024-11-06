@@ -101,7 +101,7 @@ checksum = "d965446196e3b7decd44aa7ee49e31d630118f90ef12f97900f262eb915c951d"
 [[package]]
 name = "bellman_ce"
 version = "0.3.2"
-source = "git+https://github.com/DoraFactory/bellman.git#135ea382722778065b140963f5fb0a7bd1e46375"
+source = "git+https://github.com/DoraFactory/bellman.git#?rev=135ea382722778065b140963f5fb0a7bd1e46375#135ea382722778065b140963f5fb0a7bd1e46375"
 dependencies = [
  "arrayvec 0.7.6",
  "bit-vec",
@@ -133,7 +133,7 @@ dependencies = [
 [[package]]
 name = "blake2s_const"
 version = "0.6.0"
-source = "git+https://github.com/DoraFactory/bellman.git#135ea382722778065b140963f5fb0a7bd1e46375"
+source = "git+https://github.com/DoraFactory/bellman.git#?rev=135ea382722778065b140963f5fb0a7bd1e46375#135ea382722778065b140963f5fb0a7bd1e46375"
 dependencies = [
  "arrayref",
  "arrayvec 0.5.2",
@@ -1187,15 +1187,41 @@ dependencies = [
 
 [[package]]
 name = "ff_ce"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce9180c0561effb4f0bd2b9ed62d856b039e860d695d51fe690902f7b8157fe5"
+dependencies = [
+ "byteorder",
+ "ff_derive_ce 0.10.0",
+ "hex",
+ "rand",
+]
+
+[[package]]
+name = "ff_ce"
 version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5b538e4231443a5b9c507caee3356f016d832cf7393d2d90f03ea3180d4e3fbc"
 dependencies = [
  "byteorder",
- "ff_derive_ce",
+ "ff_derive_ce 0.11.2",
  "hex",
  "rand",
  "serde",
+]
+
+[[package]]
+name = "ff_derive_ce"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2c85c41b0578de2b2c68bd3513c2a402cc92ea11961295c55987fc1f8e8310c"
+dependencies = [
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
 ]
 
 [[package]]
@@ -1450,7 +1476,7 @@ dependencies = [
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
  "cw721 0.1.1",
- "ff_ce",
+ "ff_ce 0.14.3",
  "hex",
  "hypersign-kyc-token",
  "multibase",
@@ -1525,6 +1551,7 @@ dependencies = [
  "hypersign-kyc-token",
  "hypersign-zk-verifier",
  "multibase",
+ "poseidon-rust",
  "schemars",
  "semver",
  "serde",
@@ -1710,7 +1737,7 @@ source = "git+https://github.com/matter-labs/pairing.git#e86029c163fe25719712be0
 dependencies = [
  "byteorder",
  "cfg-if 1.0.0",
- "ff_ce",
+ "ff_ce 0.14.3",
  "rand",
  "serde",
 ]
@@ -1751,6 +1778,19 @@ checksum = "f950b2377845cebe5cf8b5165cb3cc1a5e0fa5cfa3e1f7f55707d8fd82e0a7b7"
 dependencies = [
  "der",
  "spki",
+]
+
+[[package]]
+name = "poseidon-rust"
+version = "0.1.5"
+source = "git+https://github.com/Pratap2018/poseidon-rust#6e23163cb13a4e79986ac6e03a841f8c93a01553"
+dependencies = [
+ "ff_ce 0.13.1",
+ "hex",
+ "lazy_static",
+ "num-bigint",
+ "num-traits",
+ "rand",
 ]
 
 [[package]]

@@ -130,6 +130,7 @@ pub mod exec {
     };
     use cosmwasm_std::Empty;
     use hypersign_zk_verifier::msg::HypersignKYCProof;
+    use poseidon_rust::poseidon::Poseidon;
     use strum_macros::ToString;
 
     pub type ExecuteMsg = hypersign_kyc_token::msg::ExecuteMsg;
@@ -212,6 +213,21 @@ pub mod exec {
         }
 
         /// TODO: if the exposed did of issuer is same (issuer) as expected by this contract
+        /// IssuerId will be at position pub_signl.len()-3 position
+        let issuer_id = hypersign_proof.zk_proof.public_signales
+            [hypersign_proof.zk_proof.public_signales.len() - 3]
+            .clone();
+
+        let poseidon = Poseidon::default();
+        let issuer_id_in_state = OWNERDID.load(deps.storage)?;
+        let issuer_id_state_hash = poseidon
+            .hash_bytes(issuer_id_in_state.as_bytes())
+            .unwrap()
+            .string();
+
+        if (issuer_id != issuer_id_state_hash) {
+            return Err(KycContractError::ZkProofInvalidIssuer {});
+        }
 
         /// TODO: Verify the proof
         match hypersign_zk_verifier::verify_zkp(
