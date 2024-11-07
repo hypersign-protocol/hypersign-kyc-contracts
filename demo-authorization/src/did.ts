@@ -68,9 +68,6 @@ export async function generateDidAndDoc(){
         const result = await hypersignDID.verify({didDocument: signature, verificationMethodId,  challenge, domain})
         console.log(JSON.stringify(result))
     }
-    
-
-
 }
 
 

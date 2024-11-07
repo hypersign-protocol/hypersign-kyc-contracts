@@ -85,7 +85,7 @@ osmosisd q bank balances nibi1j8099d7vm6w6t8vmzh6t3vanxt2hnf99vp7z7l | jq
 ### Uploads kyc contract code
 
 ```bash
-osmosisd tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas-prices 0.025uosmo --gas auto --gas-adjustment 1.3 --node https://rpc.testnet.osmosis.zone:443 --yes | jq -rcs '.[0].txhash'
+osmosisd tx wasm store ./artifacts/issuer_kyc.wasm --from validator --gas-prices 0.025uosmo --gas auto --gas-adjustment 1.3 --node https://osmosis-testnet-rpc.polkachu.com:443 --yes | jq -rcs '.[0].txhash'
 osmosisd q tx EFB88715CE75621BF2B66C34F549D28176EB64C40B669DEA47140B00FDBDDDCE | jq -rcs '.[0].logs[0].events[1].attributes[1].value'
 #11354
 ```
